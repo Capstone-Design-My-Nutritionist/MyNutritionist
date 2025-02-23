@@ -31,9 +31,10 @@ const InputBox = styled.TextInput`
   height: 30px;
   font-size: 12px;
   font-family: "Pretendard-SemiBold";
-  color: #6c6c6c;
+  color: #111111;
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1.5px solid;
+  border-color: "#111111";
   border-radius: 8px;
 `;
 

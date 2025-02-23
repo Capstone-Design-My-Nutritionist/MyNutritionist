@@ -32,9 +32,10 @@ const StyledInput = styled.TextInput`
   height: 40px;
   font-size: 16px;
   font-family: "Pretendard-SemiBold";
-  color: #6c6c6c;
+  color: #111111;
   padding : 0px 12px;
-  border: 1px solid #ccc;
+  border: 1.5px solid;
+  border-color: "#111111";
   border-radius: 12px;
   margin-right: 8px;
   text-align: right;
