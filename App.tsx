@@ -1,12 +1,13 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { PrimaryButton, SecondaryButton } from "./src/components";
+import { LoginInputField, SurveyInputField } from "./src/components";
+
 
 const App = () => {
   return (
     <View style={styles.container}>
-      <PrimaryButton title="다음" />
-      <SecondaryButton title="이전" />
+      <LoginInputField label="아이디" placeholder="아이디를 입력하세요" />
+      <SurveyInputField label="세" placeholder="나이를 입력해주세요." />
     </View>
   );
 };
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f0f0f0",
-    gap: 10, // 버튼 간격 조절
+    gap: 20, 
   },
 });
 
