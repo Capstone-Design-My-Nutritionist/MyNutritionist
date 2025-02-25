@@ -19,6 +19,7 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  gap : 8px;
 `;
 
 const Label = styled.Text`
@@ -37,7 +38,6 @@ const StyledInput = styled.TextInput`
   border: 1.5px solid;
   border-color: "#111111";
   border-radius: 12px;
-  margin-right: 8px;
   text-align: right;
 `;
 

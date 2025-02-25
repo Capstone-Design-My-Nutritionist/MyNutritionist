@@ -16,14 +16,13 @@ const LoginInputField: React.FC<LoginInputFieldProps> = ({ label, ...props }) =>
 };
 
 const Container = styled.View`
-  margin-bottom: 6px; 
+  gap : 6px;
 `;
 
 const Label = styled.Text`
   font-size: 14px;
   font-family: "Pretendard-Bold";
   color: #111111;
-  margin-bottom: 6px;
 `;
 
 const InputBox = styled.TextInput`
