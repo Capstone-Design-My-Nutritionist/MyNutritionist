@@ -1,6 +1,11 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "types": ["styled-components-react-native"]
-  }
+    "types": [
+      "styled-components-react-native",
+      "react-native-svg",
+      "react-native-dotenv"
+    ]
+  },
+  "include": ["src", "env.d.ts", "src/utils/svg.d.ts"]
 }
