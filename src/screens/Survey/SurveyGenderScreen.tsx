@@ -5,8 +5,9 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import ProgressBar from '../../components/ProgressBar';
 import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
-import PrimaryButton from '../../components/Button/PrimaryButton';
-import OutlineButton from '../../components/Button/OutlineButton';
+import SurveyHeader from '../../components/Common/SurveyHeader';
+import SurveyTitle from '../../components/Common/SurveyTitle';
+import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
   SurveyGenderScreen: undefined;
@@ -31,25 +32,16 @@ const SurveyGenderScreen = () => {
 
   return (
     <Container>
-      {/* 상단 헤더 */}
-      <Header>
-        <HeaderTitleContainer>
-          <HeaderTitle>기본 정보</HeaderTitle>
-        </HeaderTitleContainer>
-        <SkipButton onPress={() => navigation.navigate('SurveyAgeScreen')}>
-          <SkipText>skip &gt;</SkipText>
-        </SkipButton>
-      </Header>
+      {/* ✅ 공통 헤더 사용 */}
+      <SurveyHeader title="기본 정보" skipTarget="SurveyAgeScreen" />
 
-      {/* 진행 바 */}
+      {/* ✅ 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={0.1} />
       </ProgressBarContainer>
 
-      {/* 질문 텍스트 */}
-      <TitleContainer>
-        <Title>성별을 알려주세요.</Title>
-      </TitleContainer>
+      {/* ✅ 공통 질문 텍스트 사용 */}
+      <SurveyTitle text="성별을 알려주세요." />
 
       {/* 성별 선택 버튼 */}
       <ButtonWrapper>
@@ -67,15 +59,12 @@ const SurveyGenderScreen = () => {
         </ButtonContainer>
       </ButtonWrapper>
 
-      {/* 하단 네비게이션 버튼 */}
-      <NavigationButtons>
-        <OutlineButton label="이전" onPress={() => navigation.goBack()} />
-        <PrimaryButton
-          label="다음"
-          onPress={handleNext}
-          disabled={!selectedGender}
-        />
-      </NavigationButtons>
+      {/* ✅ 공통 버튼 그룹 사용 */}
+      <SurveyButtonGroup
+        onPrevious={() => navigation.goBack()}
+        onNext={handleNext}
+        nextDisabled={!selectedGender}
+      />
     </Container>
   );
 };
@@ -89,54 +78,9 @@ const Container = styled.View`
   padding: 24px;
 `;
 
-const Header = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const HeaderTitleContainer = styled.View`
-  flex: 1;
-  align-items: center;
-  position: absolute;
-  width: 100%;
-`;
-
-const HeaderTitle = styled.Text`
-  font-size: 18px;
-  font-weight: bold;
-  color: #a83232;
-  text-align: center;
-`;
-
-const SkipButton = styled.TouchableOpacity`
-  z-index: 1;
-  margin-left: auto;
-`;
-
-const SkipText = styled.Text`
-  color: #a83232;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
 const ProgressBarContainer = styled.View`
   width: 100%;
   margin-top: 10px;
-`;
-
-const TitleContainer = styled.View`
-  flex: 0.15;
-  justify-content: flex-end;
-  align-items: center;
-`;
-
-const Title = styled.Text`
-  font-size: 20px;
-  font-weight: bold;
-  color: #a83232;
-  text-align: center;
 `;
 
 const ButtonWrapper = styled.View`
@@ -147,11 +91,5 @@ const ButtonWrapper = styled.View`
 
 const ButtonContainer = styled.View`
   flex-direction: row;
-  gap: 24px;
-`;
-
-const NavigationButtons = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: 30px;
+  gap: 38px;
 `;

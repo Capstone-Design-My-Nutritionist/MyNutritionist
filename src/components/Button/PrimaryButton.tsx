@@ -20,7 +20,7 @@ export default PrimaryButton;
 
 // ✅ 스타일 정의
 const Button = styled(TouchableOpacity)`
-  width: 100px;
+  width: 150px;
   height: 40px;
   background-color: #f24859;
   border-radius: 10px;

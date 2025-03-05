@@ -26,5 +26,5 @@ const BarContainer = styled(View)`
 
 const ProgressFill = styled(View)`
   height: 100%;
-  background-color: #a83232;
+  background-color: #f24859;
 `;
