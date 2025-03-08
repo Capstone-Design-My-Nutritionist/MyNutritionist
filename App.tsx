@@ -4,10 +4,10 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
 import SurveyAgeScreen from './src/screens/Survey/SurveyAgeScreen';
-// import SurveyHeightScreen from './src/screens/Survey/SurveyHeightScreen'; // ✅ 추가
 import SurveyMedicationOkScreen from './src/screens/Survey/SurveyMedicationOkScreen';
 import SurveySupplementOkScreen from './src/screens/Survey/SurveySupplementOkScreen';
 import SurveyFamilyHistoryOkScreen from './src/screens/Survey/SurveyFamilyHistoryOkScreen';
+import SurveyDiseaseOkScreen from './src/screens/Survey/SurveyDiseaseOkScreen';
 
 const Stack = createStackNavigator();
 
@@ -32,9 +32,13 @@ function App(): React.JSX.Element {
           name="SurveySupplementOkScreen"
           component={SurveySupplementOkScreen}
         /> */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="SurveyFamilyHistoryOkScreen"
           component={SurveyFamilyHistoryOkScreen}
+        /> */}
+        <Stack.Screen
+          name="SurveyDiseaseOkScreen"
+          component={SurveyDiseaseOkScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
