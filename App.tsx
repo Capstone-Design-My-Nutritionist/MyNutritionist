@@ -5,6 +5,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
 import SurveyAgeScreen from './src/screens/Survey/SurveyAgeScreen';
 // import SurveyHeightScreen from './src/screens/Survey/SurveyHeightScreen'; // ✅ 추가
+import SurveySupplementScreen from './src/screens/Survey/SurveySupplementScreen';
 
 const Stack = createStackNavigator();
 
@@ -13,15 +14,18 @@ function App(): React.JSX.Element {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {/* <Stack.Screen name="SurveyAgeScreen" component={SurveyAgeScreen} /> */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="SurveyGenderScreen"
           component={SurveyGenderScreen}
-        />
+        /> */}
         {/* <Stack.Screen
           name="SurveyHeightScreen"
           component={SurveyHeightScreen}
         />{' '} */}
-        {/* ✅ 추가 */}
+        <Stack.Screen
+          name="SurveySupplementScreen"
+          component={SurveySupplementScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
