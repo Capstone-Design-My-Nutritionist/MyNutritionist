@@ -24,7 +24,7 @@ const TitleContainer = styled.View`
 `;
 
 const Title = styled.Text`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   color: #8c0303;
   text-align: center;

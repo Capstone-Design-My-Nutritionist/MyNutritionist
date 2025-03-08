@@ -28,12 +28,13 @@ const SurveyHeader: React.FC<SurveyHeaderProps> = ({title, skipTarget}) => {
 
 export default SurveyHeader;
 
-// ✅ 스타일 정의
 const Header = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  margin-top: 51px;
+  margin-bottom: 17px;
 `;
 
 const HeaderTitleContainer = styled.View`
@@ -44,7 +45,7 @@ const HeaderTitleContainer = styled.View`
 `;
 
 const HeaderTitle = styled.Text`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: #731a22;
   text-align: center;
