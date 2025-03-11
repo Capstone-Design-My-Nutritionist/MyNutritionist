@@ -10,6 +10,7 @@ import SurveyFamilyHistoryOkScreen from './src/screens/Survey/SurveyFamilyHistor
 import SurveyDiseaseOkScreen from './src/screens/Survey/SurveyDiseaseOkScreen';
 import SurveyAllergyOkScreen from './src/screens/Survey/SurveyAllergyOkScreen';
 import SurveyHeightScreen from './src/screens/Survey/SurveyHeightScreen';
+import SurveyMealScreen from './src/screens/Survey/SurveyMealScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,10 +19,11 @@ function App(): React.JSX.Element {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {/* <Stack.Screen name="SurveyAgeScreen" component={SurveyAgeScreen} /> */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="SurveyHeightScreen"
           component={SurveyHeightScreen}
-        />
+        /> */}
+        <Stack.Screen name="SurveyMealScreen" component={SurveyMealScreen} />
         {/* <Stack.Screen
           name="SurveyGenderScreen"
           component={SurveyGenderScreen}
