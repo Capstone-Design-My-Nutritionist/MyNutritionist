@@ -1,8 +1,8 @@
 // components/Common/SurveyButtonGroup.tsx
 import React from 'react';
 import styled from 'styled-components/native';
-import OutlineButton from '../Button/OutlineButton';
-import PrimaryButton from '../Button/PrimaryButton';
+import OutlineButton from '../NormalButton/SecondaryButton';
+import PrimaryButton from '../NormalButton/PrimaryButton';
 
 interface SurveyButtonGroupProps {
   onPrevious: () => void;
@@ -17,15 +17,15 @@ const SurveyButtonGroup: React.FC<SurveyButtonGroupProps> = ({
 }) => {
   return (
     <NavigationButtons>
-      <OutlineButton label="이전" onPress={onPrevious} />
-      <PrimaryButton label="다음" onPress={onNext} disabled={nextDisabled} />
+      <OutlineButton title="이전" />
+      <PrimaryButton title="다음" />
     </NavigationButtons>
   );
 };
 
 export default SurveyButtonGroup;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const NavigationButtons = styled.View`
   flex-direction: row;
   justify-content: space-evenly;

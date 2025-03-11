@@ -26,16 +26,16 @@ const SurveyAllergyOkScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('NextSurveyScreen'); // ✅ 다음 화면으로 이동
+      navigation.navigate('NextSurveyScreen'); // 다음 화면으로 이동
     }
   };
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 사용 */}
+      {/* 공통 헤더 사용 */}
       <SurveyHeader title="알레르기 정보" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={0.7} />
       </ProgressBarContainer>

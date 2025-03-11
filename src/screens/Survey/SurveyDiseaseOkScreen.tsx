@@ -32,15 +32,15 @@ const SurveyDiseaseOkScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 사용 */}
+      {/* 공통 헤더 사용 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={0.6} />
       </ProgressBarContainer>
 
-      {/* ✅ 공통 질문 텍스트 사용 */}
+      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="현재 진단받은 질환이 있나요?" />
 
       {/* 선택 버튼 */}
