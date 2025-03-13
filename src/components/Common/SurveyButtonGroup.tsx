@@ -1,8 +1,8 @@
 // components/Common/SurveyButtonGroup.tsx
 import React from 'react';
 import styled from 'styled-components/native';
-import OutlineButton from '../NormalButton/SecondaryButton';
 import PrimaryButton from '../NormalButton/PrimaryButton';
+import SecondaryButton from '../NormalButton/SecondaryButton';
 
 interface SurveyButtonGroupProps {
   onPrevious: () => void;
@@ -17,7 +17,7 @@ const SurveyButtonGroup: React.FC<SurveyButtonGroupProps> = ({
 }) => {
   return (
     <NavigationButtons>
-      <OutlineButton title="이전" />
+      <SecondaryButton title="이전" />
       <PrimaryButton title="다음" />
     </NavigationButtons>
   );

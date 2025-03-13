@@ -7,7 +7,7 @@ import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
-import SurveyMultiButtonGroup from '../../components/Common/SurveyMultiButtonGroup';
+import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
   SurveyHealthGoalsScreen: undefined;
@@ -60,17 +60,18 @@ const SurveyHealthGoalsScreen = () => {
       {/* ✅ 다중선택 버튼 */}
       <ButtonGrid>
         {healthGoals.map(goal => (
-          <MultiSelectButton
-            key={goal}
-            title={goal}
-            isSelected={selectedGoals.includes(goal)}
-            onPress={() => toggleGoal(goal)}
-          />
+          <ButtonSpacing key={goal}>
+            <MultiSelectButton
+              title={goal}
+              isSelected={selectedGoals.includes(goal)}
+              onPress={() => toggleGoal(goal)}
+            />
+          </ButtonSpacing>
         ))}
       </ButtonGrid>
 
-      {/* ✅ 새 버튼 그룹 */}
-      <SurveyMultiButtonGroup
+      {/* ✅ SurveyButtonGroup으로 변경 */}
+      <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
         nextDisabled={selectedGoals.length === 0}
@@ -107,6 +108,9 @@ const ButtonGrid = styled.View`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 12px 16px;
   margin-top: 52px;
+`;
+
+const ButtonSpacing = styled.View`
+  margin: 20px 15px;
 `;
