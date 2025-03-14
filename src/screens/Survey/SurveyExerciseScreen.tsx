@@ -10,33 +10,40 @@ import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelect
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
-  SurveyAllergyScreen: undefined;
+  SurveyExerciseScreen: undefined;
   NextSurveyScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
   RootStackParamList,
-  'SurveyAllergyScreen'
+  'SurveyExerciseScreen'
 >;
 
-const allergyOptionsTop = ['견과류', '유제품', '갑각류'];
-const allergyOptionsBottom = ['글루텐', '해당 없음'];
+const exerciseOptionsTop = [
+  '거의 하지 않음',
+  '1~3회\n\n가벼운 운동',
+  '3~5회\n\n보통강도',
+];
+const exerciseOptionsBottom = [
+  '6~7회\n\n강도높은 운동',
+  '매일\n\n활동적이거나\n운동선수',
+];
 
-const SurveyAllergyScreen = () => {
+const SurveyExerciseScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = () => {
     if (selectedOption) {
-      console.log('Selected allergy:', selectedOption);
+      console.log('Selected exercise frequency:', selectedOption);
       navigation.navigate('NextSurveyScreen');
     }
   };
 
   return (
     <Container>
-      {/* ✅ 헤더 */}
-      <SurveyHeader title="알레르기" skipTarget="NextSurveyScreen" />
+      {/* ✅ 상단 헤더 */}
+      <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
       {/* ✅ 진행 바 */}
       <ProgressBarContainer>
@@ -44,12 +51,12 @@ const SurveyAllergyScreen = () => {
       </ProgressBarContainer>
 
       {/* ✅ 질문 */}
-      <SurveyTitle text="어떤 알레르기를 앓고 계신가요?" />
+      <SurveyTitle text="주당 운동 빈도는 어떻게 되시나요?" />
 
       {/* ✅ 선택 버튼 */}
       <ButtonWrapper>
         <ButtonRow>
-          {allergyOptionsTop.map(option => (
+          {exerciseOptionsTop.map(option => (
             <ButtonSpacing key={option}>
               <SmallMonoSelectButton
                 title={option}
@@ -60,7 +67,7 @@ const SurveyAllergyScreen = () => {
           ))}
         </ButtonRow>
         <ButtonRow>
-          {allergyOptionsBottom.map(option => (
+          {exerciseOptionsBottom.map(option => (
             <ButtonSpacing key={option}>
               <SmallMonoSelectButton
                 title={option}
@@ -82,7 +89,7 @@ const SurveyAllergyScreen = () => {
   );
 };
 
-export default SurveyAllergyScreen;
+export default SurveyExerciseScreen;
 
 // ✅ 스타일 정의
 const Container = styled.View`

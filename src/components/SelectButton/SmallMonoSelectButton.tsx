@@ -44,4 +44,5 @@ const ButtonText = styled.Text`
   font-size: 14px;
   color: ${(props: {isSelected: boolean}) =>
     props.isSelected ? '#FFFFFF' : '#111111'};
+  text-align: center;
 `;
