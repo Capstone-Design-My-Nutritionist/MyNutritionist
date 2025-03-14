@@ -20,6 +20,8 @@ import SurveyWaterScreen from './src/screens/Survey/SurveyWaterScreen';
 import SurveySmokingScreen from './src/screens/Survey/SurveySmokingScreen';
 import SurveyExerciseScreen from './src/screens/Survey/SurveyExerciseScreen';
 import SurveyAllergyScreen from './src/screens/Survey/SurveyAllergyScreen';
+import SurveyDrinkScreen from './src/screens/Survey/SurveyDrinkScreen';
+
 const Stack = createStackNavigator();
 
 function App(): React.JSX.Element {
@@ -85,10 +87,11 @@ function App(): React.JSX.Element {
           name="SurveyExerciseScreen"
           component={SurveyExerciseScreen}
         /> */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="SurveyAllergyScreen"
           component={SurveyAllergyScreen}
-        />
+        /> */}
+        <Stack.Screen name="SurveyDrinkScreen" component={SurveyDrinkScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
