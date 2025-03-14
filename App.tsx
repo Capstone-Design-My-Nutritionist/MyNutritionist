@@ -14,7 +14,7 @@ import SurveyMealScreen from './src/screens/Survey/SurveyMealScreen';
 import SurveyWeightScreen from './src/screens/Survey/SuveyWeightScreen';
 import SurveyHealthGoalsScreen from './src/screens/Survey/SurveyHealthGoalsScreen';
 import SurveyHealthConcernsScreen from './src/screens/Survey/SurveyHealthConcernsScreen';
-
+import SurveySleepTimeScreen from './src/screens/Survey/SurveySleepTimeScreen';
 const Stack = createStackNavigator();
 
 function App(): React.JSX.Element {
@@ -59,9 +59,13 @@ function App(): React.JSX.Element {
           name="SurveyHealthGoalsScreen"
           component={SurveyHealthGoalsScreen}
         /> */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="SurveyHealthConcernsScreen"
           component={SurveyHealthConcernsScreen}
+        /> */}
+        <Stack.Screen
+          name="SurveySleepTimeScreen"
+          component={SurveySleepTimeScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
