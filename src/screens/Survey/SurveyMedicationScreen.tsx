@@ -10,8 +10,9 @@ import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
+  SurveyMedicationOkScreen: undefined;
   SurveyMedicationScreen: undefined;
-  NextSurveyScreen: undefined;
+  SurveySupplementOkScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -43,7 +44,7 @@ const SurveyMedicationScreen = () => {
 
   const handleNext = () => {
     console.log('Selected medications:', selectedMedications);
-    navigation.navigate('NextSurveyScreen');
+    navigation.navigate('SurveySupplementOkScreen');
   };
 
   return (

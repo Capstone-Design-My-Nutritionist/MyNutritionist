@@ -10,8 +10,9 @@ import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelect
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
+  SurveyHealthGoalsScreen: undefined;
   SurveySleepTimeScreen: undefined;
-  NextSurveyScreen: undefined;
+  SurveyExerciseScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -28,7 +29,7 @@ const SurveySleepTimeScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Selected sleep time:', selectedOption);
-      navigation.navigate('NextSurveyScreen');
+      navigation.navigate('SurveyExerciseScreen');
     }
   };
 

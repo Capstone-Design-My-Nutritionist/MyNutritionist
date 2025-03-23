@@ -10,6 +10,7 @@ import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelect
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
+  SurveyAllergyOkScreen: undefined;
   SurveyAllergyScreen: undefined;
   NextSurveyScreen: undefined;
 };

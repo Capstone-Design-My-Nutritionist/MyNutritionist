@@ -10,8 +10,9 @@ import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelect
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
+  SurveyDrinkScreen: undefined;
   SurveySmokingScreen: undefined;
-  NextSurveyScreen: undefined;
+  SurveyAllergyOkScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -28,7 +29,7 @@ const SurveySmokingScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Selected smoking status:', selectedOption);
-      navigation.navigate('NextSurveyScreen');
+      navigation.navigate('SurveyAllergyOkScreen');
     }
   };
 

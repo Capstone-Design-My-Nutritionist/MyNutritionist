@@ -10,8 +10,9 @@ import SurveyInputField from '../../components/TextInputBox/SurveyInputField';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
+  SurveyExerciseScreen: undefined;
   SurveyMealScreen: undefined;
-  NextSurveyScreen: undefined;
+  SurveyVegetableScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -26,7 +27,7 @@ const SurveyMealScreen = () => {
   const handleNext = () => {
     if (mealCount !== null) {
       console.log('Navigating to NextSurveyScreen... Meal Count:', mealCount);
-      navigation.navigate('NextSurveyScreen');
+      navigation.navigate('SurveyVegetableScreen');
     }
   };
 

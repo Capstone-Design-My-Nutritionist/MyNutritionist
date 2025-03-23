@@ -11,7 +11,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
   SurveyMedicationOkScreen: undefined;
-  NextSurveyScreen: undefined; // 다음 설문 화면으로 연결될 곳
+  SurveyMedicationScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -26,7 +26,7 @@ const SurveyMedicationOkScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('NextSurveyScreen'); // 다음 화면으로 이동
+      navigation.navigate('SurveyMedicationScreen');
     }
   };
 

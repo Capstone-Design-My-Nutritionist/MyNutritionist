@@ -10,8 +10,9 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
+  SurveySmokingScreen: undefined;
   SurveyAllergyOkScreen: undefined;
-  NextSurveyScreen: undefined; // 다음 설문 화면으로 연결될 곳
+  SurveyAllergyScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -26,7 +27,7 @@ const SurveyAllergyOkScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('NextSurveyScreen'); // 다음 화면으로 이동
+      navigation.navigate('SurveyAllergyScreen');
     }
   };
 

@@ -11,7 +11,7 @@ import SurveyDiseaseOkScreen from './src/screens/Survey/SurveyDiseaseOkScreen';
 import SurveyAllergyOkScreen from './src/screens/Survey/SurveyAllergyOkScreen';
 import SurveyHeightScreen from './src/screens/Survey/SurveyHeightScreen';
 import SurveyMealScreen from './src/screens/Survey/SurveyMealScreen';
-import SurveyWeightScreen from './src/screens/Survey/SuveyWeightScreen';
+import SurveyWeightScreen from './src/screens/Survey/SurveyWeightScreen';
 import SurveyHealthGoalsScreen from './src/screens/Survey/SurveyHealthGoalsScreen';
 import SurveyHealthConcernsScreen from './src/screens/Survey/SurveyHealthConcernsScreen';
 import SurveySleepTimeScreen from './src/screens/Survey/SurveySleepTimeScreen';
@@ -32,86 +32,86 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        {/* <Stack.Screen
+        <Stack.Screen
           name="SurveyGenderScreen"
           component={SurveyGenderScreen}
-        /> */}
-        {/* <Stack.Screen name="SurveyAgeScreen" component={SurveyAgeScreen} /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen name="SurveyAgeScreen" component={SurveyAgeScreen} />
+        <Stack.Screen
           name="SurveyHeightScreen"
           component={SurveyHeightScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyWeightScreen"
           component={SurveyWeightScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyMedicationOkScreen"
           component={SurveyMedicationOkScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyMedicationScreen"
           component={SurveyMedicationScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveySupplementOkScreen"
           component={SurveySupplementOkScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveySupplementScreen"
           component={SurveySupplementScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyDiseaseOkScreen"
           component={SurveyDiseaseOkScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyDiseaseScreen"
           component={SurveyDiseaseScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyFamilyHistoryOkScreen"
           component={SurveyFamilyHistoryOkScreen}
-        /> */}
+        />
         <Stack.Screen
           name="SurveyFamilyHistoryScreen"
           component={SurveyFamilyHistoryScreen}
         />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="SurveyHealthConcernsScreen"
           component={SurveyHealthConcernsScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyHealthGoalsScreen"
           component={SurveyHealthGoalsScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveySleepTimeScreen"
           component={SurveySleepTimeScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyExerciseScreen"
           component={SurveyExerciseScreen}
-        /> */}
-        {/* <Stack.Screen name="SurveyMealScreen" component={SurveyMealScreen} /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen name="SurveyMealScreen" component={SurveyMealScreen} />
+        <Stack.Screen
           name="SurveyVegetableScreen"
           component={SurveyVegetableScreen}
-        /> */}
-        {/* <Stack.Screen name="SurveyWaterScreen" component={SurveyWaterScreen} /> */}
-        {/* <Stack.Screen name="SurveyDrinkScreen" component={SurveyDrinkScreen} /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen name="SurveyWaterScreen" component={SurveyWaterScreen} />
+        <Stack.Screen name="SurveyDrinkScreen" component={SurveyDrinkScreen} />
+        <Stack.Screen
           name="SurveySmokingScreen"
           component={SurveySmokingScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyAllergyOkScreen"
           component={SurveyAllergyOkScreen}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="SurveyAllergyScreen"
           component={SurveyAllergyScreen}
-        /> */}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,13 +1,15 @@
+// components/NormalButton/PrimaryButton.tsx
 import React from 'react';
 import styled from 'styled-components/native';
 
 interface PrimaryButtonProps {
   title: string;
+  onPress?: () => void;
 }
 
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({title}) => {
+const PrimaryButton: React.FC<PrimaryButtonProps> = ({title, onPress}) => {
   return (
-    <StyledPrimaryButton>
+    <StyledPrimaryButton onPress={onPress}>
       <ButtonText>{title}</ButtonText>
     </StyledPrimaryButton>
   );

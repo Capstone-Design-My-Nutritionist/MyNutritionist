@@ -12,7 +12,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 type RootStackParamList = {
   SurveyHeightScreen: undefined;
   SurveyWeightScreen: undefined;
-  NextSurveyScreen: undefined;
+  SurveyMedicationOkScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -27,7 +27,7 @@ const SurveyWeightScreen = () => {
   const handleNext = () => {
     if (weight !== null) {
       console.log('Navigating to NextSurveyScreen... Weight:', weight);
-      navigation.navigate('NextSurveyScreen');
+      navigation.navigate('SurveyMedicationOkScreen');
     }
   };
 

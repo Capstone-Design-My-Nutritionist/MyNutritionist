@@ -15,10 +15,16 @@ const SurveyButtonGroup: React.FC<SurveyButtonGroupProps> = ({
   onNext,
   nextDisabled = false,
 }) => {
+  const handleNextPress = () => {
+    if (!nextDisabled) {
+      onNext();
+    }
+  };
+
   return (
     <NavigationButtons>
-      <SecondaryButton title="이전" />
-      <PrimaryButton title="다음" />
+      <SecondaryButton title="이전" onPress={onPrevious} />
+      <PrimaryButton title="다음" onPress={handleNextPress} />
     </NavigationButtons>
   );
 };
