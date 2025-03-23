@@ -93,6 +93,7 @@ const Container = styled.View`
 const ProgressBarContainer = styled.View`
   width: 100%;
   margin-top: 10px;
+  margin-bottom: 64px;
 `;
 
 const SubText = styled.Text`
@@ -104,7 +105,7 @@ const SubText = styled.Text`
 `;
 
 const ButtonGrid = styled.View`
-  flex: 0.5;
+  flex: 0.7;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;

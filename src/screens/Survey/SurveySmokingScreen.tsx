@@ -83,10 +83,11 @@ const Container = styled.View`
 const ProgressBarContainer = styled.View`
   width: 100%;
   margin-top: 10px;
+  margin-bottom: 72px;
 `;
 
 const ButtonWrapper = styled.View`
-  flex: 0.5;
+  flex: 0.7;
   justify-content: center;
   align-items: center;
 `;
