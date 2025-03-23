@@ -48,19 +48,19 @@ const SurveyFamilyHistoryScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 헤더 */}
+      {/* 헤더 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.65} />
+        <ProgressBar progress={12 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="가족력이 있는 질환을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* ✅ 버튼 목록 */}
+      {/* 버튼 목록 */}
       <ButtonGrid>
         {familyHistoryOptions.map(item => (
           <ButtonSpacing key={item}>
@@ -73,7 +73,7 @@ const SurveyFamilyHistoryScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* ✅ 버튼 그룹 */}
+      {/* 버튼 그룹 */}
       <SurveyButtonGroupWrapper>
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}
@@ -87,7 +87,7 @@ const SurveyFamilyHistoryScreen = () => {
 
 export default SurveyFamilyHistoryScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

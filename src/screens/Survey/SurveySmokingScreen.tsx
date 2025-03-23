@@ -34,18 +34,18 @@ const SurveySmokingScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 상단 헤더 */}
+      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.65} />
+        <ProgressBar progress={21 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="흡연을 하시나요?" />
 
-      {/* ✅ 선택 버튼 */}
+      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonGrid>
           {smokingOptions.map(option => (
@@ -60,7 +60,7 @@ const SurveySmokingScreen = () => {
         </ButtonGrid>
       </ButtonWrapper>
 
-      {/* ✅ 하단 버튼 */}
+      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -72,7 +72,7 @@ const SurveySmokingScreen = () => {
 
 export default SurveySmokingScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

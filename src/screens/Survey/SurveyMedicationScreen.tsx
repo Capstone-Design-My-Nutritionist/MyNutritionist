@@ -48,22 +48,22 @@ const SurveyMedicationScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 헤더 */}
+      {/* 헤더 */}
       <SurveyHeader
         title="복용약 & 건강기능식품 정보"
         skipTarget="NextSurveyScreen"
       />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.5} />
+        <ProgressBar progress={6 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="현재 복용중이신 약을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* ✅ 버튼 목록 */}
+      {/* 버튼 목록 */}
       <ButtonGrid>
         {medicationOptions.map(item => (
           <ButtonSpacing key={item}>
@@ -76,7 +76,7 @@ const SurveyMedicationScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* ✅ 버튼 그룹 */}
+      {/* 버튼 그룹 */}
       <SurveyButtonGroupWrapper>
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}
@@ -90,7 +90,7 @@ const SurveyMedicationScreen = () => {
 
 export default SurveyMedicationScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

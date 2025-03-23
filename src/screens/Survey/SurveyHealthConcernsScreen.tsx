@@ -47,19 +47,19 @@ const SurveyHealthConcernsScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 상단 헤더 */}
+      {/* 상단 헤더 */}
       <SurveyHeader title="건강고민 & 목표" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.3} />
+        <ProgressBar progress={13 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 텍스트 */}
+      {/* 질문 텍스트 */}
       <SurveyTitle text="현재 가장 신경쓰이는 건강고민이 무엇인가요?" />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* ✅ 다중 선택 버튼 */}
+      {/* 다중 선택 버튼 */}
       <ButtonGrid>
         {healthConcerns.map(concern => (
           <ButtonSpacing key={concern}>
@@ -72,7 +72,7 @@ const SurveyHealthConcernsScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* ✅ 공통 하단 버튼 */}
+      {/* 공통 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -84,7 +84,7 @@ const SurveyHealthConcernsScreen = () => {
 
 export default SurveyHealthConcernsScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

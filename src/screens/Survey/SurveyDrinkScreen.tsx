@@ -35,18 +35,18 @@ const SurveyDrinkScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 상단 헤더 */}
+      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.5} />
+        <ProgressBar progress={20 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="음주를 얼마나 하시나요?" />
 
-      {/* ✅ 선택 버튼 */}
+      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonRow>
           {drinkOptionsTop.map(option => (
@@ -72,7 +72,7 @@ const SurveyDrinkScreen = () => {
         </ButtonRow>
       </ButtonWrapper>
 
-      {/* ✅ 하단 버튼 */}
+      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -84,7 +84,7 @@ const SurveyDrinkScreen = () => {
 
 export default SurveyDrinkScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

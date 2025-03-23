@@ -35,18 +35,18 @@ const SurveyAllergyScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 헤더 */}
+      {/* 헤더 */}
       <SurveyHeader title="알레르기" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.7} />
+        <ProgressBar progress={23 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="어떤 알레르기를 앓고 계신가요?" />
 
-      {/* ✅ 선택 버튼 */}
+      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonRow>
           {allergyOptionsTop.map(option => (
@@ -72,7 +72,7 @@ const SurveyAllergyScreen = () => {
         </ButtonRow>
       </ButtonWrapper>
 
-      {/* ✅ 하단 버튼 */}
+      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -84,7 +84,7 @@ const SurveyAllergyScreen = () => {
 
 export default SurveyAllergyScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

@@ -32,18 +32,18 @@ const SurveyMealScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 */}
+      {/* 공통 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.6} />
+        <ProgressBar progress={17 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 타이틀 */}
+      {/* 질문 타이틀 */}
       <SurveyTitle text="하루에 평균 몇 끼를 드시나요?" />
 
-      {/* ✅ 입력 필드 */}
+      {/* 입력 필드 */}
       <InputWrapper>
         <SurveyInputField
           label=""
@@ -55,7 +55,7 @@ const SurveyMealScreen = () => {
         <UnitText>끼</UnitText>
       </InputWrapper>
 
-      {/* ✅ 버튼 그룹 */}
+      {/* 버튼 그룹 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -67,7 +67,7 @@ const SurveyMealScreen = () => {
 
 export default SurveyMealScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

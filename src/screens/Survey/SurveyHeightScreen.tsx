@@ -33,18 +33,18 @@ const SurveyHeightScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 */}
+      {/* 공통 헤더 */}
       <SurveyHeader title="기본 정보" skipTarget="SurveyWeightScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.3} />
+        <ProgressBar progress={3 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 타이틀 */}
+      {/* 질문 타이틀 */}
       <SurveyTitle text="키를 입력해주세요." />
 
-      {/* ✅ 입력 필드 */}
+      {/* 입력 필드 */}
       <InputWrapper>
         <SurveyInputField
           label=""
@@ -56,7 +56,7 @@ const SurveyHeightScreen = () => {
         <UnitText>cm</UnitText>
       </InputWrapper>
 
-      {/* ✅ 버튼 그룹 */}
+      {/* 버튼 그룹 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -68,7 +68,7 @@ const SurveyHeightScreen = () => {
 
 export default SurveyHeightScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

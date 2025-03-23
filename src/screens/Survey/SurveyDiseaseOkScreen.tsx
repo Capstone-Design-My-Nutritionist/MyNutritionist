@@ -11,7 +11,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
   SurveyDiseaseOkScreen: undefined;
-  NextSurveyScreen: undefined; // ✅ 다음 설문 화면으로 연결될 곳
+  NextSurveyScreen: undefined; // 다음 설문 화면으로 연결될 곳
 };
 
 type NavigationProps = StackNavigationProp<
@@ -26,7 +26,7 @@ const SurveyDiseaseOkScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('NextSurveyScreen'); // ✅ 다음 화면으로 이동
+      navigation.navigate('NextSurveyScreen'); // 다음 화면으로 이동
     }
   };
 
@@ -37,7 +37,7 @@ const SurveyDiseaseOkScreen = () => {
 
       {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.6} />
+        <ProgressBar progress={9 / 24} />
       </ProgressBarContainer>
 
       {/* 공통 질문 텍스트 사용 */}
@@ -59,7 +59,7 @@ const SurveyDiseaseOkScreen = () => {
         </ButtonContainer>
       </ButtonWrapper>
 
-      {/* ✅ 공통 버튼 그룹 사용 */}
+      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -71,7 +71,7 @@ const SurveyDiseaseOkScreen = () => {
 
 export default SurveyDiseaseOkScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

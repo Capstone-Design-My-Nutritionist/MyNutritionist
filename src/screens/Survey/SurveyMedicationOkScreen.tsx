@@ -11,7 +11,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
   SurveyMedicationOkScreen: undefined;
-  NextSurveyScreen: undefined; // ✅ 다음 설문 화면으로 연결될 곳
+  NextSurveyScreen: undefined; // 다음 설문 화면으로 연결될 곳
 };
 
 type NavigationProps = StackNavigationProp<
@@ -26,24 +26,24 @@ const SurveyMedicationOkScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('NextSurveyScreen'); // ✅ 다음 화면으로 이동
+      navigation.navigate('NextSurveyScreen'); // 다음 화면으로 이동
     }
   };
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 사용 */}
+      {/* 공통 헤더 사용 */}
       <SurveyHeader
         title="복용약 & 건강기능식품 정보"
         skipTarget="NextSurveyScreen"
       />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.3} />
+        <ProgressBar progress={5 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 공통 질문 텍스트 사용 */}
+      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="현재 복용 중이신 약이 있으신가요?" />
 
       {/* 선택 버튼 */}
@@ -62,7 +62,7 @@ const SurveyMedicationOkScreen = () => {
         </ButtonContainer>
       </ButtonWrapper>
 
-      {/* ✅ 공통 버튼 그룹 사용 */}
+      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -74,7 +74,7 @@ const SurveyMedicationOkScreen = () => {
 
 export default SurveyMedicationOkScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

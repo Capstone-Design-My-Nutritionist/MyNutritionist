@@ -32,15 +32,15 @@ const SurveyGenderScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 사용 */}
+      {/* 공통 헤더 사용 */}
       <SurveyHeader title="기본 정보" skipTarget="SurveyAgeScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.1} />
+        <ProgressBar progress={1 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 공통 질문 텍스트 사용 */}
+      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="성별을 알려주세요." />
 
       {/* 성별 선택 버튼 */}
@@ -59,7 +59,7 @@ const SurveyGenderScreen = () => {
         </ButtonContainer>
       </ButtonWrapper>
 
-      {/* ✅ 공통 버튼 그룹 사용 */}
+      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -71,7 +71,7 @@ const SurveyGenderScreen = () => {
 
 export default SurveyGenderScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

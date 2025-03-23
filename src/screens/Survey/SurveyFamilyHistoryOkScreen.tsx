@@ -11,7 +11,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
   SurveyFamilyHistoryOkScreen: undefined;
-  NextSurveyScreen: undefined; // ✅ 다음 설문 화면으로 연결될 곳
+  NextSurveyScreen: undefined; // 다음 설문 화면으로 연결될 곳
 };
 
 type NavigationProps = StackNavigationProp<
@@ -26,21 +26,21 @@ const SurveyFamilyHistoryOkScreen = () => {
   const handleNext = () => {
     if (selectedOption) {
       console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('NextSurveyScreen'); // ✅ 다음 화면으로 이동
+      navigation.navigate('NextSurveyScreen'); // 다음 화면으로 이동
     }
   };
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 사용 */}
+      {/* 공통 헤더 사용 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.5} />
+        <ProgressBar progress={11 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 공통 질문 텍스트 사용 */}
+      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="가족력(유전적 질병 위험)이 있나요?" />
 
       {/* 선택 버튼 */}
@@ -59,7 +59,7 @@ const SurveyFamilyHistoryOkScreen = () => {
         </ButtonContainer>
       </ButtonWrapper>
 
-      {/* ✅ 공통 버튼 그룹 사용 */}
+      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -71,7 +71,7 @@ const SurveyFamilyHistoryOkScreen = () => {
 
 export default SurveyFamilyHistoryOkScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

@@ -33,18 +33,18 @@ const SurveyWeightScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 */}
+      {/* 공통 헤더 */}
       <SurveyHeader title="기본 정보" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.4} />
+        <ProgressBar progress={4 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 텍스트 */}
+      {/* 질문 텍스트 */}
       <SurveyTitle text="몸무게를 입력해주세요." />
 
-      {/* ✅ 입력 필드 */}
+      {/* 입력 필드 */}
       <InputWrapper>
         <SurveyInputField
           label=""
@@ -56,7 +56,7 @@ const SurveyWeightScreen = () => {
         <UnitText>kg</UnitText>
       </InputWrapper>
 
-      {/* ✅ 버튼 그룹 */}
+      {/* 버튼 그룹 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -68,7 +68,7 @@ const SurveyWeightScreen = () => {
 
 export default SurveyWeightScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
+import {Alert} from 'react-native';
 
 interface SurveyHeaderProps {
   title: string;
@@ -10,6 +11,27 @@ interface SurveyHeaderProps {
 
 const SurveyHeader: React.FC<SurveyHeaderProps> = ({title, skipTarget}) => {
   const navigation = useNavigation();
+
+  const handleSkipPress = () => {
+    if (!skipTarget) return;
+
+    Alert.alert(
+      '지금 skip을 하시면, 알맞은 영양제를 추천해드릴 수 없어요.',
+      '(나중에 다시 참여 가능하나, 처음부터 진행하셔야 합니다.)',
+      [
+        {
+          text: '나가기',
+          // onPress: () => navigation.navigate(skipTarget),
+          style: 'destructive',
+        },
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+      ],
+      {cancelable: true},
+    );
+  };
 
   return (
     <Header>

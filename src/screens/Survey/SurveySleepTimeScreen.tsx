@@ -34,18 +34,18 @@ const SurveySleepTimeScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 상단 헤더 */}
+      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.4} />
+        <ProgressBar progress={15 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="하루 평균 수면 시간은 몇 시간인가요?" />
 
-      {/* ✅ 선택 버튼 */}
+      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonGrid>
           {sleepOptions.map(option => (
@@ -60,7 +60,7 @@ const SurveySleepTimeScreen = () => {
         </ButtonGrid>
       </ButtonWrapper>
 
-      {/* ✅ 하단 공통 버튼 */}
+      {/* 하단 공통 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -72,7 +72,7 @@ const SurveySleepTimeScreen = () => {
 
 export default SurveySleepTimeScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

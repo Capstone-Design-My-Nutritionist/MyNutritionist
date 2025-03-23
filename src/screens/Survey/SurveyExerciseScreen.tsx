@@ -42,18 +42,18 @@ const SurveyExerciseScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 상단 헤더 */}
+      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.7} />
+        <ProgressBar progress={16 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="주당 운동 빈도는 어떻게 되시나요?" />
 
-      {/* ✅ 선택 버튼 */}
+      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonRow>
           {exerciseOptionsTop.map(option => (
@@ -79,7 +79,7 @@ const SurveyExerciseScreen = () => {
         </ButtonRow>
       </ButtonWrapper>
 
-      {/* ✅ 하단 버튼 */}
+      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -91,7 +91,7 @@ const SurveyExerciseScreen = () => {
 
 export default SurveyExerciseScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

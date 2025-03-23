@@ -34,18 +34,18 @@ const SurveyWaterScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 상단 헤더 */}
+      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.6} />
+        <ProgressBar progress={19 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="하루 물 섭취량이 어느 정도 되시나요?" />
 
-      {/* ✅ 선택 버튼 */}
+      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonGrid>
           {waterOptions.map(option => (
@@ -60,7 +60,7 @@ const SurveyWaterScreen = () => {
         </ButtonGrid>
       </ButtonWrapper>
 
-      {/* ✅ 하단 버튼 */}
+      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -72,7 +72,7 @@ const SurveyWaterScreen = () => {
 
 export default SurveyWaterScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

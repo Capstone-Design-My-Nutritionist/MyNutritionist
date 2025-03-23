@@ -49,19 +49,19 @@ const SurveyDiseaseScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 헤더 */}
+      {/* 헤더 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.6} />
+        <ProgressBar progress={10 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 */}
+      {/* 질문 */}
       <SurveyTitle text="진단받은 질환을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* ✅ 버튼 목록 */}
+      {/* 버튼 목록 */}
       <ButtonGrid>
         {diseaseOptions.map(item => (
           <ButtonSpacing key={item}>
@@ -74,7 +74,7 @@ const SurveyDiseaseScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* ✅ 버튼 그룹 */}
+      {/* 버튼 그룹 */}
       <SurveyButtonGroupWrapper>
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}
@@ -88,7 +88,7 @@ const SurveyDiseaseScreen = () => {
 
 export default SurveyDiseaseScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

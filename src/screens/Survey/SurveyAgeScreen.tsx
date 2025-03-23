@@ -33,18 +33,18 @@ const SurveyAgeScreen = () => {
 
   return (
     <Container>
-      {/* ✅ 공통 헤더 사용 */}
+      {/* 공통 헤더 사용 */}
       <SurveyHeader title="기본 정보" skipTarget="SurveyHeightScreen" />
 
-      {/* ✅ 진행 바 */}
+      {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={0.2} />
+        <ProgressBar progress={2 / 24} />
       </ProgressBarContainer>
 
-      {/* ✅ 질문 텍스트 */}
+      {/* 질문 텍스트 */}
       <SurveyTitle text="나이를 알려주세요." />
 
-      {/* ✅ 나이 입력 필드 */}
+      {/* 나이 입력 필드 */}
       <InputWrapper>
         <SurveyInputField
           label=""
@@ -56,7 +56,7 @@ const SurveyAgeScreen = () => {
         <UnitText>세</UnitText>
       </InputWrapper>
 
-      {/* ✅ 공통 버튼 그룹 */}
+      {/* 공통 버튼 그룹 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -68,7 +68,7 @@ const SurveyAgeScreen = () => {
 
 export default SurveyAgeScreen;
 
-// ✅ 스타일 정의
+// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;
