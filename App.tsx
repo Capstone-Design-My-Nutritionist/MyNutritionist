@@ -26,12 +26,33 @@ import SurveyMedicationScreen from './src/screens/Survey/SurveyMedicationScreen'
 import SurveyDiseaseScreen from './src/screens/Survey/SurveyDiseaseScreen';
 import SurveyFamilyHistoryScreen from './src/screens/Survey/SurveyFamilyHistoryScreen';
 
+import ProfileScreen from './src/screens/UserSettings/ProfileScreen';
+// import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
+// import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
+// import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
+
 const Stack = createStackNavigator();
 
 function App(): React.JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Navigator
+        initialRouteName="ProfileScreen" // ✅ 시작 스크린 설정
+        screenOptions={{headerShown: false}}>
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        {/* <Stack.Screen
+          name="PasswordChangeScreen"
+          component={PasswordChangeScreen}
+        />
+        <Stack.Screen
+          name="NicknameChangeScreen"
+          component={NicknameChangeScreen}
+        />
+        <Stack.Screen
+          name="AccountDeleteScreen"
+          component={AccountDeleteScreen}
+        /> */}
+
         <Stack.Screen
           name="SurveyGenderScreen"
           component={SurveyGenderScreen}
