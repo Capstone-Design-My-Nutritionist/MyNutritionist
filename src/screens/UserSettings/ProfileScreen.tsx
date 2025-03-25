@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
@@ -321,3 +322,29 @@ const TimeText = styled.Text<TimeProps>(({isPushEnabled}: TimeProps) => ({
   fontSize: 12,
   color: isPushEnabled ? '#d95b72' : '#999999',
 }));
+=======
+import React from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+
+const ProfileScreen: React.FC = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>프로필 화면</Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+export default ProfileScreen; // ✅ default export 확인!!
+>>>>>>> develop
