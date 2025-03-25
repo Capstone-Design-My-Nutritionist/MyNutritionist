@@ -219,7 +219,6 @@ export default ProfileScreen;
 const TitleWrapper = styled.View`
   background-color: #ffffff;
   padding-top: 11px;
-  padding-bottom: 12px;
 `;
 const Title = styled.Text`
   font-size: 18px;
@@ -230,7 +229,7 @@ const Title = styled.Text`
 `;
 const TitleUnderline = styled.View`
   width: 100%;
-  height: 1px;
+  height: 1.3px;
   background-color: #731a22;
 `;
 const Container = styled.ScrollView`
