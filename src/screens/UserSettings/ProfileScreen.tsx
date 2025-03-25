@@ -1,10 +1,10 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
-const SupplementRecommendationScreen = () => {
+const ProfileScreen: React.FC = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>영양제 추천 화면</Text>
+      <Text style={styles.text}>프로필 화면</Text>
     </View>
   );
 };
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SupplementRecommendationScreen;
+export default ProfileScreen; // ✅ default export 확인!!
