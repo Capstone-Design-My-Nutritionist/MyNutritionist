@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import {View, Text} from 'react-native';
-import {Shadow} from 'react-native-shadow-2';
 
 interface ProgressBarProps {
+  id: number;
   label: string; // 탄수화물, 단백질 등 카테고리
   consumed: number; // 현재 섭취량
   goal: number; // 목표량
   progressColor?: string; // 프로그레스 바 색상
+  unit?: string; // 단위
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
@@ -15,6 +15,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   consumed,
   goal,
   progressColor = '#FD384C', // 기본 색상 (빨간색)
+  unit,
 }) => {
   const progressPercentage = Math.min((consumed / goal) * 100, 100); // 100% 초과 방지
 
@@ -26,7 +27,10 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       </BarContainer>
       <CarbAmountContainer>
         <CarbAmountText color={progressColor}>{consumed}g</CarbAmountText>
-        <CarbAmountText color="#111111"> / {goal}g</CarbAmountText>
+        <CarbAmountText color="#111111">
+          / {goal}
+          {unit}
+        </CarbAmountText>
       </CarbAmountContainer>
     </Container>
   );
