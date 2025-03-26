@@ -151,7 +151,7 @@ const CalorieInfoContainer = styled.View`
 const CalorieText = styled.Text`
   font-family: 'Pretendard-Bold';
   font-size: 24px;
-  color: #333333;
+  color: #F2594B;
 `;
 
 const CalorieUnit = styled.Text`
