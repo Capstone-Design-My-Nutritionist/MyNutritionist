@@ -43,7 +43,7 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="ProfileScreen"
+        initialRouteName="FoodUploadScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
 

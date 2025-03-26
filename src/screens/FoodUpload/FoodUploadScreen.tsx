@@ -53,19 +53,31 @@ const FoodUploadScreen = () => {
         </SubmitButton>
       </Content>
 
-      <Modal transparent visible={modalVisible} animationType="fade">
-        <Backdrop onPress={closeModal}>
-          <ModalContent>
-            <OptionButton onPress={handleImagePick}>
-              <OptionText>앨범에서 가져오기 📷</OptionText>
-            </OptionButton>
-            <OptionButton onPress={handleCamera}>
-              <OptionText>직접 찍어 올리기 📸</OptionText>
-            </OptionButton>
-            <CancelButton onPress={closeModal}>
-              <CancelText>취소</CancelText>
-            </CancelButton>
-          </ModalContent>
+      <Modal
+        transparent
+        visible={modalVisible}
+        animationType="fade"
+        statusBarTranslucent>
+        <Backdrop>
+          <ModalContainer activeOpacity={1}>
+            <OptionBox onPress={handleImagePick}>
+              <OptionRow>
+                <OptionText>앨범에서 가져오기</OptionText>
+                <OptionIcon>📷</OptionIcon>
+              </OptionRow>
+            </OptionBox>
+
+            <OptionBox onPress={handleCamera}>
+              <OptionRow>
+                <OptionText>직접 찍어 올리기</OptionText>
+                <OptionIcon>🖼️</OptionIcon>
+              </OptionRow>
+            </OptionBox>
+          </ModalContainer>
+
+          <CancelButton onPress={closeModal}>
+            <CancelText>취소</CancelText>
+          </CancelButton>
         </Backdrop>
       </Modal>
     </Container>
@@ -79,63 +91,40 @@ const Container = styled.View`
   background-color: #fff;
 `;
 
-const Header = styled.View`
-  padding-top: 11px;
-  padding-bottom: 6px;
-  background-color: #fff;
-  border-bottom-width: 1.3px;
-  border-color: #731a22;
-  align-items: center;
-  position: relative;
-`;
-
-const BackText = styled.Text`
-  position: absolute;
-  left: 20px;
-  font-size: 20px;
-  color: #731a22;
-`;
-
-const HeaderTitle = styled.Text`
-  font-size: 16px;
-  font-family: 'Pretendard-Bold';
-  color: #731a22;
-`;
-
 const Content = styled.View`
   flex: 1;
-  padding: 40px 20px;
+  padding: 65px;
   align-items: center;
 `;
 
 const DateTitle = styled.Text`
-  font-size: 16px;
+  font-size: 20px;
   font-family: 'Pretendard-Bold';
   color: #000;
-  margin-bottom: 4px;
+  margin-bottom: 13px;
 `;
 
 const DateText = styled.Text`
-  font-size: 14px;
+  font-size: 16px;
   color: #000;
-  margin-bottom: 24px;
+  margin-bottom: 81px;
 `;
 
 const UploadBox = styled.TouchableOpacity`
-  width: 280px;
-  height: 180px;
-  border-width: 1.5px;
+  width: 281px;
+  height: 194px;
+  border-width: 2px;
   border-color: #ff8080;
   border-style: dashed;
-  border-radius: 12px;
+  border-radius: 15px;
   justify-content: center;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 195px;
 `;
 
 const UploadIcon = styled.Text`
   font-size: 24px;
-  margin-bottom: 8px;
+  margin-bottom: 32px;
 `;
 
 const UploadText = styled.Text`
@@ -152,7 +141,10 @@ const UploadedImage = styled.Image`
 
 const SubmitButton = styled.TouchableOpacity`
   background-color: #d95b72;
-  padding: 10px 40px;
+  width: 320px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
   border-radius: 8px;
 `;
 
@@ -161,40 +153,62 @@ const SubmitText = styled.Text`
   font-size: 14px;
 `;
 
-const Backdrop = styled.TouchableOpacity`
+const Backdrop = styled.View`
   flex: 1;
+  height: 100%;
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.3);
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
-const ModalContent = styled.View`
-  width: 260px;
-  background-color: #fff;
-  padding: 18px;
-  border-radius: 12px;
-  gap: 12px;
+const ModalContainer = styled.TouchableOpacity`
+  width: 320px;
+  justify-content: center;
+  gap: 20px;
 `;
 
-const OptionButton = styled.TouchableOpacity`
-  background-color: #f4f4f4;
-  padding: 10px;
-  border-radius: 8px;
+const OptionBox = styled.TouchableOpacity`
+  background-color: white;
+  height: 120px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+`;
+
+const OptionRow = styled.View`
+  width: 70%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const OptionText = styled.Text`
-  font-size: 14px;
-  text-align: center;
+  font-size: 22px;
+  font-family: 'Pretendard-Bold';
+  color: #000;
+`;
+
+const OptionIcon = styled.Text`
+  font-size: 38px;
 `;
 
 const CancelButton = styled.TouchableOpacity`
   background-color: #d95b72;
-  padding: 10px;
+  width: 320px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
   border-radius: 8px;
+  position: absolute;
+  bottom: 220px;
 `;
 
 const CancelText = styled.Text`
   color: white;
   font-size: 14px;
-  text-align: center;
+  font-family: 'Pretendard';
 `;
