@@ -2,6 +2,10 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Navigation from './src/navigation/Navigation';
+import {View, StyleSheet} from 'react-native';
+import {LoginInputField, SurveyInputField} from './src/components';
+
+import FoodUploadScreen from './src/screens/FoodUpload/FoodUploadScreen';
 
 import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
 import SurveyAgeScreen from './src/screens/Survey/SurveyAgeScreen';
@@ -39,8 +43,10 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="ProfileScreen" // 시작 스크린 설정
+        initialRouteName="ProfileScreen"
         screenOptions={{headerShown: false}}>
+        <Stack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
+
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         <Stack.Screen
           name="PasswordVerifyScreen"

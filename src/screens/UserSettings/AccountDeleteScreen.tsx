@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2';
 import ConfirmModal from '../../components/Modal/ConfirmModal';
+import CommonHeader from '../../components/Common/CommonHeader';
 
 type RootStackParamList = {
   ProfileScreen: undefined;
@@ -33,13 +34,7 @@ const AccountDeleteScreen = () => {
 
   return (
     <>
-      <TitleWrapper>
-        <BackButton onPress={() => navigation.goBack()}>
-          <BackText>{'<'}</BackText>
-        </BackButton>
-        <Title>회원탈퇴</Title>
-        <TitleUnderline />
-      </TitleWrapper>
+      <CommonHeader title="회원탈퇴" />
 
       <Container>
         <LogoBox>

@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2';
 import ConfirmModal from '../../components/Modal/ConfirmModal'; // 모달 컴포넌트 경로에 맞게 수정
+import CommonHeader from '../../components/Common/CommonHeader';
 
 type RootStackParamList = {
   ProfileScreen: undefined;
@@ -39,13 +40,7 @@ const PasswordChangeScreen = () => {
 
   return (
     <>
-      <TitleWrapper>
-        <BackButton onPress={() => navigation.goBack()}>
-          <BackText>{'<'}</BackText>
-        </BackButton>
-        <Title>비밀번호 변경</Title>
-        <TitleUnderline />
-      </TitleWrapper>
+      <CommonHeader title="비밀번호 변경" />
 
       <Container>
         <LogoBox>

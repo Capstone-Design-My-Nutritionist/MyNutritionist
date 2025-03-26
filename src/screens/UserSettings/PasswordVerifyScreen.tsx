@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2'; // 상단 import 추가
+import CommonHeader from '../../components/Common/CommonHeader';
 
 type RootStackParamList = {
   PasswordVerifyScreen: {
@@ -43,13 +44,7 @@ const PasswordVerifyScreen = () => {
 
   return (
     <>
-      <TitleWrapper>
-        <BackButton onPress={() => navigation.goBack()}>
-          <BackText>{'<'}</BackText>
-        </BackButton>
-        <Title>{route.params.title}</Title>
-        <TitleUnderline />
-      </TitleWrapper>
+      <CommonHeader title={route.params.title} />
       <Container>
         <LogoBox>
           <LogoText>Logo</LogoText>
