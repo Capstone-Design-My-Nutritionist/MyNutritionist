@@ -10,63 +10,63 @@ import SurveyInputField from '../../components/TextInputBox/SurveyInputField';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
-  SurveyExerciseScreen: undefined;
-  SurveyMealScreen: undefined;
-  SurveyVegetableScreen: undefined;
+  SurveyAgeScreen: undefined;
+  SurveyHeightScreen: undefined;
+  SurveyWeightScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
   RootStackParamList,
-  'SurveyMealScreen'
+  'SurveyHeightScreen'
 >;
 
-const SurveyMealScreen = () => {
+const SurveyHeightScreen = () => {
   const navigation = useNavigation<NavigationProps>();
-  const [mealCount, setMealCount] = useState<number | null>(null);
+  const [height, setHeight] = useState<number | null>(null);
 
   const handleNext = () => {
-    if (mealCount !== null) {
-      console.log('Navigating to NextSurveyScreen... Meal Count:', mealCount);
-      navigation.navigate('SurveyVegetableScreen');
+    if (height !== null) {
+      console.log('Navigating to SurveyWeightScreen... Height:', height);
+      navigation.navigate('SurveyWeightScreen');
     }
   };
 
   return (
     <Container>
       {/* 공통 헤더 */}
-      <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
+      <SurveyHeader title="기본 정보" skipTarget="SurveyWeightScreen" />
 
       {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={17 / 24} />
+        <ProgressBar progress={3 / 24} />
       </ProgressBarContainer>
 
       {/* 질문 타이틀 */}
-      <SurveyTitle text="하루에 평균 몇 끼를 드시나요?" />
+      <SurveyTitle text="키를 입력해주세요." />
 
       {/* 입력 필드 */}
       <InputWrapper>
         <SurveyInputField
           label=""
-          placeholder="횟수를 입력해주세요."
-          value={mealCount !== null ? mealCount.toString() : ''}
-          onChangeText={text => setMealCount(text ? parseInt(text, 10) : 0)}
+          placeholder="키를 입력해주세요."
+          value={height !== null ? height.toString() : ''}
+          onChangeText={text => setHeight(text ? parseInt(text, 10) : 0)}
           keyboardType="numeric"
         />
-        <UnitText>끼</UnitText>
+        <UnitText>cm</UnitText>
       </InputWrapper>
 
       {/* 버튼 그룹 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
-        nextDisabled={mealCount === null}
+        nextDisabled={height === null}
       />
     </Container>
   );
 };
 
-export default SurveyMealScreen;
+export default SurveyHeightScreen;
 
 // 스타일 정의
 const Container = styled.View`

@@ -1,130 +1,148 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import Navigation from './src/navigation/Navigation';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
+import SurveyAgeScreen from './src/screens/Survey/SurveyAgeScreen';
+import SurveyMedicationOkScreen from './src/screens/Survey/SurveyMedicationOkScreen';
+import SurveySupplementOkScreen from './src/screens/Survey/SurveySupplementOkScreen';
+import SurveyFamilyHistoryOkScreen from './src/screens/Survey/SurveyFamilyHistoryOkScreen';
+import SurveyDiseaseOkScreen from './src/screens/Survey/SurveyDiseaseOkScreen';
+import SurveyAllergyOkScreen from './src/screens/Survey/SurveyAllergyOkScreen';
+import SurveyHeightScreen from './src/screens/Survey/SurveyHeightScreen';
+import SurveyMealScreen from './src/screens/Survey/SurveyMealScreen';
+import SurveyWeightScreen from './src/screens/Survey/SurveyWeightScreen';
+import SurveyHealthGoalsScreen from './src/screens/Survey/SurveyHealthGoalsScreen';
+import SurveyHealthConcernsScreen from './src/screens/Survey/SurveyHealthConcernsScreen';
+import SurveySleepTimeScreen from './src/screens/Survey/SurveySleepTimeScreen';
+import SurveyVegetableScreen from './src/screens/Survey/SurveyVegetableScreen';
+import SurveyWaterScreen from './src/screens/Survey/SurveyWaterScreen';
+import SurveySmokingScreen from './src/screens/Survey/SurveySmokingScreen';
+import SurveyExerciseScreen from './src/screens/Survey/SurveyExerciseScreen';
+import SurveyAllergyScreen from './src/screens/Survey/SurveyAllergyScreen';
+import SurveyDrinkScreen from './src/screens/Survey/SurveyDrinkScreen';
+import SurveySupplementScreen from './src/screens/Survey/SurveySupplementScreen';
+import SurveyMedicationScreen from './src/screens/Survey/SurveyMedicationScreen';
+import SurveyDiseaseScreen from './src/screens/Survey/SurveyDiseaseScreen';
+import SurveyFamilyHistoryScreen from './src/screens/Survey/SurveyFamilyHistoryScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import ProfileScreen from './src/screens/UserSettings/ProfileScreen';
+import PasswordVerifyScreen from './src/screens/UserSettings/PasswordVerifyScreen';
+import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
+import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
+import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const Stack = createStackNavigator();
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the reccomendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
-
   return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header />
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="ProfileScreen" // 시작 스크린 설정
+        screenOptions={{headerShown: false}}>
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen
+          name="PasswordVerifyScreen"
+          component={PasswordVerifyScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="PasswordChangeScreen"
+          component={PasswordChangeScreen}
+        />
+        <Stack.Screen
+          name="NicknameChangeScreen"
+          component={NicknameChangeScreen}
+        />
+        <Stack.Screen
+          name="AccountDeleteScreen"
+          component={AccountDeleteScreen}
+        />
+
+        <Stack.Screen
+          name="SurveyGenderScreen"
+          component={SurveyGenderScreen}
+        />
+        <Stack.Screen name="SurveyAgeScreen" component={SurveyAgeScreen} />
+        <Stack.Screen
+          name="SurveyHeightScreen"
+          component={SurveyHeightScreen}
+        />
+        <Stack.Screen
+          name="SurveyWeightScreen"
+          component={SurveyWeightScreen}
+        />
+        <Stack.Screen
+          name="SurveyMedicationOkScreen"
+          component={SurveyMedicationOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyMedicationScreen"
+          component={SurveyMedicationScreen}
+        />
+        <Stack.Screen
+          name="SurveySupplementOkScreen"
+          component={SurveySupplementOkScreen}
+        />
+        <Stack.Screen
+          name="SurveySupplementScreen"
+          component={SurveySupplementScreen}
+        />
+        <Stack.Screen
+          name="SurveyDiseaseOkScreen"
+          component={SurveyDiseaseOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyDiseaseScreen"
+          component={SurveyDiseaseScreen}
+        />
+        <Stack.Screen
+          name="SurveyFamilyHistoryOkScreen"
+          component={SurveyFamilyHistoryOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyFamilyHistoryScreen"
+          component={SurveyFamilyHistoryScreen}
+        />
+        <Stack.Screen
+          name="SurveyHealthConcernsScreen"
+          component={SurveyHealthConcernsScreen}
+        />
+        <Stack.Screen
+          name="SurveyHealthGoalsScreen"
+          component={SurveyHealthGoalsScreen}
+        />
+        <Stack.Screen
+          name="SurveySleepTimeScreen"
+          component={SurveySleepTimeScreen}
+        />
+        <Stack.Screen
+          name="SurveyExerciseScreen"
+          component={SurveyExerciseScreen}
+        />
+        <Stack.Screen name="SurveyMealScreen" component={SurveyMealScreen} />
+        <Stack.Screen
+          name="SurveyVegetableScreen"
+          component={SurveyVegetableScreen}
+        />
+        <Stack.Screen name="SurveyWaterScreen" component={SurveyWaterScreen} />
+        <Stack.Screen name="SurveyDrinkScreen" component={SurveyDrinkScreen} />
+        <Stack.Screen
+          name="SurveySmokingScreen"
+          component={SurveySmokingScreen}
+        />
+        <Stack.Screen
+          name="SurveyAllergyOkScreen"
+          component={SurveyAllergyOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyAllergyScreen"
+          component={SurveyAllergyScreen}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;

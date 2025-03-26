@@ -1,13 +1,15 @@
-import React from "react";
-import styled from "styled-components/native";
+// components/NormalButton/PrimaryButton.tsx
+import React from 'react';
+import styled from 'styled-components/native';
 
 interface PrimaryButtonProps {
   title: string;
+  onPress?: () => void;
 }
 
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title }) => {
+const PrimaryButton: React.FC<PrimaryButtonProps> = ({title, onPress}) => {
   return (
-    <StyledPrimaryButton>
+    <StyledPrimaryButton onPress={onPress}>
       <ButtonText>{title}</ButtonText>
     </StyledPrimaryButton>
   );
@@ -17,15 +19,15 @@ const StyledPrimaryButton = styled.TouchableOpacity`
   width: 150px;
   height: 40px;
   border-radius: 12px;
-  background-color: #F24859;
+  background-color: #f24859;
   justify-content: center;
   align-items: center;
 `;
 
 const ButtonText = styled.Text`
   font-size: 14px;
-  font-family: "Pretendard-Bold";
-  color: #FFFFFF;
+  font-family: 'Pretendard-Bold';
+  color: #ffffff;
 `;
 
 export default PrimaryButton;

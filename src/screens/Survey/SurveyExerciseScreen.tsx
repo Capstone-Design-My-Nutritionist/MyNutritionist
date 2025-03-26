@@ -10,26 +10,34 @@ import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelect
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
-  SurveyHealthGoalsScreen: undefined;
   SurveySleepTimeScreen: undefined;
   SurveyExerciseScreen: undefined;
+  SurveyMealScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
   RootStackParamList,
-  'SurveySleepTimeScreen'
+  'SurveyExerciseScreen'
 >;
 
-const sleepOptions = ['5시간 이하', '6~7 시간', '8시간 이상'];
+const exerciseOptionsTop = [
+  '거의 하지 않음',
+  '1~3회\n\n가벼운 운동',
+  '3~5회\n\n보통강도',
+];
+const exerciseOptionsBottom = [
+  '6~7회\n\n강도높은 운동',
+  '매일\n\n활동적이거나\n운동선수',
+];
 
-const SurveySleepTimeScreen = () => {
+const SurveyExerciseScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = () => {
     if (selectedOption) {
-      console.log('Selected sleep time:', selectedOption);
-      navigation.navigate('SurveyExerciseScreen');
+      console.log('Selected exercise frequency:', selectedOption);
+      navigation.navigate('SurveyMealScreen');
     }
   };
 
@@ -40,16 +48,16 @@ const SurveySleepTimeScreen = () => {
 
       {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={15 / 24} />
+        <ProgressBar progress={16 / 24} />
       </ProgressBarContainer>
 
       {/* 질문 */}
-      <SurveyTitle text="하루 평균 수면 시간은 몇 시간인가요?" />
+      <SurveyTitle text="주당 운동 빈도는 어떻게 되시나요?" />
 
       {/* 선택 버튼 */}
       <ButtonWrapper>
-        <ButtonGrid>
-          {sleepOptions.map(option => (
+        <ButtonRow>
+          {exerciseOptionsTop.map(option => (
             <ButtonSpacing key={option}>
               <SmallMonoSelectButton
                 title={option}
@@ -58,10 +66,21 @@ const SurveySleepTimeScreen = () => {
               />
             </ButtonSpacing>
           ))}
-        </ButtonGrid>
+        </ButtonRow>
+        <ButtonRow>
+          {exerciseOptionsBottom.map(option => (
+            <ButtonSpacing key={option}>
+              <SmallMonoSelectButton
+                title={option}
+                isSelected={selectedOption === option}
+                onPress={() => setSelectedOption(option)}
+              />
+            </ButtonSpacing>
+          ))}
+        </ButtonRow>
       </ButtonWrapper>
 
-      {/* 하단 공통 버튼 */}
+      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -71,7 +90,7 @@ const SurveySleepTimeScreen = () => {
   );
 };
 
-export default SurveySleepTimeScreen;
+export default SurveyExerciseScreen;
 
 // 스타일 정의
 const Container = styled.View`
@@ -92,11 +111,9 @@ const ButtonWrapper = styled.View`
   align-items: center;
 `;
 
-const ButtonGrid = styled.View`
+const ButtonRow = styled.View`
   flex-direction: row;
-  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
 `;
 
 const ButtonSpacing = styled.View`

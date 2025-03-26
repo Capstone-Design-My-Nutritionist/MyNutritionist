@@ -10,52 +10,51 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
-  SurveySupplementScreen: undefined;
-  SurveyDiseaseOkScreen: undefined;
-  SurveyDiseaseScreen: undefined;
+  SurveyGenderScreen: undefined;
+  SurveyAgeScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
   RootStackParamList,
-  'SurveyDiseaseOkScreen'
+  'SurveyGenderScreen'
 >;
 
-const SurveyDiseaseOkScreen = () => {
+const SurveyGenderScreen = () => {
   const navigation = useNavigation<NavigationProps>();
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
 
   const handleNext = () => {
-    if (selectedOption) {
-      console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('SurveyDiseaseScreen'); // 다음 화면으로 이동
+    if (selectedGender) {
+      console.log('Navigating to SurveyAgeScreen...');
+      navigation.navigate('SurveyAgeScreen');
     }
   };
 
   return (
     <Container>
       {/* 공통 헤더 사용 */}
-      <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
+      <SurveyHeader title="기본 정보" skipTarget="SurveyAgeScreen" />
 
       {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={9 / 24} />
+        <ProgressBar progress={1 / 24} />
       </ProgressBarContainer>
 
       {/* 공통 질문 텍스트 사용 */}
-      <SurveyTitle text="현재 진단받은 질환이 있나요?" />
+      <SurveyTitle text="성별을 알려주세요." />
 
-      {/* 선택 버튼 */}
+      {/* 성별 선택 버튼 */}
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
-            title="예"
-            isSelected={selectedOption === '예'}
-            onPress={() => setSelectedOption('예')}
+            title="남성"
+            isSelected={selectedGender === '남성'}
+            onPress={() => setSelectedGender('남성')}
           />
           <MonoSelectButton
-            title="아니오"
-            isSelected={selectedOption === '아니오'}
-            onPress={() => setSelectedOption('아니오')}
+            title="여성"
+            isSelected={selectedGender === '여성'}
+            onPress={() => setSelectedGender('여성')}
           />
         </ButtonContainer>
       </ButtonWrapper>
@@ -64,13 +63,13 @@ const SurveyDiseaseOkScreen = () => {
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
-        nextDisabled={!selectedOption}
+        nextDisabled={!selectedGender}
       />
     </Container>
   );
 };
 
-export default SurveyDiseaseOkScreen;
+export default SurveyGenderScreen;
 
 // 스타일 정의
 const Container = styled.View`

@@ -10,65 +10,68 @@ import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
-  SurveyFamilyHistoryOkScreen: undefined;
-  SurveyFamilyHistoryScreen: undefined;
-  SurveyHealthConcernsScreen: undefined;
+  SurveySupplementOkScreen: undefined;
+  SurveySupplementScreen: undefined;
+  SurveyDiseaseOkScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
   RootStackParamList,
-  'SurveyFamilyHistoryScreen'
+  'SurveySupplementScreen'
 >;
 
-const familyHistoryOptions = [
-  '당뇨병',
-  '고혈압',
-  '심혈관 질환',
-  '갑상선 질환',
-  '골다공증',
-  '고지혈증',
-  '암',
-  '알츠하이머병',
-  '신장 질환',
+const supplementOptions = [
+  '오메가-3',
+  '비타민K',
+  '마그네슘',
+  '칼슘',
+  '철분',
+  '비타민C',
+  '프로바이오틱스',
+  '비타민D',
+  '홍삼(인삼)',
 ];
 
-const SurveyFamilyHistoryScreen = () => {
+const SurveySupplementScreen = () => {
   const navigation = useNavigation<NavigationProps>();
-  const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
+  const [selectedSupplements, setSelectedSupplements] = useState<string[]>([]);
 
-  const toggleHistory = (item: string) => {
-    setSelectedHistory(prev =>
+  const toggleSupplement = (item: string) => {
+    setSelectedSupplements(prev =>
       prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item],
     );
   };
 
   const handleNext = () => {
-    console.log('Selected family history:', selectedHistory);
-    navigation.navigate('SurveyHealthConcernsScreen');
+    console.log('Selected supplements:', selectedSupplements);
+    navigation.navigate('SurveyDiseaseOkScreen');
   };
 
   return (
     <Container>
       {/* 헤더 */}
-      <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
+      <SurveyHeader
+        title="복용약 & 건강기능식품 정보"
+        skipTarget="NextSurveyScreen"
+      />
 
       {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={12 / 24} />
+        <ProgressBar progress={8 / 24} />
       </ProgressBarContainer>
 
       {/* 질문 */}
-      <SurveyTitle text="가족력이 있는 질환을 선택해주세요." />
+      <SurveyTitle text="현재 복용중이신 건강기능식품을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
       {/* 버튼 목록 */}
       <ButtonGrid>
-        {familyHistoryOptions.map(item => (
+        {supplementOptions.map(item => (
           <ButtonSpacing key={item}>
             <MultiSelectButton
               title={item}
-              isSelected={selectedHistory.includes(item)}
-              onPress={() => toggleHistory(item)}
+              isSelected={selectedSupplements.includes(item)}
+              onPress={() => toggleSupplement(item)}
             />
           </ButtonSpacing>
         ))}
@@ -79,14 +82,14 @@ const SurveyFamilyHistoryScreen = () => {
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}
           onNext={handleNext}
-          nextDisabled={selectedHistory.length === 0}
+          nextDisabled={selectedSupplements.length === 0}
         />
       </SurveyButtonGroupWrapper>
     </Container>
   );
 };
 
-export default SurveyFamilyHistoryScreen;
+export default SurveySupplementScreen;
 
 // 스타일 정의
 const Container = styled.View`
