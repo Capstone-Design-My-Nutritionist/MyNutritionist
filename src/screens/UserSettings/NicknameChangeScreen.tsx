@@ -215,6 +215,7 @@ const CheckButton = styled.TouchableOpacity`
 const CheckText = styled.Text`
   color: #fff;
   font-size: 13px;
+  line-height: 20px;
 `;
 
 const ErrorText = styled.Text`
@@ -232,7 +233,7 @@ const ButtonRow = styled.View`
 const PrimaryButton = styled.TouchableOpacity`
   background-color: #d95b72;
   width: 130px;
-  height: 24px;
+  height: 30px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
@@ -242,7 +243,7 @@ const SecondaryButton = styled.TouchableOpacity`
   background-color: white;
   border: 1px solid #d95b72;
   width: 130px;
-  height: 24px;
+  height: 30px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
@@ -251,9 +252,11 @@ const SecondaryButton = styled.TouchableOpacity`
 const ButtonText = styled.Text`
   color: #fff;
   font-size: 13px;
+  line-height: 20px;
 `;
 
 const CancelText = styled.Text`
   color: #d95b72;
   font-size: 13px;
+  line-height: 20px;
 `;

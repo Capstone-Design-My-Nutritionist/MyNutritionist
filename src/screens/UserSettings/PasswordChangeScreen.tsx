@@ -192,7 +192,7 @@ const ButtonRow = styled.View`
 const PrimaryButton = styled.TouchableOpacity`
   background-color: #d95b72;
   width: 100px;
-  height: 24px;
+  height: 30px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
@@ -200,13 +200,14 @@ const PrimaryButton = styled.TouchableOpacity`
 const ButtonText = styled.Text`
   color: #fff;
   font-size: 13px;
+  line-height: 20px;
 `;
 
 const SecondaryButton = styled.TouchableOpacity`
   border: 1px solid #d95b72;
   background-color: white;
   width: 100px;
-  height: 24px;
+  height: 30px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
@@ -215,4 +216,5 @@ const SecondaryButton = styled.TouchableOpacity`
 const CancelText = styled.Text`
   color: #d95b72;
   font-size: 13px;
+  line-height: 20px;
 `;

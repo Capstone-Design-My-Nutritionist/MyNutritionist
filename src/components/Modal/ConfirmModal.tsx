@@ -82,7 +82,7 @@ const ButtonRow = styled.View`
 const PrimaryButton = styled.TouchableOpacity`
   background-color: #d95b72;
   width: 80px;
-  height: 28px;
+  height: 30px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
@@ -91,7 +91,7 @@ const PrimaryButton = styled.TouchableOpacity`
 const SecondaryButton = styled.TouchableOpacity`
   border: 1px solid #d95b72;
   width: 80px;
-  height: 28px;
+  height: 30px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
@@ -100,9 +100,11 @@ const SecondaryButton = styled.TouchableOpacity`
 const PrimaryText = styled.Text`
   color: #ffffff;
   font-size: 12px;
+  line-height: 20px;
 `;
 
 const SecondaryText = styled.Text`
   color: #d95b72;
   font-size: 12px;
+  line-height: 20px;
 `;

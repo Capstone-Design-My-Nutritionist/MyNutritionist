@@ -176,4 +176,5 @@ const ConfirmButton = styled.TouchableOpacity`
 const ConfirmText = styled.Text`
   color: #fff;
   font-size: 13px;
+  line-height: 20px;
 `;
