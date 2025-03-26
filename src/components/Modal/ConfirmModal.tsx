@@ -20,7 +20,12 @@ const ConfirmModal = ({
   cancelText = '취소',
 }: ConfirmModalProps) => {
   return (
-    <Modal transparent visible={visible} animationType="fade">
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+      statusBarTranslucent // ✅ 전체 회색 배경이 나오도록 추가
+    >
       <Backdrop>
         <ModalContainer>
           <Message>{message}</Message>
@@ -42,9 +47,14 @@ export default ConfirmModal;
 
 const Backdrop = styled.View`
   flex: 1;
+  height: 100%;
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.3);
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 const ModalContainer = styled.View`
