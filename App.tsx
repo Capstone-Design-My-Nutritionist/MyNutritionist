@@ -29,7 +29,7 @@ import SurveyFamilyHistoryScreen from './src/screens/Survey/SurveyFamilyHistoryS
 
 import ProfileScreen from './src/screens/UserSettings/ProfileScreen';
 import PasswordVerifyScreen from './src/screens/UserSettings/PasswordVerifyScreen';
-// import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
+import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
 // import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
 // import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
 
@@ -47,15 +47,15 @@ function App(): React.JSX.Element {
           component={PasswordVerifyScreen}
           options={{headerShown: false}}
         />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="PasswordChangeScreen"
           component={PasswordChangeScreen}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="NicknameChangeScreen"
           component={NicknameChangeScreen}
-        />
-        <Stack.Screen
+        /> */}
+        {/* <Stack.Screen
           name="AccountDeleteScreen"
           component={AccountDeleteScreen}
         /> */}
