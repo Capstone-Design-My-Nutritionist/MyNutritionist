@@ -23,6 +23,7 @@ const Navigation = () => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
+        headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: styles.tabBar,
         tabBarIcon: ({focused}) => {
@@ -76,7 +77,7 @@ const Navigation = () => {
           tabBarIcon: () => (
             <UploadButtonContainer>
               <UploadButton>
-                <UploadIcon width={28} height={28} fill="#ffffff" />
+                <UploadIcon width={58} height={58} />
               </UploadButton>
             </UploadButtonContainer>
           ),
