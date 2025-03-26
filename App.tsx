@@ -30,7 +30,7 @@ import SurveyFamilyHistoryScreen from './src/screens/Survey/SurveyFamilyHistoryS
 import ProfileScreen from './src/screens/UserSettings/ProfileScreen';
 import PasswordVerifyScreen from './src/screens/UserSettings/PasswordVerifyScreen';
 import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
-// import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
+import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
 // import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
 
 const Stack = createStackNavigator();
@@ -51,10 +51,10 @@ function App(): React.JSX.Element {
           name="PasswordChangeScreen"
           component={PasswordChangeScreen}
         />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="NicknameChangeScreen"
           component={NicknameChangeScreen}
-        /> */}
+        />
         {/* <Stack.Screen
           name="AccountDeleteScreen"
           component={AccountDeleteScreen}
