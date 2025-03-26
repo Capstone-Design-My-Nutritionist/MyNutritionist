@@ -10,81 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Shadow } from 'react-native-shadow-2';
 import ArrowLeft from '../../../assets/images/arrow-left.svg';
 import ArrowRight from '../../../assets/images/arrow-right.svg';
-
-
-// 임시 데이터 (백엔드 연동 전까지 사용)
-const tempUserData = {
-  name: '홍길동',
-  totalCalories: 2300,
-  consumedCalories: 1080,
-  nutrients: {
-    carbs: {consumed: 1.4, goal: 60},
-    protein: {consumed: 45.1, goal: 50},
-    fat: {consumed: 83.4, goal: 100},
-  },
-};
-
-// 임시 식사 데이터
-const tempMeals = [
-  {
-    id: 1,
-    imageUrl: 'https://via.placeholder.com/140x120',
-    mealType: '아침 식사',
-    totalCalories: 933,
-    carbs: 1.4,
-    protein: 45.1,
-    fat: 63.4,
-  },
-  {
-    id: 2,
-    imageUrl: 'https://via.placeholder.com/140x120',
-    mealType: '점심 식사',
-    totalCalories: 933,
-    carbs: 1.4,
-    protein: 45.1,
-    fat: 63.4,
-  },
-  {
-    id: 3,
-    imageUrl: 'https://via.placeholder.com/140x120',
-    mealType: '저녁 식사',
-    totalCalories: 933,
-    carbs: 1.4,
-    protein: 45.1,
-    fat: 63.4,
-  },
-];
-
-// 임시 추천 메뉴 데이터
-const tempRecommendations = [
-  {
-    id: 1,
-    name: '닭가슴살 샐러드',
-    imageUrl: 'https://via.placeholder.com/140x120',
-    calories: 223,
-    carbs: 10.2,
-    protein: 32.1,
-    fat: 8.3,
-  },
-  {
-    id: 2,
-    name: '연어 스테이크',
-    imageUrl: 'https://via.placeholder.com/140x120',
-    calories: 320,
-    carbs: 5.2,
-    protein: 42.1,
-    fat: 12.3,
-  },
-  {
-    id: 3,
-    name: '퀴노아 볼',
-    imageUrl: 'https://via.placeholder.com/140x120',
-    calories: 280,
-    carbs: 35.2,
-    protein: 12.1,
-    fat: 6.3,
-  },
-];
+import { tempUserData, tempMeals, tempRecommendations } from '../../data/dummyHomeData';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -248,45 +174,50 @@ const HomeScreen = () => {
         {/* 식사 메뉴 추천 영역 */}
         <SectionContainer>
           <SectionTitle>식사 메뉴 추천</SectionTitle>
-          
-          <RecommendationContainer>
-            <ArrowButton onPress={handlePrevRecommendation}>
-              <ArrowLeft />
-            </ArrowButton>
-            
-            <RecommendationCard>
-              <RecommendationImage 
-                source={{uri: currentRecommendation.imageUrl}} 
-                resizeMode="cover"
-              />
-              <RecommendationInfo>
-                <RecommendationName>{currentRecommendation.name}</RecommendationName>
-                <RecommendationCalories>{currentRecommendation.calories} kcal</RecommendationCalories>
-                
-                <NutrientRow>
-                  <NutrientLabel>탄수화물</NutrientLabel>
-                  <NutrientValue color="#FD384C">{currentRecommendation.carbs}g</NutrientValue>
-                </NutrientRow>
-                
-                <NutrientRow>
-                  <NutrientLabel>단백질</NutrientLabel>
-                  <NutrientValue color="#D95B72">{currentRecommendation.protein}g</NutrientValue>
-                </NutrientRow>
-                
-                <NutrientRow>
-                  <NutrientLabel>지방</NutrientLabel>
-                  <NutrientValue color="#FD9E38">{currentRecommendation.fat}g</NutrientValue>
-                </NutrientRow>
-              </RecommendationInfo>
-            </RecommendationCard>
-            
-            <ArrowButton onPress={handleNextRecommendation}>
-              <ArrowRight />
-            </ArrowButton>
-          </RecommendationContainer>
-          
+
+          {tempRecommendations.length > 0 ? (
+            <RecommendationContainer>
+              <ArrowButton onPress={handlePrevRecommendation}>
+                <ArrowLeft />
+              </ArrowButton>
+
+              <RecommendationCard>
+                <RecommendationImage
+                  source={{ uri: currentRecommendation.imageUrl }}
+                  resizeMode="cover"
+                />
+                <RecommendationInfo>
+                  <RecommendationName>{currentRecommendation.name}</RecommendationName>
+                  <RecommendationCalories>{currentRecommendation.calories} kcal</RecommendationCalories>
+
+                  <NutrientRow>
+                    <NutrientLabel>탄수화물</NutrientLabel>
+                    <NutrientValue color="#FD384C">{currentRecommendation.carbs}g</NutrientValue>
+                  </NutrientRow>
+                  <NutrientRow>
+                    <NutrientLabel>단백질</NutrientLabel>
+                    <NutrientValue color="#D95B72">{currentRecommendation.protein}g</NutrientValue>
+                  </NutrientRow>
+                  <NutrientRow>
+                    <NutrientLabel>지방</NutrientLabel>
+                    <NutrientValue color="#FD9E38">{currentRecommendation.fat}g</NutrientValue>
+                  </NutrientRow>
+                </RecommendationInfo>
+              </RecommendationCard>
+
+              <ArrowButton onPress={handleNextRecommendation}>
+                <ArrowRight />
+              </ArrowButton>
+            </RecommendationContainer>
+          ) : (
+            <EmptyRecommendContainer>
+              <EmptyRecommendText>
+                설문조사에 참여하셔야 음식을 추천드릴 수 있어요
+              </EmptyRecommendText>
+            </EmptyRecommendContainer>
+          )}
         </SectionContainer>
-        
+                
         {/* 하단 여백 */}
         <BottomSpacer />
       </ScrollView>
@@ -559,4 +490,19 @@ const BottomSpacer = styled.View`
   height: 100px;
 `;
 
+const EmptyRecommendContainer = styled.View`
+  height: 140px;
+  background-color: #F8F8F8;
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+`;
+
+const EmptyRecommendText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 14px;
+  color: #8E8E8E;
+  text-align: center;
+`;
 export default HomeScreen;
