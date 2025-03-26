@@ -381,7 +381,7 @@ const NutrientProgressContainer = styled.View`
 `;
 
 const SectionContainer = styled.View`
-  margin: 20px;
+  margin: 8px 20px;
 
 `;
 
