@@ -1,6 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import Navigation from './src/navigation/Navigation';
 
 import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
 import SurveyAgeScreen from './src/screens/Survey/SurveyAgeScreen';
@@ -27,6 +28,7 @@ import SurveyDiseaseScreen from './src/screens/Survey/SurveyDiseaseScreen';
 import SurveyFamilyHistoryScreen from './src/screens/Survey/SurveyFamilyHistoryScreen';
 
 import ProfileScreen from './src/screens/UserSettings/ProfileScreen';
+import PasswordVerifyScreen from './src/screens/UserSettings/PasswordVerifyScreen';
 // import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
 // import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
 // import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
@@ -37,9 +39,14 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="ProfileScreen" // ✅ 시작 스크린 설정
+        initialRouteName="ProfileScreen" // 시작 스크린 설정
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen
+          name="PasswordVerifyScreen"
+          component={PasswordVerifyScreen}
+          options={{headerShown: false}}
+        />
         {/* <Stack.Screen
           name="PasswordChangeScreen"
           component={PasswordChangeScreen}

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
@@ -7,8 +6,14 @@ import {Shadow} from 'react-native-shadow-2';
 import CustomToggle from '../../components/Toggle/CustomToggle';
 import TimePickerModal from '../../components/Modal/TimePickerModal';
 
-// 네비게이션 타입 정의
 type RootStackParamList = {
+  PasswordVerifyScreen: {
+    nextScreen:
+      | 'PasswordChangeScreen'
+      | 'NicknameChangeScreen'
+      | 'AccountDeleteScreen';
+    title: string;
+  };
   PasswordChangeScreen: undefined;
   NicknameChangeScreen: undefined;
   AccountDeleteScreen: undefined;
@@ -60,21 +65,36 @@ const ProfileScreen = () => {
                 <Value>*******@naver.com</Value>
               </InfoRow>
               <Touchable
-                onPress={() => navigation.navigate('PasswordChangeScreen')}>
+                onPress={() =>
+                  navigation.navigate('PasswordVerifyScreen', {
+                    nextScreen: 'PasswordChangeScreen',
+                    title: '비밀번호 변경',
+                  })
+                }>
                 <TextRow>
                   <TextLabel>비밀번호 변경</TextLabel>
                   <Arrow>＞</Arrow>
                 </TextRow>
               </Touchable>
               <Touchable
-                onPress={() => navigation.navigate('NicknameChangeScreen')}>
+                onPress={() =>
+                  navigation.navigate('PasswordVerifyScreen', {
+                    nextScreen: 'NicknameChangeScreen',
+                    title: '닉네임 변경',
+                  })
+                }>
                 <TextRow>
                   <TextLabel>닉네임 변경</TextLabel>
                   <Arrow>＞</Arrow>
                 </TextRow>
               </Touchable>
               <Touchable
-                onPress={() => navigation.navigate('AccountDeleteScreen')}>
+                onPress={() =>
+                  navigation.navigate('PasswordVerifyScreen', {
+                    nextScreen: 'AccountDeleteScreen',
+                    title: '회원탈퇴',
+                  })
+                }>
                 <TextRow>
                   <TextLabel>회원탈퇴</TextLabel>
                   <Arrow>＞</Arrow>
@@ -322,29 +342,3 @@ const TimeText = styled.Text<TimeProps>(({isPushEnabled}: TimeProps) => ({
   fontSize: 12,
   color: isPushEnabled ? '#d95b72' : '#999999',
 }));
-=======
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-
-const ProfileScreen: React.FC = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>프로필 화면</Text>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
-
-export default ProfileScreen; // ✅ default export 확인!!
->>>>>>> develop

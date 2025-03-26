@@ -29,7 +29,11 @@ const TimePickerModal = ({
   }, [initialHour, initialMinute]);
 
   return (
-    <Modal transparent visible={visible} animationType="fade">
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+      statusBarTranslucent>
       <Backdrop>
         <ModalContainer>
           <ModalTitle>{title}</ModalTitle>
@@ -98,9 +102,14 @@ export default TimePickerModal;
 
 const Backdrop = styled.View`
   flex: 1;
+  height: 100%;
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.3);
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 const ModalContainer = styled.View`
