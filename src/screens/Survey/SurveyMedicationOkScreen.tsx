@@ -10,39 +10,41 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 type RootStackParamList = {
-  SurveySupplementScreen: undefined;
-  SurveyDiseaseOkScreen: undefined;
-  SurveyDiseaseScreen: undefined;
+  SurveyMedicationOkScreen: undefined;
+  SurveyMedicationScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
   RootStackParamList,
-  'SurveyDiseaseOkScreen'
+  'SurveyMedicationOkScreen'
 >;
 
-const SurveyDiseaseOkScreen = () => {
+const SurveyMedicationOkScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = () => {
     if (selectedOption) {
       console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('SurveyDiseaseScreen'); // 다음 화면으로 이동
+      navigation.navigate('SurveyMedicationScreen');
     }
   };
 
   return (
     <Container>
       {/* 공통 헤더 사용 */}
-      <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
+      <SurveyHeader
+        title="복용약 & 건강기능식품 정보"
+        skipTarget="NextSurveyScreen"
+      />
 
       {/* 진행 바 */}
       <ProgressBarContainer>
-        <ProgressBar progress={9 / 24} />
+        <ProgressBar progress={5 / 24} />
       </ProgressBarContainer>
 
       {/* 공통 질문 텍스트 사용 */}
-      <SurveyTitle text="현재 진단받은 질환이 있나요?" />
+      <SurveyTitle text="현재 복용 중이신 약이 있으신가요?" />
 
       {/* 선택 버튼 */}
       <ButtonWrapper>
@@ -70,7 +72,7 @@ const SurveyDiseaseOkScreen = () => {
   );
 };
 
-export default SurveyDiseaseOkScreen;
+export default SurveyMedicationOkScreen;
 
 // 스타일 정의
 const Container = styled.View`

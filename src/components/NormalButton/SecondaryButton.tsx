@@ -1,13 +1,14 @@
-import React from "react";
-import styled from "styled-components/native";
+import React from 'react';
+import styled from 'styled-components/native';
 
 interface SecondaryButtonProps {
   title: string;
+  onPress?: () => void;
 }
 
-const SecondaryButton: React.FC<SecondaryButtonProps> = ({ title }) => {
+const SecondaryButton: React.FC<SecondaryButtonProps> = ({title, onPress}) => {
   return (
-    <StyledSecondaryButton>
+    <StyledSecondaryButton onPress={onPress}>
       <ButtonText>{title}</ButtonText>
     </StyledSecondaryButton>
   );
@@ -18,16 +19,16 @@ const StyledSecondaryButton = styled.TouchableOpacity`
   height: 40px;
   border-radius: 12px;
   border-width: 1.5px;
-  border-color: #F24859;
-  background-color: #FFFFFF;
+  border-color: #f24859;
+  background-color: #ffffff;
   justify-content: center;
   align-items: center;
 `;
 
 const ButtonText = styled.Text`
   font-size: 14px;
-  font-family: "Pretendard-Bold";
-  color: #F24859;
+  font-family: 'Pretendard-Bold';
+  color: #f24859;
 `;
 
 export default SecondaryButton;

@@ -1,14 +1,14 @@
-import react from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 import {Shadow} from 'react-native-shadow-2';
 
-interface MultiSelectButtonProps {
+interface SmallMonoSelectButtonProps {
   title: string;
   isSelected?: boolean;
   onPress?: () => void;
 }
 
-const MultiSelectButton: React.FC<MultiSelectButtonProps> = ({
+const SmallMonoSelectButton: React.FC<SmallMonoSelectButtonProps> = ({
   title,
   isSelected = false,
   onPress,
@@ -19,14 +19,17 @@ const MultiSelectButton: React.FC<MultiSelectButtonProps> = ({
       startColor="rgba(0, 0, 0, 0.10)"
       offset={[2, 2]}
       style={{borderRadius: 24}}>
-      <StyledMultiButton isSelected={isSelected} onPress={onPress}>
+      <StyledButton isSelected={isSelected} onPress={onPress}>
         <ButtonText isSelected={isSelected}>{title}</ButtonText>
-      </StyledMultiButton>
+      </StyledButton>
     </Shadow>
   );
 };
 
-const StyledMultiButton = styled.TouchableOpacity<{isSelected: boolean}>`
+export default SmallMonoSelectButton;
+
+// ✅ 스타일 정의
+const StyledButton = styled.TouchableOpacity<{isSelected: boolean}>`
   width: 90px;
   height: 80px;
   border-radius: 24px;
@@ -41,6 +44,5 @@ const ButtonText = styled.Text`
   font-size: 14px;
   color: ${(props: {isSelected: boolean}) =>
     props.isSelected ? '#FFFFFF' : '#111111'};
+  text-align: center;
 `;
-
-export default MultiSelectButton;
