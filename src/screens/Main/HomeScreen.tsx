@@ -164,6 +164,12 @@ const HomeScreen = () => {
                     fat={meal.fat}
                     onPress={() => {
                       // 식사 상세 화면으로 이동하는 로직
+                      // @ts-ignore: 타입 정의 임시 처리
+                      navigation.navigate('MealRecord', { 
+                        mealId: meal.id,
+                        date: selectedDate.format('YYYY.MM.DD'),
+                        mealType: meal.mealType
+                      });
                     }}
                   />
                 </FoodCardWrapper>

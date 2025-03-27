@@ -14,12 +14,12 @@ export const tempUserData = {
 export const tempMeals = [
   {
     id: 1,
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfSgdaDjTWEIRGvaMO7J4RVRymcw2-3O9EBafiMwzlG7KXeuzOvWlsIVoRb9WFGB80SF4&usqp=CAU',
+    imageUrl: 'https://www.sbfoods-worldwide.com/ko/recipes/deq4os000000086z-img/9_Samgyeopsal.jpg',
     mealType: '아침 식사',
-    totalCalories: 933,
+    totalCalories: 938,
     carbs: 1.4,
     protein: 45.1,
-    fat: 63.4,
+    fat: 83.4,
   },
   {
     id: 2,
