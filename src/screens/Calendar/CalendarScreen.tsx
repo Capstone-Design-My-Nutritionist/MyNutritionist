@@ -217,6 +217,7 @@ const CalendarScreen = () => {
               <NoDataMessage>해당 날짜에 등록된 데이터가 없어요.</NoDataMessage>
             </SummaryContainer>
           )}
+          <SectionDivider />
 
           {/* 식단 기록 영역 */}
           <SectionContainer>
@@ -501,4 +502,10 @@ const NoFoodMessage = styled.Text`
   font-size: 16px;
   color: #8E8E8E;
   text-align: center;
+`;
+
+const SectionDivider = styled.View`
+  height: 8px;
+  background-color: #E1E3E7;
+  margin-vertical: 8px;
 `;

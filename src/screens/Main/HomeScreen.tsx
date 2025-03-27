@@ -144,7 +144,8 @@ const HomeScreen = () => {
               />
             </NutrientProgressContainer>
           </SummaryContainer>
-      
+        
+        <SectionDivider />
         {/* 오늘 섭취한 음식 영역 */}
         <SectionContainer>
           <SectionTitle>오늘 섭취한 음식</SectionTitle>
@@ -176,6 +177,7 @@ const HomeScreen = () => {
             </EmptyFoodContainer>
           )}
         </SectionContainer>
+        <SectionDivider />
 
         {/* 식사 메뉴 추천 영역 */}
         <SectionContainer>
@@ -512,4 +514,11 @@ const EmptyRecommendText = styled.Text`
   color: #8E8E8E;
   text-align: center;
 `;
+
+const SectionDivider = styled.View`
+  height: 8px;
+  background-color: #E1E3E7;
+  margin-vertical: 8px;
+`;
+
 export default HomeScreen;
