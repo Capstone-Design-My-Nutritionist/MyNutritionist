@@ -1,71 +1,29 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import styled from 'styled-components/native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NutrientItem from '../../components/Nutrient/NutrientItem';
-import { getMealRecordById, getMealRecordByDateAndType, dummyMealRecord } from '../../data/dummyMealRecordData';
+import { dummyFood } from '../../data/dummyFoodRecommendationData';
 
 // 타입 정의
 type RouteParams = {
-  mealId?: number;
-  date?: string;
+  name: string;
+  imageUrl: string;
+  kcal: number;
+  carbs: number;
+  protein: number;
+  fat: number;
   mealType?: string;
+  nutrients: Record<string, string>;
 };
 
-const MealRecordsScreen = () => {
+const FoodRecommendationScreen = () => {
   const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
   const navigation = useNavigation();
   
-  // 라우트 파라미터에서 필요한 정보 추출
-  const { mealId, date, mealType } = route.params || {};
-  
-  // 식사 기록 데이터 가져오기 (ID 또는 날짜와 식사 타입으로)
-  let mealRecord;
-  if (mealId) {
-    mealRecord = getMealRecordById(mealId);
-  } else if (date && mealType) {
-    mealRecord = getMealRecordByDateAndType(date, mealType);
-  }
-  
-  // 데이터가 없을 경우 기본 더미 데이터 사용 (테스트용)
-  const mealData = mealRecord ? {
-    date: mealRecord.date,
-    mealType: mealRecord.mealType,
-    imageUrl: mealRecord.mainFood.imageUrl,
-    foodName: mealRecord.mainFood.name,
-    totalCalories: mealRecord.mainFood.kcal,
-    carbs: mealRecord.mainFood.carbs,
-    protein: mealRecord.mainFood.protein,
-    fat: mealRecord.mainFood.fat,
-    servingSize: mealRecord.mainFood.serving,
-    nutrients: mealRecord.mainFood.nutrients,
-    additionalFoods: mealRecord.additionalFoods.map(food => ({
-      name: food.name,
-      servingSize: food.serving,
-      actualServing: food.actualAmount,
-      calories: food.kcal,
-      nutrients: food.nutrients
-    }))
-  } : {
-    date: dummyMealRecord.date,
-    mealType: dummyMealRecord.mealType,
-    imageUrl: dummyMealRecord.mainFood.imageUrl,
-    foodName: dummyMealRecord.mainFood.name,
-    totalCalories: dummyMealRecord.mainFood.kcal,
-    carbs: dummyMealRecord.mainFood.carbs,
-    protein: dummyMealRecord.mainFood.protein,
-    fat: dummyMealRecord.mainFood.fat,
-    servingSize: dummyMealRecord.mainFood.serving,
-    nutrients: dummyMealRecord.mainFood.nutrients,
-    additionalFoods: dummyMealRecord.additionalFoods.map(food => ({
-      name: food.name,
-      servingSize: food.serving,
-      actualServing: food.actualAmount,
-      calories: food.kcal,
-      nutrients: food.nutrients
-    }))
-  };
+  // 실제 데이터는 route.params에서 가져오지만, 테스트를 위해 dummy 데이터도 사용
+  const foodData = route.params || dummyFood;
   
   // 뒤로가기 핸들러
   const handleGoBack = () => {
@@ -73,15 +31,15 @@ const MealRecordsScreen = () => {
   };
 
   // 영양소 총합 계산 (탄수화물 + 단백질 + 지방)
-  const totalNutrients = mealData.carbs + mealData.protein + mealData.fat;
+  const totalNutrients = foodData.carbs + foodData.protein + foodData.fat;
   
   // 각 영양소 비율 계산
-  const carbsRatio = (mealData.carbs / totalNutrients) * 100;
-  const proteinRatio = (mealData.protein / totalNutrients) * 100;
-  const fatRatio = (mealData.fat / totalNutrients) * 100;
+  const carbsRatio = (foodData.carbs / totalNutrients) * 100;
+  const proteinRatio = (foodData.protein / totalNutrients) * 100;
+  const fatRatio = (foodData.fat / totalNutrients) * 100;
 
   // 유효한 영양소만 필터링 (값이 0이거나 빈 문자열이 아닌 것만)
-  const validNutrients = Object.entries(mealData.nutrients).filter(
+  const validNutrients = Object.entries(foodData.nutrients).filter(
     ([_, value]) => value !== '0g' && value !== ''
   );
 
@@ -92,24 +50,24 @@ const MealRecordsScreen = () => {
         <BackButton onPress={handleGoBack}>
           <Icon name="arrow-back-ios" size={24} color="#731A22" />
         </BackButton>
-        <HeaderTitle>{`${mealData.date} - ${mealData.mealType}식사`}</HeaderTitle>
+        <HeaderTitle>식사메뉴 추천</HeaderTitle>
       </HeaderContainer>
       <HeaderDivider />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 음식 이미지 */}
-        <FoodImage source={{ uri: mealData.imageUrl }} />
+        <FoodImage source={{ uri: foodData.imageUrl }} />
 
         {/* 음식 정보 카드 */}
         <FoodInfoCard>
           <FoodInfoHeader>
-            <FoodName>{mealData.foodName}</FoodName>
-            <MealTypeTag>{mealData.mealType}</MealTypeTag>
+            <FoodName>{foodData.name}</FoodName>
+            {foodData.mealType && <MealTypeTag>{foodData.mealType}</MealTypeTag>}
           </FoodInfoHeader>
           
           <ServingInfoRow>
-            <ServingText>{mealData.servingSize}</ServingText>
-            <CalorieText>{mealData.totalCalories}kcal</CalorieText>
+            <ServingText>1인분</ServingText>
+            <CalorieText>{foodData.kcal}kcal</CalorieText>
           </ServingInfoRow>
 
           {/* 탄단지 정보 */}
@@ -117,19 +75,19 @@ const MealRecordsScreen = () => {
             <NutrientRow>
               <NutrientDot color="#FD384C" />
               <NutrientLabel>탄수화물</NutrientLabel>
-              <NutrientValue color="#FD384C">{mealData.carbs}g</NutrientValue>
+              <NutrientValue color="#FD384C">{foodData.carbs}g</NutrientValue>
             </NutrientRow>
 
             <NutrientRow>
               <NutrientDot color="#FD9E38" />
               <NutrientLabel>지방</NutrientLabel>
-              <NutrientValue color="#FD9E38">{mealData.fat}g</NutrientValue>
+              <NutrientValue color="#FD9E38">{foodData.fat}g</NutrientValue>
             </NutrientRow>
 
             <NutrientRow>
               <NutrientDot color="#D95B72" />
               <NutrientLabel>단백질</NutrientLabel>
-              <NutrientValue color="#D95B72">{mealData.protein}g</NutrientValue>
+              <NutrientValue color="#D95B72">{foodData.protein}g</NutrientValue>
             </NutrientRow>
           </NutrientSummary>
 
@@ -140,6 +98,8 @@ const MealRecordsScreen = () => {
             <ProteinProgress width={proteinRatio} />
           </NutrientProgressBar>
         </FoodInfoCard>
+        <SectionDivider />
+
 
         {/* 영양소 상세 정보 */}
         <NutrientDetailContainer>
@@ -148,41 +108,6 @@ const MealRecordsScreen = () => {
           ))}
         </NutrientDetailContainer>
 
-        {/* 추가 음식 정보 */}
-        {mealData.additionalFoods && mealData.additionalFoods.length > 0 && (
-          <>
-            {mealData.additionalFoods.map((food, foodIndex) => {
-              // 유효한 영양소만 필터링
-              const validAdditionalNutrients = Object.entries(food.nutrients).filter(
-                ([_, value]) => value !== '0g' && value !== ''
-              );
-              
-              return (
-                <React.Fragment key={`additional-food-${foodIndex}`}>
-                  <SectionDivider />
-                  <NutrientDetailContainer>
-                    <AdditionalFoodHeader>
-                      <AdditionalFoodName>{food.name}</AdditionalFoodName>
-                      <AdditionalFoodCalories>{food.calories}kcal</AdditionalFoodCalories>
-                    </AdditionalFoodHeader>
-                    
-                    <ServingInfoWrapper>
-                      <ServingInfoRow>
-                        <ServingText>기본 {food.servingSize}</ServingText>
-                        <ActualServingText>실제 섭취량: {food.actualServing}</ActualServingText>
-                      </ServingInfoRow>
-                    </ServingInfoWrapper>
-
-                    {validAdditionalNutrients.map(([name, value], index) => (
-                      <NutrientItem key={`additional-nutrient-${foodIndex}-${index}`} name={name} value={value} />
-                    ))}
-                  </NutrientDetailContainer>
-                </React.Fragment>
-              );
-            })}
-          </>
-        )}
-
         {/* 하단 여백 */}
         <BottomSpacer />
       </ScrollView>
@@ -190,12 +115,12 @@ const MealRecordsScreen = () => {
   );
 };
 
-export default MealRecordsScreen;
+export default FoodRecommendationScreen;
 
 // 스타일 정의
 const Container = styled.View`
   flex: 1;
-  background-color: #FFF8F8;
+  background-color: #FFFBFB;
 `;
 
 const HeaderContainer = styled.View`
@@ -205,9 +130,6 @@ const HeaderContainer = styled.View`
   padding: 20px;
   padding-top: 60px;
   position: relative;
-  background-color: #FFFFFF;
-  border-bottom-width: 1px;
-  border-color: #E0E0E0;
 `;
 
 const BackButton = styled.TouchableOpacity`
@@ -225,7 +147,7 @@ const HeaderTitle = styled.Text`
 const HeaderDivider = styled.View`
   height: 1px;
   width: 100%;
-  background-color: #E0E0E0;
+  background-color: #731A22;
 `;
 
 const FoodImage = styled.Image`
@@ -266,9 +188,9 @@ const MealTypeTag = styled.Text`
 `;
 
 const ServingInfoRow = styled.View`
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
-  align-items:left;
+  align-items: center;
   margin-bottom: 20px;
 `;
 
@@ -287,6 +209,13 @@ const CalorieText = styled.Text`
 const NutrientSummary = styled.View`
   margin-bottom: 10px;
   flex-direction: row;
+  
+`;
+
+const NutrientSummaryText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 14px;
+  color: #111111;
 `;
 
 interface ColorProps {
@@ -332,41 +261,15 @@ const ProteinProgress = styled.View<WidthProps>`
 `;
 
 const SectionDivider = styled.View`
-  height: 8px;
-  background-color: #E0E0E0;
-
+  height: 1px;
+  width: 100%;
+  background-color: #731A22;
+  opacity: 0.5;
 `;
 
 const NutrientDetailContainer = styled.View`
   align-items: center;
   padding: 10px 20px;
-  background-color: #fefefe;
-`;
-
-const AdditionalFoodHeader = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  width: 350px;
-`;
-
-const AdditionalFoodName = styled.Text`
-  font-family: 'Pretendard-Bold';
-  font-size: 18px;
-  color: #731A22;
-`;
-
-const AdditionalFoodCalories = styled.Text`
-  font-family: 'Pretendard-Bold';
-  font-size: 14px;
-  color: #E44F68;
-`;
-
-const ActualServingText = styled.Text`
-  font-family: 'Pretendard-Bold';
-  font-size: 14px;
-  color: #D95B72;
 `;
 
 const BottomSpacer = styled.View`
@@ -391,11 +294,4 @@ const NutrientValue = styled.Text<{ color: string }>`
   font-size: 14px;
   color: ${(props: { color: string }) => props.color};
   margin-left: 4px;
-`;
-
-const ServingInfoWrapper = styled.View`
-  width: 100%;
-  max-width: 350px;
-  align-self: flex-start;
-  padding: 0px 10px;
 `;
