@@ -102,7 +102,7 @@ const CalendarScreen = () => {
     // @ts-ignore: 타입 정의 임시 처리
     navigation.navigate('MealDetails', {
       date: selectedDate.format('YYYY.MM.DD'),
-      mealId,
+      mealType: '점심', // 기본값으로 점심 설정
     });
   };
 

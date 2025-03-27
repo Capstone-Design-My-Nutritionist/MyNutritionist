@@ -8,7 +8,8 @@ import Navigation from './src/navigation/Navigation';
 import NutritionDetails from './src/screens/Main/NutritionDetailsScreen';
 import FoodRecommendation from './src/screens/Main/FoodRecommendationScreen';
 import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen'; // 경로는 네이밍에 맞게 조정
-
+import MealRecords from './src/screens/Main/MealRecordsScreen';
+import MealDetails from './src/screens/Calendar/MealDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,8 @@ const App = () => {
         <Stack.Screen name="NutritionDetails" component={NutritionDetails} />
         <Stack.Screen name="FoodRecommendation" component={FoodRecommendation} />
         <Stack.Screen name="SupplementDetails" component={SupplementDetails} /> 
+        <Stack.Screen name="MealRecord" component={MealRecords} />
+        <Stack.Screen name="MealDetails" component={MealDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
