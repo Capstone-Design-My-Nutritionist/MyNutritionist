@@ -1,6 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
 import Navigation from './src/navigation/Navigation';
 import {View, StyleSheet} from 'react-native';
 import {LoginInputField, SurveyInputField} from './src/components';
@@ -38,9 +39,9 @@ import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScree
 import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
 import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
-function App(): React.JSX.Element {
+const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -154,6 +155,6 @@ function App(): React.JSX.Element {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 export default App;
