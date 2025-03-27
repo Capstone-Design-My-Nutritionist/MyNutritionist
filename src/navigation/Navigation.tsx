@@ -23,6 +23,7 @@ const Navigation = () => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
+        headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: styles.tabBar,
         tabBarIcon: ({focused}) => {
@@ -52,7 +53,7 @@ const Navigation = () => {
 
           const size = sizes[route.name];
 
-          // 📌 Upload 자리에는 빈 View를 리턴해서 정렬 유지
+          // Upload 자리에는 빈 View를 리턴해서 정렬 유지
           if (route.name === 'Upload') {
             return <View style={{width: 70}} />;
           }
@@ -76,7 +77,7 @@ const Navigation = () => {
           tabBarIcon: () => (
             <UploadButtonContainer>
               <UploadButton>
-                <UploadIcon width={28} height={28} fill="#ffffff" />
+                <UploadIcon width={58} height={58} />
               </UploadButton>
             </UploadButtonContainer>
           ),

@@ -1,7 +1,6 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
 import Navigation from './src/navigation/Navigation';
 import {View, StyleSheet} from 'react-native';
 import {LoginInputField, SurveyInputField} from './src/components';
