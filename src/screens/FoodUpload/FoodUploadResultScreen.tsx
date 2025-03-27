@@ -2,13 +2,15 @@ import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {Image} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import ProgressBar from '../../components/Progress/ProgressBar';
 import CommonHeader from '../../components/Common/CommonHeader';
 import MultiNutrientProgressBar from '../../components/Progress/MultiProgressBar';
+import FoodNutrientCard from '../../components/Common/FoodNutrientCard';
 
 const FoodUploadResultScreen = () => {
+  const [amount, setAmount] = useState('');
+  const [unit, setUnit] = useState('g');
   const [mealType, setMealType] = useState('아침');
-  const [selectedFood, setSelectedFood] = useState('삼겹살');
+  const [selectedFood, setSelectedFood] = useState('돼지국밥');
 
   return (
     <>
@@ -21,94 +23,79 @@ const FoodUploadResultScreen = () => {
       />
 
       <Container>
+        <TitleRow>
+          <FoodTitle>{selectedFood}</FoodTitle>
+
+          <PickerWrapper>
+            <Picker
+              selectedValue={mealType}
+              onValueChange={(value: string) => setMealType(value)}
+              mode="dropdown"
+              style={{width: 50, height: 24}}>
+              <Picker.Item label="아침" value="아침" />
+              <Picker.Item label="점심" value="점심" />
+              <Picker.Item label="저녁" value="저녁" />
+            </Picker>
+          </PickerWrapper>
+        </TitleRow>
+
+        <AltFoodRow>
+          <AltFoodButton>
+            <AltFoodText>육개장</AltFoodText>
+          </AltFoodButton>
+          <AltFoodButton>
+            <AltFoodText>김치찌개</AltFoodText>
+          </AltFoodButton>
+          <AltFoodButton>
+            <AltFoodText>순대국밥</AltFoodText>
+          </AltFoodButton>
+          <AltFoodButton>
+            <AltFoodText>음식 직접 검색하기 🔍</AltFoodText>
+          </AltFoodButton>
+        </AltFoodRow>
+
+        <SummaryRow>
+          <SummaryLabel>총 섭취량</SummaryLabel>
+          <KcalText>938kcal</KcalText>
+        </SummaryRow>
+
+        <MultiNutrientProgressBar
+          carbohydrate={10.4}
+          fat={83.4}
+          protein={45.1}
+        />
+
+        <Divider />
         <Scroll>
-          <Section>
-            <TitleRow>
-              <FoodTitle>{selectedFood} & 김치볶음</FoodTitle>
-
-              <PickerWrapper>
-                <Picker
-                  selectedValue={mealType}
-                  onValueChange={(value: string) => setMealType(value)}
-                  mode="dropdown"
-                  style={{width: 50, height: 24}}>
-                  <Picker.Item label="아침" value="아침" />
-                  <Picker.Item label="점심" value="점심" />
-                  <Picker.Item label="저녁" value="저녁" />
-                </Picker>
-              </PickerWrapper>
-            </TitleRow>
-
-            <AltFoodRow>
-              <AltFoodButton>
-                <AltFoodText>목살</AltFoodText>
-              </AltFoodButton>
-              <AltFoodButton>
-                <AltFoodText>항정살</AltFoodText>
-              </AltFoodButton>
-              <AltFoodButton>
-                <AltFoodText>오겹살</AltFoodText>
-              </AltFoodButton>
-              <AltFoodButton>
-                <AltFoodText>음식 직접 검색하기 🔍</AltFoodText>
-              </AltFoodButton>
-            </AltFoodRow>
-
-            <SummaryRow>
-              <SummaryLabel>총 섭취량</SummaryLabel>
-              <KcalText>938kcal</KcalText>
-            </SummaryRow>
-
-            <MultiNutrientProgressBar
-              carbohydrate={10.4}
-              fat={83.4}
-              protein={45.1}
-            />
-          </Section>
-
+          <FoodNutrientCard
+            foodName="돼지국밥"
+            servingInfo={'1인분 200g\n933kcal'}
+            nutrients={[
+              {label: '콜레스테롤', value: '79.4 mg'},
+              {label: '나트륨', value: '1152.8 mg'},
+            ]}
+            unit="g"
+            inputValue={amount}
+            onUnitChange={setUnit}
+            onInputChange={setAmount}
+            onInput={() => console.log('입력')}
+            showRemoveButton={false}
+          />
           <Divider />
-
-          <InfoBlock>
-            <InfoRow>
-              <InfoLabel>삼겹살</InfoLabel>
-              <GramInput placeholder="g을 입력해주세요..." />
-            </InfoRow>
-          </InfoBlock>
-
-          <InfoBlock>
-            <InfoRow>
-              <InfoLabel>콜레스테롤</InfoLabel>
-              <InfoValue>79.4 mg</InfoValue>
-            </InfoRow>
-            <InfoRow>
-              <InfoLabel>나트륨</InfoLabel>
-              <InfoValue>1152.8 mg</InfoValue>
-            </InfoRow>
-          </InfoBlock>
-
-          <Divider />
-
-          <InfoBlock>
-            <InfoRow>
-              <InfoLabel>상추</InfoLabel>
-              <GramInput placeholder="g을 입력해주세요..." />
-            </InfoRow>
-          </InfoBlock>
-
-          <InfoBlock>
-            <InfoRow>
-              <InfoLabel>식이섬유</InfoLabel>
-              <InfoValue>0.5 g</InfoValue>
-            </InfoRow>
-            <InfoRow>
-              <InfoLabel>칼슘</InfoLabel>
-              <InfoValue>15 mg</InfoValue>
-            </InfoRow>
-            <InfoRow>
-              <InfoLabel>비타민A</InfoLabel>
-              <InfoValue>0.6 mg</InfoValue>
-            </InfoRow>
-          </InfoBlock>
+          <FoodNutrientCard
+            foodName="김치"
+            servingInfo={'1인분 200g\n933kcal'}
+            nutrients={[
+              {label: '콜레스테롤', value: '79.4 mg'},
+              {label: '나트륨', value: '1152.8 mg'},
+            ]}
+            unit="g"
+            inputValue={amount}
+            onUnitChange={setUnit}
+            onInputChange={setAmount}
+            onInput={() => console.log('입력')}
+            showRemoveButton={false}
+          />
 
           <Divider />
 
@@ -144,14 +131,11 @@ const Container = styled.View`
   margin-top: -20px;
   border-radius: 12px;
   background-color: #fff;
-`;
-
-const Scroll = styled.ScrollView`
   padding: 20px;
 `;
 
-const Section = styled.View`
-  margin-bottom: 15px;
+const Scroll = styled.ScrollView`
+  padding-top: 20px;
 `;
 
 const TitleRow = styled.View`
@@ -213,54 +197,32 @@ const KcalText = styled.Text`
 
 const Divider = styled.View`
   height: 1px;
-  background-color: #ddd;
-  margin: 16px 0;
-`;
-
-const InfoBlock = styled.View`
-  margin-bottom: 16px;
-`;
-
-const InfoRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-`;
-
-const InfoLabel = styled.Text`
-  font-size: 14px;
-  font-family: 'Pretendard-Regular';
-`;
-
-const InfoValue = styled.Text`
-  font-size: 14px;
-  font-family: 'Pretendard-SemiBold';
-`;
-
-const GramInput = styled.TextInput`
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 13px;
-  margin-top: 4px;
-  flex: 1;
+  background-color: rgba(115, 26, 34, 0.5);
+  margin-vertical: 16px;
+  margin-horizontal: -20px;
 `;
 
 const MealTypeRow = styled.View`
-  margin-bottom: 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
 `;
 
 const MealTypeLabel = styled.Text`
+  color: black;
   font-size: 14px;
-  margin-bottom: 6px;
+  font-family: 'Pretendard-SemiBold';
+  margin-right: 12px;
 `;
 
 const SearchInput = styled.TextInput`
+  width: 115px;
+  height: 24px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 13px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
 `;
 
 const BottomButtons = styled.View`
@@ -273,7 +235,10 @@ const BottomButtons = styled.View`
 
 const SubmitButton = styled.TouchableOpacity`
   background-color: #d95b72;
-  padding: 10px 40px;
+  width: 150px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
 `;
 
@@ -284,7 +249,10 @@ const SubmitText = styled.Text`
 
 const CancelButton = styled.TouchableOpacity`
   border: 1px solid #d95b72;
-  padding: 10px 40px;
+  width: 150px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
 `;
 
