@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import {Shadow} from 'react-native-shadow-2';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import ArrowLeft from '../../../assets/images/arrow-left.svg';
 import ArrowRight from '../../../assets/images/arrow-right.svg';
 
@@ -17,47 +15,45 @@ interface SupplementCardProps {
   supplement: Supplement;
   onPrev: () => void;
   onNext: () => void;
+  onDetailPress: () => void;
 }
 
 const SupplementCard: React.FC<SupplementCardProps> = ({
   supplement,
   onPrev,
   onNext,
+  onDetailPress,
 }) => {
   return (
-    <Shadow
-      distance={5}
-      startColor="rgba(140,3,3,0.15)"
-      offset={[0, 0.5]}
-      style={{borderRadius: 12}}>
-      <CardContainer>
-        <ArrowButton onPress={onPrev}>
-          <ArrowLeft />
-        </ArrowButton>
+    <CardContainer>
+      <ArrowButton onPress={onPrev}>
+        {/* <ArrowLeft /> */}
+      </ArrowButton>
 
-        <Content>
-          <ImageContainer>
-            <ProductImage
-              source={{uri: supplement.imageUrl}}
-              resizeMode="contain"
-            />
-          </ImageContainer>
+      <Content>
+        <ImageContainer>
+          <ProductImage
+            source={{uri: supplement.imageUrl}}
+            resizeMode="contain"
+          />
+        </ImageContainer>
 
-          <InfoContainer>
-            <CategoryText>{supplement.category}</CategoryText>
-            <ProductName>{supplement.name}</ProductName>
-            <Description>{supplement.description}</Description>
-            <DetailButton>
-              <DetailText>상세보기</DetailText>
-            </DetailButton>
-          </InfoContainer>
-        </Content>
+        <InfoContainer>
+          <CategoryText>{supplement.category}</CategoryText>
+          <ProductName>{supplement.name}</ProductName>
+          <Description>{supplement.description}</Description>
+          <DetailButton onPress={onDetailPress}>
+            <DetailText>상세보기</DetailText>
+          </DetailButton>
+        </InfoContainer>
+      </Content>
 
-        <ArrowButton onPress={onNext}>
-          <ArrowRight />
-        </ArrowButton>
-      </CardContainer>
-    </Shadow>
+      <ArrowButton onPress={onNext}>
+        {/* <ArrowRight /> */}
+      </ArrowButton>
+        
+    </CardContainer>
+    
   );
 };
 
@@ -68,19 +64,14 @@ const CardContainer = styled.View`
   align-items: center;
   background-color: white;
   border-radius: 12px;
-  padding: 8px 0px;
+  padding: 12px 4px;
   width: 370px;
   justify-content: space-between;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const ArrowButton = styled.TouchableOpacity`
   padding: 6px;
-`;
-
-const ArrowIcon = styled(ArrowLeft)`
-  width: 7px;
-  height: 14px;
-  color: black;
 `;
 
 const Content = styled.View`
@@ -94,7 +85,7 @@ const ImageContainer = styled.View`
   width: 100px;
   height: 100px;
   border: 1px solid #333;
-  border-radius: 18px;
+  border-radius: 8px;
 `;
 
 const ProductImage = styled.Image`
@@ -140,4 +131,11 @@ const DetailText = styled.Text`
   font-family: 'Pretendard-Regular';
   color: #000000;
   text-decoration: underline;
+`;
+
+
+const SectionDivider = styled.View`
+  height: 8px;
+  background-color: #F5F5F5;
+  margin-vertical: 8px;
 `;
