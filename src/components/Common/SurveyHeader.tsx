@@ -1,50 +1,53 @@
 // components/Common/SurveyHeader.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
-import {Alert} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import SurveySkipModal from '../Modal/SurveySkipModal';
+import { resetSurveyState } from '../../utils/surveyUtils';
 
 interface SurveyHeaderProps {
   title: string;
   skipTarget?: string; // Skip 버튼 클릭 시 이동할 화면 (선택 사항)
 }
 
-const SurveyHeader: React.FC<SurveyHeaderProps> = ({title, skipTarget}) => {
+const SurveyHeader: React.FC<SurveyHeaderProps> = ({ title, skipTarget }) => {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleSkipPress = () => {
     if (!skipTarget) return;
+    setModalVisible(true);
+  };
 
-    Alert.alert(
-      '지금 skip을 하시면, 알맞은 영양제를 추천해드릴 수 없어요.',
-      '(나중에 다시 참여 가능하나, 처음부터 진행하셔야 합니다.)',
-      [
-        {
-          text: '나가기',
-          // onPress: () => navigation.navigate(skipTarget),
-          style: 'destructive',
-        },
-        {
-          text: '취소',
-          style: 'cancel',
-        },
-      ],
-      {cancelable: true},
-    );
+  const handleSkipConfirm = async () => {
+    setModalVisible(false);
+    // 설문 상태 초기화
+    await resetSurveyState();
+    // 메인 화면으로 이동
+    // @ts-ignore: 타입 정의 임시 처리
+    navigation.navigate('Main');
   };
 
   return (
-    <Header>
-      <HeaderTitleContainer>
-        <HeaderTitle>{title}</HeaderTitle>
-      </HeaderTitleContainer>
-      {skipTarget && (
-        <SkipButton>
-          {/* onPress={() => navigation.navigate(skipTarget)} */}
-          <SkipText>skip &gt;</SkipText>
-        </SkipButton>
-      )}
-    </Header>
+    <>
+      <Header>
+        <HeaderTitleContainer>
+          <HeaderTitle>{title}</HeaderTitle>
+        </HeaderTitleContainer>
+        {skipTarget && (
+          <SkipButton onPress={handleSkipPress}>
+            <SkipText>skip &gt;</SkipText>
+          </SkipButton>
+        )}
+      </Header>
+
+      {/* 스킵 확인 모달 */}
+      <SurveySkipModal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        onConfirm={handleSkipConfirm}
+      />
+    </>
   );
 };
 
