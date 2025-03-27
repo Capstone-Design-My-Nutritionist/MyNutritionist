@@ -6,6 +6,7 @@ import {View, StyleSheet} from 'react-native';
 import {LoginInputField, SurveyInputField} from './src/components';
 
 import FoodUploadScreen from './src/screens/FoodUpload/FoodUploadScreen';
+import FoodUploadResultScreen from './src/screens/FoodUpload/FoodUploadResultScreen';
 
 import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
 import SurveyAgeScreen from './src/screens/Survey/SurveyAgeScreen';
@@ -43,9 +44,13 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="FoodUploadScreen"
+        initialRouteName="FoodUploadResultScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
+        <Stack.Screen
+          name="FoodUploadResultScreen"
+          component={FoodUploadResultScreen}
+        />
 
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         <Stack.Screen
