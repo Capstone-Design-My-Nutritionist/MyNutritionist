@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2';
 import ConfirmModal from '../../components/Modal/ConfirmModal';
+import CommonHeader from '../../components/Common/CommonHeader';
 
 type RootStackParamList = {
   ProfileScreen: undefined;
@@ -50,13 +51,7 @@ const NicknameChangeScreen = () => {
 
   return (
     <>
-      <TitleWrapper>
-        <BackButton onPress={() => navigation.goBack()}>
-          <BackText>{'<'}</BackText>
-        </BackButton>
-        <Title>닉네임 변경</Title>
-        <TitleUnderline />
-      </TitleWrapper>
+      <CommonHeader title="닉네임 변경" />
 
       <Container>
         <LogoBox>
@@ -120,34 +115,6 @@ const NicknameChangeScreen = () => {
 };
 
 export default NicknameChangeScreen;
-
-const TitleWrapper = styled.View`
-  background-color: #ffffff;
-  padding-top: 11px;
-`;
-
-const Title = styled.Text`
-  font-size: 18px;
-  font-family: 'Pretendard-Bold';
-  color: #731a22;
-  text-align: center;
-  margin-bottom: 11px;
-`;
-
-const TitleUnderline = styled.View`
-  width: 100%;
-  height: 1.3px;
-  background-color: #731a22;
-  margin-bottom: 6px;
-`;
-
-const BackButton = styled.TouchableOpacity`
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  justify-content: center;
-  align-items: center;
-`;
 
 const BackText = styled.Text`
   font-size: 20px;

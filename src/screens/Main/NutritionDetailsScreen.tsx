@@ -1,11 +1,17 @@
 // src/screens/Main/NutritionDetailsScreen.tsx
 
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import styled from 'styled-components/native';
-import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import {useRoute, RouteProp, useNavigation} from '@react-navigation/native';
 import ProgressBar from '../../components/Progress/ProgressBar';
-import { dummyNutritionData } from '../../data/dummyNutritionDetailData';
+import {dummyNutritionData} from '../../data/dummyNutritionDetailData';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type RouteParams = {
@@ -13,11 +19,11 @@ type RouteParams = {
 };
 
 const NutritionDetailsScreen = () => {
-  const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
+  const route = useRoute<RouteProp<{params: RouteParams}, 'params'>>();
   const navigation = useNavigation();
   const selectedDate = route.params?.date || '2025.03.27';
 
-  const { totalCalories, consumedCalories, nutrients } = dummyNutritionData;
+  const {totalCalories, consumedCalories, nutrients} = dummyNutritionData;
 
   // 뒤로가기 핸들러
   const handleGoBack = () => {
@@ -43,7 +49,7 @@ const NutritionDetailsScreen = () => {
               />
             </NutrientItem>
           ))}
-        </NutrientRow>
+        </NutrientRow>,
       );
     }
     return rows;
@@ -52,14 +58,13 @@ const NutritionDetailsScreen = () => {
   return (
     <Container>
       <ScrollView showsVerticalScrollIndicator={false}>
-      <HeaderBackground>
-        <HeaderContent>
-          <DateText>{selectedDate}</DateText>
-          <SubText>에 섭취했던 영양소 정보에요.</SubText>
-        </HeaderContent>
-      </HeaderBackground>
+        <HeaderBackground>
+          <HeaderContent>
+            <DateText>{selectedDate}</DateText>
+            <SubText>에 섭취했던 영양소 정보에요.</SubText>
+          </HeaderContent>
+        </HeaderBackground>
 
-      
         <ContentContainer>
           <SummaryContainer>
             <SectionTitle>총 섭취량</SectionTitle>
@@ -67,11 +72,11 @@ const NutritionDetailsScreen = () => {
               <CalorieText>{consumedCalories}</CalorieText>
               <CalorieUnit>/ {totalCalories}kcal</CalorieUnit>
             </CalorieInfoContainer>
-            
+
             <ProgressBarContainer>
               <ProgressBarBackground>
-                <ProgressBarFill 
-                  width={(consumedCalories / totalCalories) * 100} 
+                <ProgressBarFill
+                  width={(consumedCalories / totalCalories) * 100}
                 />
               </ProgressBarBackground>
             </ProgressBarContainer>
@@ -81,13 +86,12 @@ const NutritionDetailsScreen = () => {
             </NutrientGridContainer>
           </SummaryContainer>
         </ContentContainer>
-      
 
-      <BackButtonContainer>
-        <BackButton onPress={handleGoBack}>
-          <BackButtonText>뒤로가기</BackButtonText>
-        </BackButton>
-      </BackButtonContainer>
+        <BackButtonContainer>
+          <BackButton onPress={handleGoBack}>
+            <BackButtonText>뒤로가기</BackButtonText>
+          </BackButton>
+        </BackButtonContainer>
       </ScrollView>
     </Container>
   );
@@ -96,11 +100,11 @@ const NutritionDetailsScreen = () => {
 // 스타일 정의
 const Container = styled.View`
   flex: 1;
-  background-color: #FFFBFB;
+  background-color: #fffbfb;
 `;
 
 const HeaderBackground = styled.View`
-  background-color: #E44F68;
+  background-color: #e44f68;
   padding: 20px;
   padding-top: 100px;
   height: 260px;
@@ -113,14 +117,14 @@ const HeaderContent = styled.View`
 const DateText = styled.Text`
   font-family: 'Pretendard-ExtraBold';
   font-size: 20px;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 4px;
 `;
 
 const SubText = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 14px;
-  color: #FFFFFF;
+  color: #ffffff;
 `;
 
 const ContentContainer = styled.View`
@@ -128,11 +132,11 @@ const ContentContainer = styled.View`
 `;
 
 const SummaryContainer = styled.View`
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   margin-top: -80px;
   border-radius: 15px;
   padding: 20px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const SectionTitle = styled.Text`
@@ -151,13 +155,13 @@ const CalorieInfoContainer = styled.View`
 const CalorieText = styled.Text`
   font-family: 'Pretendard-Bold';
   font-size: 24px;
-  color: #F2594B;
+  color: #f2594b;
 `;
 
 const CalorieUnit = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 14px;
-  color: #8E8E8E;
+  color: #8e8e8e;
   margin-left: 5px;
 `;
 
@@ -167,15 +171,15 @@ const ProgressBarContainer = styled.View`
 
 const ProgressBarBackground = styled.View`
   height: 8px;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   border-radius: 4px;
   overflow: hidden;
 `;
 
-const ProgressBarFill = styled.View<{ width: number }>`
+const ProgressBarFill = styled.View<{width: number}>`
   height: 100%;
-  width: ${(props: { width: number }) => props.width}%;
-  background-color: #E44F68;
+  width: ${(props: {width: number}) => props.width}%;
+  background-color: #e44f68;
   border-radius: 4px;
 `;
 
@@ -200,7 +204,7 @@ const BackButtonContainer = styled.View`
 `;
 
 const BackButton = styled.TouchableOpacity`
-  background-color: #E44F68;
+  background-color: #e44f68;
   padding: 15px 30px;
   border-radius: 25px;
   align-items: center;
@@ -211,7 +215,7 @@ const BackButton = styled.TouchableOpacity`
 const BackButtonText = styled.Text`
   font-family: 'Pretendard-Bold';
   font-size: 16px;
-  color: #FFFFFF;
+  color: #ffffff;
 `;
 
 export default NutritionDetailsScreen;

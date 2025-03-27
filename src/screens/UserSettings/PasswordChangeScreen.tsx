@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2';
 import ConfirmModal from '../../components/Modal/ConfirmModal'; // 모달 컴포넌트 경로에 맞게 수정
+import CommonHeader from '../../components/Common/CommonHeader';
 
 type RootStackParamList = {
   ProfileScreen: undefined;
@@ -39,13 +40,7 @@ const PasswordChangeScreen = () => {
 
   return (
     <>
-      <TitleWrapper>
-        <BackButton onPress={() => navigation.goBack()}>
-          <BackText>{'<'}</BackText>
-        </BackButton>
-        <Title>비밀번호 변경</Title>
-        <TitleUnderline />
-      </TitleWrapper>
+      <CommonHeader title="비밀번호 변경" />
 
       <Container>
         <LogoBox>
@@ -105,36 +100,6 @@ const PasswordChangeScreen = () => {
 };
 
 export default PasswordChangeScreen;
-
-const TitleWrapper = styled.View`
-  background-color: #ffffff;
-  padding-top: 11px;
-`;
-const Title = styled.Text`
-  font-size: 18px;
-  font-family: 'Pretendard-Bold';
-  color: #731a22;
-  text-align: center;
-  margin-bottom: 11px;
-`;
-const TitleUnderline = styled.View`
-  width: 100%;
-  height: 1.3px;
-  background-color: #731a22;
-  margin-bottom: 6px;
-`;
-
-const BackButton = styled.TouchableOpacity`
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  justify-content: center;
-  align-items: center;
-`;
-const BackText = styled.Text`
-  color: #731a22;
-  font-size: 20px;
-`;
 
 const Container = styled.View`
   flex: 1;
