@@ -11,6 +11,7 @@ import { Shadow } from 'react-native-shadow-2';
 import ArrowLeft from '../../../assets/images/arrow-left.svg';
 import ArrowRight from '../../../assets/images/arrow-right.svg';
 import { tempUserData, tempMeals, tempRecommendations } from '../../data/dummyHomeData';
+import { dummyFood } from '../../data/dummyFoodRecommendationData';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -58,6 +59,11 @@ const HomeScreen = () => {
     });
   };
 
+  // 음식 추천 상세 화면으로 이동
+  const navigateToFoodRecommendation = () => {
+    // @ts-ignore: 타입 정의 임시 처리
+    navigation.navigate('FoodRecommendation', dummyFood);
+  };
   // 현재 표시할 추천 메뉴
   const currentRecommendation = tempRecommendations[currentRecommendationIndex];
 
@@ -181,29 +187,31 @@ const HomeScreen = () => {
                 <ArrowLeft />
               </ArrowButton>
 
-              <RecommendationCard>
-                <RecommendationImage
-                  source={{ uri: currentRecommendation.imageUrl }}
-                  resizeMode="cover"
-                />
-                <RecommendationInfo>
-                  <RecommendationName>{currentRecommendation.name}</RecommendationName>
-                  <RecommendationCalories>{currentRecommendation.calories} kcal</RecommendationCalories>
+              <TouchableOpacity onPress={navigateToFoodRecommendation} style={{flex: 1}}>
+                <RecommendationCard>
+                  <RecommendationImage
+                    source={{ uri: currentRecommendation.imageUrl }}
+                    resizeMode="cover"
+                  />
+                  <RecommendationInfo>
+                    <RecommendationName>{currentRecommendation.name}</RecommendationName>
+                    <RecommendationCalories>{currentRecommendation.calories} kcal</RecommendationCalories>
 
-                  <NutrientRow>
-                    <NutrientLabel>탄수화물</NutrientLabel>
-                    <NutrientValue color="#FD384C">{currentRecommendation.carbs}g</NutrientValue>
-                  </NutrientRow>
-                  <NutrientRow>
-                    <NutrientLabel>단백질</NutrientLabel>
-                    <NutrientValue color="#D95B72">{currentRecommendation.protein}g</NutrientValue>
-                  </NutrientRow>
-                  <NutrientRow>
-                    <NutrientLabel>지방</NutrientLabel>
-                    <NutrientValue color="#FD9E38">{currentRecommendation.fat}g</NutrientValue>
-                  </NutrientRow>
-                </RecommendationInfo>
-              </RecommendationCard>
+                    <NutrientRow>
+                      <NutrientLabel>탄수화물</NutrientLabel>
+                      <NutrientValue color="#FD384C">{currentRecommendation.carbs}g</NutrientValue>
+                    </NutrientRow>
+                    <NutrientRow>
+                      <NutrientLabel>단백질</NutrientLabel>
+                      <NutrientValue color="#D95B72">{currentRecommendation.protein}g</NutrientValue>
+                    </NutrientRow>
+                    <NutrientRow>
+                      <NutrientLabel>지방</NutrientLabel>
+                      <NutrientValue color="#FD9E38">{currentRecommendation.fat}g</NutrientValue>
+                    </NutrientRow>
+                  </RecommendationInfo>
+                </RecommendationCard>
+              </TouchableOpacity>
 
               <ArrowButton onPress={handleNextRecommendation}>
                 <ArrowRight />
@@ -273,7 +281,6 @@ const DateContainer = styled.View`
 const DateItem = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
-  width: 40px;
 `;
 
 const DayText = styled.Text`
