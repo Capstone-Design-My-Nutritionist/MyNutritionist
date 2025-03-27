@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2'; // 상단 import 추가
+import CommonHeader from '../../components/Common/CommonHeader';
 
 type RootStackParamList = {
   PasswordVerifyScreen: {
@@ -43,13 +44,7 @@ const PasswordVerifyScreen = () => {
 
   return (
     <>
-      <TitleWrapper>
-        <BackButton onPress={() => navigation.goBack()}>
-          <BackText>{'<'}</BackText>
-        </BackButton>
-        <Title>{route.params.title}</Title>
-        <TitleUnderline />
-      </TitleWrapper>
+      <CommonHeader title={route.params.title} />
       <Container>
         <LogoBox>
           <LogoText>Logo</LogoText>
@@ -81,39 +76,6 @@ const PasswordVerifyScreen = () => {
 };
 
 export default PasswordVerifyScreen;
-
-const BackButton = styled.TouchableOpacity`
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  justify-content: center;
-  align-items: center;
-`;
-
-const BackText = styled.Text`
-  color: #731a22;
-  font-size: 20px;
-`;
-
-const TitleWrapper = styled.View`
-  background-color: #ffffff;
-  padding-top: 11px;
-`;
-
-const Title = styled.Text`
-  font-size: 18px;
-  font-family: 'Pretendard-Bold';
-  color: #731a22;
-  text-align: center;
-  margin-bottom: 11px;
-`;
-
-const TitleUnderline = styled.View`
-  width: 100%;
-  height: 1.3px;
-  background-color: #731a22;
-  margin-bottom: 6px;
-`;
 
 const Container = styled.View`
   flex: 1;
