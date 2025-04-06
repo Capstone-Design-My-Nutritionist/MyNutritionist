@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {Modal, View} from 'react-native';
+import {Modal, View, Platform} from 'react-native';
 import styled from 'styled-components/native';
-import {Picker} from '@react-native-picker/picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 interface Props {
   visible: boolean;
@@ -11,6 +11,12 @@ interface Props {
   initialYear: string;
   initialMonth: string;
 }
+
+// DropDownPicker 아이템 타입 정의
+type DropdownItem = {
+  label: string;
+  value: string;
+};
 
 const DatePickerModal = ({
   visible,
@@ -22,6 +28,12 @@ const DatePickerModal = ({
 }: Props) => {
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  
+  // DropDownPicker에 필요한 상태
+  const [yearOpen, setYearOpen] = useState(false);
+  const [monthOpen, setMonthOpen] = useState(false);
+  const [yearItems, setYearItems] = useState<DropdownItem[]>([]);
+  const [monthItems, setMonthItems] = useState<DropdownItem[]>([]);
 
   useEffect(() => {
     setSelectedYear(initialYear);
@@ -30,10 +42,29 @@ const DatePickerModal = ({
 
   // 연도 배열 생성 (현재 연도 기준 -5년 ~ +5년)
   const currentYear = new Date().getFullYear();
-  const years = Array.from({length: 11}, (_, i) => (currentYear - 5 + i).toString());
+  const years = Array.from({length: 11}, (_, i) =>
+    (currentYear - 5 + i).toString(),
+  );
 
   // 월 배열 생성 (1~12월)
-  const months = Array.from({length: 12}, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const months = Array.from({length: 12}, (_, i) =>
+    (i + 1).toString().padStart(2, '0'),
+  );
+  
+  // DropDownPicker에 사용할 아이템 형식으로 변환
+  useEffect(() => {
+    const yearOptions: DropdownItem[] = years.map(year => ({
+      label: year + '년',
+      value: year,
+    }));
+    setYearItems(yearOptions);
+    
+    const monthOptions: DropdownItem[] = months.map(month => ({
+      label: month + '월',
+      value: month,
+    }));
+    setMonthItems(monthOptions);
+  }, []);
 
   return (
     <Modal
@@ -45,42 +76,38 @@ const DatePickerModal = ({
         <ModalContainer>
           <ModalTitle>{title}</ModalTitle>
           <DateRow>
-            <SelectBox>
-              <Picker
-                selectedValue={selectedYear}
-                onValueChange={(itemValue: string) =>
-                  setSelectedYear(itemValue)
-                }
-                mode="dropdown"
-                style={{
-                  width: '200%',
-                  height: 20,
-                  fontSize: 12,
-                }}
-                itemStyle={{fontSize: 13}}>
-                {years.map(year => (
-                  <Picker.Item key={year} label={year + '년'} value={year} />
-                ))}
-              </Picker>
-            </SelectBox>
-            <SelectBox>
-              <Picker
-                selectedValue={selectedMonth}
-                onValueChange={(itemValue: string) =>
-                  setSelectedMonth(itemValue)
-                }
-                mode="dropdown"
-                style={{
-                  width: '200%',
-                  height: 30,
-                  fontSize: 12,
-                }}
-                itemStyle={{fontSize: 13}}>
-                {months.map(month => (
-                  <Picker.Item key={month} label={month + '월'} value={month} />
-                ))}
-              </Picker>
-            </SelectBox>
+            <DropdownContainer>
+              <DropDownPicker
+                open={yearOpen}
+                value={selectedYear}
+                items={yearItems}
+                setOpen={setYearOpen}
+                setValue={setSelectedYear}
+                setItems={setYearItems}
+                style={dropdownStyle}
+                textStyle={dropdownTextStyle}
+                dropDownContainerStyle={dropdownContainerStyle}
+                zIndex={3000}
+                zIndexInverse={1000}
+                placeholder=""
+              />
+            </DropdownContainer>
+            <DropdownContainer>
+              <DropDownPicker
+                open={monthOpen}
+                value={selectedMonth}
+                items={monthItems}
+                setOpen={setMonthOpen}
+                setValue={setSelectedMonth}
+                setItems={setMonthItems}
+                style={dropdownStyle}
+                textStyle={dropdownTextStyle}
+                dropDownContainerStyle={dropdownContainerStyle}
+                zIndex={2000}
+                zIndexInverse={2000}
+                placeholder=""
+              />
+            </DropdownContainer>
           </DateRow>
           <ButtonRow>
             <PrimaryButton
@@ -99,6 +126,23 @@ const DatePickerModal = ({
 
 export default DatePickerModal;
 
+// DropDownPicker 스타일
+const dropdownStyle = {
+  backgroundColor: '#fff',
+  borderColor: '#cccccc',
+  height: 30,
+  minHeight: 30,
+};
+
+const dropdownTextStyle = {
+  fontSize: 13,
+  fontFamily: 'Pretendard-Medium',
+};
+
+const dropdownContainerStyle = {
+  borderColor: '#cccccc',
+};
+
 const Backdrop = styled.View`
   flex: 1;
   height: 100%;
@@ -114,7 +158,7 @@ const Backdrop = styled.View`
 const ModalContainer = styled.View`
   background-color: #fff;
   width: 280px;
-  height: 160px;
+  height: 180px;
   padding: 18px;
   border-radius: 12px;
   align-items: center;
@@ -124,7 +168,7 @@ const ModalContainer = styled.View`
 const ModalTitle = styled.Text`
   font-size: 14px;
   font-family: 'Pretendard-Bold';
-  color: #E44F68;
+  color: #e44f68;
 `;
 
 const DateRow = styled.View`
@@ -134,13 +178,8 @@ const DateRow = styled.View`
   gap: 10px;
 `;
 
-const SelectBox = styled.View`
-  border: 1px solid #cccccc;
-  border-radius: 8px;
+const DropdownContainer = styled.View`
   width: 100px;
-  height: 30px;
-  justify-content: center;
-  overflow: hidden;
 `;
 
 const ButtonRow = styled.View`
@@ -149,7 +188,7 @@ const ButtonRow = styled.View`
 `;
 
 const PrimaryButton = styled.TouchableOpacity`
-  background-color: #E44F68;
+  background-color: #e44f68;
   width: 80px;
   height: 28px;
   justify-content: center;
@@ -158,7 +197,7 @@ const PrimaryButton = styled.TouchableOpacity`
 `;
 
 const SecondaryButton = styled.TouchableOpacity`
-  border: 1px solid #E44F68;
+  border: 1px solid #e44f68;
   width: 80px;
   height: 28px;
   justify-content: center;
@@ -173,7 +212,7 @@ const ButtonText = styled.Text`
 `;
 
 const CancelText = styled.Text`
-  color: #E44F68;
+  color: #e44f68;
   font-size: 12px;
   font-family: 'Pretendard-Medium';
 `;

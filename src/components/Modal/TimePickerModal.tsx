@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {Modal, View} from 'react-native';
+import {Modal, View, Platform} from 'react-native';
 import styled from 'styled-components/native';
-import {Picker} from '@react-native-picker/picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 interface Props {
   visible: boolean;
@@ -11,6 +11,12 @@ interface Props {
   initialHour: string;
   initialMinute: string;
 }
+
+// DropDownPicker 아이템 타입 정의
+type DropdownItem = {
+  label: string;
+  value: string;
+};
 
 const TimePickerModal = ({
   visible,
@@ -22,11 +28,38 @@ const TimePickerModal = ({
 }: Props) => {
   const [selectedHour, setSelectedHour] = useState(initialHour);
   const [selectedMinute, setSelectedMinute] = useState(initialMinute);
+  
+  // DropDownPicker에 필요한 상태
+  const [hourOpen, setHourOpen] = useState(false);
+  const [minuteOpen, setMinuteOpen] = useState(false);
+  const [hourItems, setHourItems] = useState<DropdownItem[]>([]);
+  const [minuteItems, setMinuteItems] = useState<DropdownItem[]>([]);
 
   useEffect(() => {
     setSelectedHour(initialHour);
     setSelectedMinute(initialMinute);
   }, [initialHour, initialMinute]);
+  
+  // DropDownPicker에 사용할 아이템 형식으로 변환
+  useEffect(() => {
+    const hourOptions: DropdownItem[] = [...Array(24).keys()].map(hour => {
+      const value = hour.toString().padStart(2, '0');
+      return {
+        label: value,
+        value: value,
+      };
+    });
+    setHourItems(hourOptions);
+    
+    const minuteOptions: DropdownItem[] = [...Array(60).keys()].map(min => {
+      const value = min.toString().padStart(2, '0');
+      return {
+        label: value,
+        value: value,
+      };
+    });
+    setMinuteItems(minuteOptions);
+  }, []);
 
   return (
     <Modal
@@ -38,49 +71,39 @@ const TimePickerModal = ({
         <ModalContainer>
           <ModalTitle>{title}</ModalTitle>
           <TimeRow>
-            <SelectBox>
-              <Picker
-                selectedValue={selectedHour}
-                onValueChange={(itemValue: string) =>
-                  setSelectedHour(itemValue)
-                }
-                mode="dropdown"
-                style={{
-                  width: '200%',
-                  height: 20,
-                  fontSize: 12,
-                }}
-                itemStyle={{fontSize: 13}}>
-                {[...Array(24).keys()].map(hour => {
-                  const value = hour.toString().padStart(2, '0');
-                  return (
-                    <Picker.Item key={value} label={value} value={value} />
-                  );
-                })}
-              </Picker>
-            </SelectBox>
+            <DropdownContainer>
+              <DropDownPicker
+                open={hourOpen}
+                value={selectedHour}
+                items={hourItems}
+                setOpen={setHourOpen}
+                setValue={setSelectedHour}
+                setItems={setHourItems}
+                style={dropdownStyle}
+                textStyle={dropdownTextStyle}
+                dropDownContainerStyle={dropdownContainerStyle}
+                zIndex={3000}
+                zIndexInverse={1000}
+                placeholder=""
+              />
+            </DropdownContainer>
             <Label>시</Label>
-            <SelectBox>
-              <Picker
-                selectedValue={selectedMinute}
-                onValueChange={(itemValue: string) =>
-                  setSelectedMinute(itemValue)
-                }
-                mode="dropdown"
-                style={{
-                  width: '200%',
-                  height: 30,
-                  fontSize: 12,
-                }}
-                itemStyle={{fontSize: 13}}>
-                {[...Array(60).keys()].map(min => {
-                  const value = min.toString().padStart(2, '0');
-                  return (
-                    <Picker.Item key={value} label={value} value={value} />
-                  );
-                })}
-              </Picker>
-            </SelectBox>
+            <DropdownContainer>
+              <DropDownPicker
+                open={minuteOpen}
+                value={selectedMinute}
+                items={minuteItems}
+                setOpen={setMinuteOpen}
+                setValue={setSelectedMinute}
+                setItems={setMinuteItems}
+                style={dropdownStyle}
+                textStyle={dropdownTextStyle}
+                dropDownContainerStyle={dropdownContainerStyle}
+                zIndex={2000}
+                zIndexInverse={2000}
+                placeholder=""
+              />
+            </DropdownContainer>
             <Label>분</Label>
           </TimeRow>
           <ButtonRow>
@@ -100,6 +123,25 @@ const TimePickerModal = ({
 
 export default TimePickerModal;
 
+// DropDownPicker 스타일
+const dropdownStyle = {
+  backgroundColor: '#fff',
+  borderColor: '#cccccc',
+  height: 30,
+  minHeight: 30,
+  width: 67,
+};
+
+const dropdownTextStyle = {
+  fontSize: 13,
+  fontFamily: 'Pretendard-Medium',
+};
+
+const dropdownContainerStyle = {
+  borderColor: '#cccccc',
+  width: 67,
+};
+
 const Backdrop = styled.View`
   flex: 1;
   height: 100%;
@@ -115,7 +157,7 @@ const Backdrop = styled.View`
 const ModalContainer = styled.View`
   background-color: #fff;
   width: 280px;
-  height: 160px;
+  height: 180px;
   padding: 18px;
   border-radius: 12px;
   align-items: center;
@@ -133,13 +175,8 @@ const TimeRow = styled.View`
   align-items: center;
 `;
 
-const SelectBox = styled.View`
-  border: 1px solid #cccccc;
-  border-radius: 8px;
+const DropdownContainer = styled.View`
   width: 67px;
-  height: 30px;
-  justify-content: center;
-  overflow: hidden;
   margin-horizontal: 4px;
 `;
 
@@ -175,9 +212,11 @@ const SecondaryButton = styled.TouchableOpacity`
 const ButtonText = styled.Text`
   color: #fff;
   font-size: 12px;
+  font-family: 'Pretendard-Medium';
 `;
 
 const CancelText = styled.Text`
   color: #d95b72;
   font-size: 12px;
+  font-family: 'Pretendard-Medium';
 `;
