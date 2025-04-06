@@ -6,6 +6,7 @@ import {Shadow} from 'react-native-shadow-2'; // 상단 import 추가
 import CommonHeader from '../../components/Common/CommonHeader';
 
 type RootStackParamList = {
+  ProfileScreen: undefined;
   PasswordVerifyScreen: {
     nextScreen:
       | 'PasswordChangeScreen'
@@ -18,33 +19,45 @@ type RootStackParamList = {
   AccountDeleteScreen: undefined;
 };
 
-type Props = {
-  route: RouteProp<RootStackParamList, 'PasswordVerifyScreen'>;
-};
+type PasswordVerifyScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'PasswordVerifyScreen'
+>;
+
+type PasswordVerifyScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'PasswordVerifyScreen'
+>;
 
 const PasswordVerifyScreen = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const route =
-    useRoute<RouteProp<RootStackParamList, 'PasswordVerifyScreen'>>();
-  const {nextScreen} = route.params;
+  const navigation = useNavigation<PasswordVerifyScreenNavigationProp>();
+  const route = useRoute<PasswordVerifyScreenRouteProp>();
+  const {nextScreen, title} = route.params;
 
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleConfirm = () => {
-    if (!password.trim()) return;
+    if (!password.trim()) {
+      setError('비밀번호를 입력해주세요.');
+      return;
+    }
 
-    if (nextScreen === 'PasswordChangeScreen') {
-      navigation.navigate('PasswordChangeScreen');
-    } else if (nextScreen === 'NicknameChangeScreen') {
-      navigation.navigate('NicknameChangeScreen');
-    } else if (nextScreen === 'AccountDeleteScreen') {
-      navigation.navigate('AccountDeleteScreen');
+    // 여기서 실제로는 비밀번호 검증 로직이 들어가야 함
+    // 예시로 비밀번호가 '1234'라고 가정
+    if (password === '1234') {
+      setError('');
+      
+      // 다음 화면으로 이동
+      navigation.navigate(nextScreen);
+    } else {
+      setError('비밀번호가 일치하지 않습니다.');
     }
   };
 
   return (
     <>
-      <CommonHeader title={route.params.title} />
+      <CommonHeader title={title} />
       <Container>
         <LogoBox>
           <LogoText>Logo</LogoText>
@@ -69,6 +82,7 @@ const PasswordVerifyScreen = () => {
               </ConfirmButton>
             </Shadow>
           </InputRow>
+          {error ? <ErrorText>{error}</ErrorText> : null}
         </Form>
       </Container>
     </>
@@ -101,42 +115,49 @@ const LogoText = styled.Text`
 `;
 
 const Form = styled.View`
-  gap: 10px;
+  width: 100%;
 `;
 
 const Label = styled.Text`
-  font-family: 'Pretendard-Bold';
   font-size: 16px;
-  color: black;
-  margin-bottom: 5px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #070c26;
 `;
 
 const InputRow = styled.View`
-  flex-direction: row;
-  align-items: center;
+  width: 100%;
+  margin-bottom: 16px;
 `;
 
 const PasswordInput = styled.TextInput`
-  flex: 1;
-  height: 30px;
-  border: 1px solid black;
+  width: 100%;
+  height: 50px;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 0 8px;
-  font-size: 13px;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
 `;
 
 const ConfirmButton = styled.TouchableOpacity`
-  background-color: #d95b72;
-  margin-left: 8px;
-  padding: 0 12px;
-  height: 30px;
+  width: 100%;
+  height: 50px;
+  background-color: #e44f68;
+  border-radius: 8px;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
 `;
 
 const ConfirmText = styled.Text`
-  color: #fff;
-  font-size: 13px;
-  line-height: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+`;
+
+const ErrorText = styled.Text`
+  font-size: 14px;
+  color: #e44f68;
+  margin-top: -8px;
+  margin-bottom: 16px;
 `;

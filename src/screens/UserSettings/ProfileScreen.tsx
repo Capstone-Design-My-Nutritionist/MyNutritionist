@@ -9,6 +9,7 @@ import SurveySkipModal from '../../components/Modal/SurveySkipModal';
 import { resetSurveyState } from '../../utils/surveyUtils';
 
 type RootStackParamList = {
+  ProfileScreen: undefined;
   PasswordVerifyScreen: {
     nextScreen:
       | 'PasswordChangeScreen'
@@ -52,6 +53,7 @@ const ProfileScreen = () => {
     // 설문 상태 초기화
     await resetSurveyState();
     // 설문조사 첫 화면으로 이동
+    // @ts-ignore
     navigation.navigate('SurveyGenderScreen');
   };
 

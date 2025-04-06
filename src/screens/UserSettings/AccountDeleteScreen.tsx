@@ -18,7 +18,7 @@ const AccountDeleteScreen = () => {
 
   const handleConfirm = () => {
     if (confirmationText.trim() !== '회원을 탈퇴하겠습니다') {
-      setError(`잘못된 입력입니다.`);
+      setError(`"회원을 탈퇴하겠습니다"를 정확히 입력해주세요.`);
       return;
     }
 
@@ -29,55 +29,55 @@ const AccountDeleteScreen = () => {
   const handleSubmit = () => {
     setModalVisible(false);
     console.log('회원 탈퇴 완료');
+    // 회원 탈퇴 API 호출 등의 로직 추가
+    
+    // 탈퇴 완료 후 ProfileScreen으로 이동
     navigation.navigate('ProfileScreen');
   };
 
   return (
     <>
       <CommonHeader title="회원탈퇴" />
-
       <Container>
-        <LogoBox>
-          <LogoText>Logo</LogoText>
-        </LogoBox>
-
-        <Form>
+        <WarningContainer>
           <WarningTitle>정말로 떠나시겠습니까?</WarningTitle>
-          <WarningText>* "회원을 탈퇴하겠습니다"를 입력해주세요.</WarningText>
+          <WarningText>
+            회원 탈퇴 시 모든 개인정보와 설문조사 결과가 삭제됩니다.
+            이 작업은 되돌릴 수 없습니다.
+          </WarningText>
+          <WarningInstructions>
+            * 아래에 "회원을 탈퇴하겠습니다"를 입력해주세요.
+          </WarningInstructions>
+          
           <InputField
-            placeholder="떠나지 마요 ㅠㅠ..."
+            placeholder="회원을 탈퇴하겠습니다"
             value={confirmationText}
             onChangeText={setConfirmationText}
             underlineColorAndroid="transparent"
           />
           {error ? <ErrorText>{error}</ErrorText> : null}
 
-          <ButtonRow>
+          <ButtonContainer>
             <Shadow
               distance={4}
               offset={[0, 2]}
               startColor="rgba(0, 0, 0, 0.05)"
-              style={{borderRadius: 8}}>
-              <PrimaryButton onPress={handleConfirm}>
-                <ButtonText>탈퇴하기</ButtonText>
-              </PrimaryButton>
+              style={{width: '100%', borderRadius: 8, marginTop: 20}}>
+              <DeleteButton onPress={handleConfirm}>
+                <DeleteButtonText>탈퇴하기</DeleteButtonText>
+              </DeleteButton>
             </Shadow>
-            <Shadow
-              distance={4}
-              offset={[0, 2]}
-              startColor="rgba(0, 0, 0, 0.05)"
-              style={{borderRadius: 8}}>
-              <SecondaryButton onPress={() => navigation.goBack()}>
-                <CancelText>취소</CancelText>
-              </SecondaryButton>
-            </Shadow>
-          </ButtonRow>
-        </Form>
+            
+            <CancelButton onPress={() => navigation.goBack()}>
+              <CancelButtonText>취소하고 돌아가기</CancelButtonText>
+            </CancelButton>
+          </ButtonContainer>
+        </WarningContainer>
       </Container>
 
       <ConfirmModal
         visible={modalVisible}
-        message="정말로 탈퇴하시겠습니까?"
+        message="정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다."
         confirmText="탈퇴하기"
         cancelText="취소"
         onConfirm={handleSubmit}
@@ -92,92 +92,83 @@ export default AccountDeleteScreen;
 const Container = styled.View`
   flex: 1;
   background-color: #fff;
-  padding: 61px 90px;
+  padding: 20px;
 `;
 
-const LogoBox = styled.View`
-  width: 160px;
-  height: 40px;
-  border: 1px solid #000;
-  border-radius: 12px;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  margin-bottom: 40px;
+const WarningContainer = styled.View`
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #ffcccc;
+  border-radius: 8px;
+  background-color: #fff9f9;
 `;
-
-const LogoText = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: black;
-`;
-
-const Form = styled.View``;
 
 const WarningTitle = styled.Text`
-  font-family: 'Pretendard-Bold';
-  font-size: 15px;
-  color: #000000;
+  font-size: 20px;
+  font-weight: bold;
+  color: #e44f68;
+  margin-bottom: 16px;
   text-align: center;
-  margin-bottom: 4px;
 `;
 
 const WarningText = styled.Text`
-  font-size: 10px;
-  color: #ff0707;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 24px;
   text-align: center;
-  margin-bottom: 8px;
+`;
+
+const WarningInstructions = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  color: #e44f68;
+  margin-bottom: 12px;
 `;
 
 const InputField = styled.TextInput`
-  height: 30px;
-  border: 1px solid black;
+  width: 100%;
+  height: 50px;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 0 8px;
-  font-size: 13px;
-  margin-bottom: 4px;
+  padding: 0 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
 `;
 
 const ErrorText = styled.Text`
-  font-size: 10px;
-  color: #ff0707;
-  margin-bottom: 5px;
-  text-align: center;
+  font-size: 14px;
+  color: #e44f68;
+  margin-bottom: 16px;
 `;
 
-const ButtonRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: 4px;
+const ButtonContainer = styled.View`
+  width: 100%;
+  align-items: center;
 `;
 
-const PrimaryButton = styled.TouchableOpacity`
-  background-color: #d95b72;
-  width: 100px;
-  height: 30px;
+const DeleteButton = styled.TouchableOpacity`
+  width: 100%;
+  height: 50px;
+  background-color: #e44f68;
+  border-radius: 8px;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
 `;
 
-const SecondaryButton = styled.TouchableOpacity`
-  background-color: white;
-  border: 1px solid #d95b72;
-  width: 100px;
-  height: 30px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
+const DeleteButtonText = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
 `;
 
-const ButtonText = styled.Text`
-  color: #fff;
-  font-size: 13px;
-  line-height: 20px;
+const CancelButton = styled.TouchableOpacity`
+  margin-top: 16px;
+  padding: 8px;
 `;
 
-const CancelText = styled.Text`
-  color: #d95b72;
-  font-size: 13px;
-  line-height: 20px;
+const CancelButtonText = styled.Text`
+  font-size: 16px;
+  color: #666;
+  text-decoration: underline;
 `;

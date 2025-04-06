@@ -20,10 +20,15 @@ const NicknameChangeScreen = () => {
   const duplicateNicknames = ['홍길동', 'admin'];
 
   const handleCheckDuplicate = () => {
+    if (!nickname.trim()) {
+      setError('닉네임을 입력해주세요.');
+      return;
+    }
+    
     if (duplicateNicknames.includes(nickname.trim())) {
       setError('해당 닉네임은 이미 사용중입니다.');
     } else {
-      setError('');
+      setError('사용 가능한 닉네임입니다.');
       // 실제로는 서버에 중복 확인 API 호출해야 함
     }
   };
@@ -46,18 +51,16 @@ const NicknameChangeScreen = () => {
   const handleSubmit = () => {
     setModalVisible(false);
     console.log('닉네임 변경 완료');
+    // 닉네임 변경 API 호출 등의 로직 추가
+    
+    // 변경 완료 후 ProfileScreen으로 이동
     navigation.navigate('ProfileScreen');
   };
 
   return (
     <>
       <CommonHeader title="닉네임 변경" />
-
       <Container>
-        <LogoBox>
-          <LogoText>Logo</LogoText>
-        </LogoBox>
-
         <Form>
           <Label>새 닉네임</Label>
           <InputRow>
@@ -77,38 +80,27 @@ const NicknameChangeScreen = () => {
             </Shadow>
           </InputRow>
 
-          {error ? <ErrorText>{error}</ErrorText> : null}
+          {error ? <ErrorText style={{color: error.includes('사용 가능') ? '#4CAF50' : '#e44f68'}}>{error}</ErrorText> : null}
 
-          <ButtonRow>
-            <Shadow
-              distance={4}
-              offset={[0, 2]}
-              startColor="rgba(0, 0, 0, 0.05)"
-              style={{borderRadius: 8}}>
-              <PrimaryButton onPress={handleConfirm}>
-                <ButtonText>확인</ButtonText>
-              </PrimaryButton>
-            </Shadow>
-            <Shadow
-              distance={4}
-              offset={[0, 2]}
-              startColor="rgba(0, 0, 0, 0.05)"
-              style={{borderRadius: 8}}>
-              <SecondaryButton onPress={() => navigation.goBack()}>
-                <CancelText>취소</CancelText>
-              </SecondaryButton>
-            </Shadow>
-          </ButtonRow>
+          <Shadow
+            distance={4}
+            offset={[0, 2]}
+            startColor="rgba(0, 0, 0, 0.05)"
+            style={{width: '100%', borderRadius: 8, marginTop: 20}}>
+            <ConfirmButton onPress={handleConfirm}>
+              <ConfirmText>변경하기</ConfirmText>
+            </ConfirmButton>
+          </Shadow>
         </Form>
       </Container>
 
       <ConfirmModal
         visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        onConfirm={handleSubmit}
         message="닉네임을 변경하시겠습니까?"
-        confirmText="변경하기"
+        confirmText="변경"
         cancelText="취소"
+        onConfirm={handleSubmit}
+        onCancel={() => setModalVisible(false)}
       />
     </>
   );
@@ -116,114 +108,70 @@ const NicknameChangeScreen = () => {
 
 export default NicknameChangeScreen;
 
-const BackText = styled.Text`
-  font-size: 20px;
-  color: #731a22;
-`;
-
 const Container = styled.View`
   flex: 1;
   background-color: #fff;
-  padding: 61px 60px;
+  padding: 20px;
 `;
 
-const LogoBox = styled.View`
-  width: 160px;
-  height: 40px;
-  border: 1px solid #000;
-  border-radius: 12px;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  margin-bottom: 40px;
+const Form = styled.View`
+  width: 100%;
 `;
-
-const LogoText = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: black;
-`;
-
-const Form = styled.View``;
 
 const Label = styled.Text`
-  font-family: 'Pretendard-Bold';
   font-size: 16px;
-  color: black;
-  margin-bottom: 5px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #070c26;
 `;
 
 const InputRow = styled.View`
   flex-direction: row;
   align-items: center;
+  margin-bottom: 16px;
 `;
 
 const NicknameInput = styled.TextInput`
   flex: 1;
-  height: 30px;
-  border: 1px solid #000;
+  height: 50px;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 0 8px;
-  font-size: 13px;
-  margin-bottom: 4px;
+  padding: 0 16px;
+  font-size: 14px;
+  margin-right: 8px;
 `;
 
 const CheckButton = styled.TouchableOpacity`
-  background-color: #d95b72;
-  margin-left: 8px;
-  padding: 0 8px;
-  height: 30px;
+  background-color: #e44f68;
+  padding: 0 16px;
+  height: 50px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  margin-bottom: 4px;
 `;
 
 const CheckText = styled.Text`
-  color: #fff;
-  font-size: 13px;
-  line-height: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
 `;
 
 const ErrorText = styled.Text`
-  font-size: 10px;
-  color: #ff0707;
-  margin-bottom: 5px;
+  font-size: 14px;
+  margin-bottom: 16px;
 `;
 
-const ButtonRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: 4px;
-`;
-
-const PrimaryButton = styled.TouchableOpacity`
-  background-color: #d95b72;
-  width: 130px;
-  height: 30px;
+const ConfirmButton = styled.TouchableOpacity`
+  width: 100%;
+  height: 50px;
+  background-color: #e44f68;
+  border-radius: 8px;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
 `;
 
-const SecondaryButton = styled.TouchableOpacity`
-  background-color: white;
-  border: 1px solid #d95b72;
-  width: 130px;
-  height: 30px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-`;
-
-const ButtonText = styled.Text`
-  color: #fff;
-  font-size: 13px;
-  line-height: 20px;
-`;
-
-const CancelText = styled.Text`
-  color: #d95b72;
-  font-size: 13px;
-  line-height: 20px;
+const ConfirmText = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
 `;

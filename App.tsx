@@ -7,6 +7,13 @@ import FoodRecommendation from './src/screens/Main/FoodRecommendationScreen';
 import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen'; // 경로는 네이밍에 맞게 조정
 import MealRecords from './src/screens/Main/MealRecordsScreen';
 import MealDetails from './src/screens/Calendar/MealDetailsScreen';
+import FoodUploadScreen from './src/screens/FoodUpload/FoodUploadScreen';
+import FoodUploadResultScreen from './src/screens/FoodUpload/FoodUploadResultScreen';
+import ProfileScreen from './src/screens/UserSettings/ProfileScreen';
+import PasswordVerifyScreen from './src/screens/UserSettings/PasswordVerifyScreen';
+import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
+import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
+import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
 
 // Survey Screens
 import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
@@ -34,6 +41,47 @@ import SurveySmokingScreen from './src/screens/Survey/SurveySmokingScreen';
 import SurveyDrinkScreen from './src/screens/Survey/SurveyDrinkScreen';
 
 const Stack = createNativeStackNavigator();
+const FoodUploadStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
+
+const FoodUploadNavigator = () => {
+  return (
+    <FoodUploadStack.Navigator 
+      initialRouteName="FoodUploadResultScreen"
+      screenOptions={{headerShown: false}}>
+      <FoodUploadStack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
+      <FoodUploadStack.Screen
+        name="FoodUploadResultScreen"
+        component={FoodUploadResultScreen}
+      />
+    </FoodUploadStack.Navigator>
+  );
+};
+
+const ProfileNavigator = () => {
+  return (
+    <ProfileStack.Navigator screenOptions={{headerShown: false}}>
+      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <ProfileStack.Screen
+        name="PasswordVerifyScreen"
+        component={PasswordVerifyScreen}
+        options={{headerShown: false}}
+      />
+      <ProfileStack.Screen
+        name="PasswordChangeScreen"
+        component={PasswordChangeScreen}
+      />
+      <ProfileStack.Screen
+        name="NicknameChangeScreen"
+        component={NicknameChangeScreen}
+      />
+      <ProfileStack.Screen
+        name="AccountDeleteScreen"
+        component={AccountDeleteScreen}
+      />
+    </ProfileStack.Navigator>
+  );
+};
 
 const App = () => {
   return (
@@ -47,6 +95,8 @@ const App = () => {
         <Stack.Screen name="SupplementDetails" component={SupplementDetails} /> 
         <Stack.Screen name="MealRecord" component={MealRecords} />
         <Stack.Screen name="MealDetails" component={MealDetails} />
+        <Stack.Screen name="FoodUpload" component={FoodUploadNavigator} />
+        <Stack.Screen name="Profile" component={ProfileNavigator} />
         
         {/* 설문조사 화면 */}
         <Stack.Screen name="SurveyGenderScreen" component={SurveyGenderScreen} />
