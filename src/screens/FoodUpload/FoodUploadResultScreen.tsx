@@ -1,103 +1,107 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {Image} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import CommonHeader from '../../components/Common/CommonHeader';
 import MultiNutrientProgressBar from '../../components/Progress/MultiProgressBar';
 import FoodNutrientCard from '../../components/Common/FoodNutrientCard';
+import {dummyMealRecord} from '../../data/dummyMealRecordData';
 
 const FoodUploadResultScreen = () => {
   const [amount, setAmount] = useState('');
   const [unit, setUnit] = useState('g');
   const [mealType, setMealType] = useState('아침');
-  const [selectedFood, setSelectedFood] = useState('돼지국밥');
+  const [mealData] = useState(dummyMealRecord);
 
   return (
     <>
       <CommonHeader title="음식 사진 업로드" />
 
-      <FoodImage
-        source={{
-          uri: 'https://health.chosun.com/site/data/img_dir/2023/11/03/2023110302298_0.jpg',
-        }}
-      />
+      <FoodImage source={{uri: mealData.mainFood.imageUrl}} />
 
       <Container>
-        <TitleRow>
-          <FoodTitle>{selectedFood}</FoodTitle>
+        <TitleContainer>
+          <TitleRow>
+            <FoodTitle>{mealData.mainFood.name}</FoodTitle>
 
-          <PickerWrapper>
-            <Picker
-              selectedValue={mealType}
-              onValueChange={(value: string) => setMealType(value)}
-              mode="dropdown"
-              style={{width: 50, height: 24}}>
-              <Picker.Item label="아침" value="아침" />
-              <Picker.Item label="점심" value="점심" />
-              <Picker.Item label="저녁" value="저녁" />
-            </Picker>
-          </PickerWrapper>
-        </TitleRow>
+            <PickerWrapper>
+              <Picker
+                selectedValue={mealType}
+                onValueChange={(value: string) => setMealType(value)}
+                mode="dropdown"
+                style={{width: 50, height: 24}}>
+                <Picker.Item label="아침" value="아침" />
+                <Picker.Item label="점심" value="점심" />
+                <Picker.Item label="저녁" value="저녁" />
+              </Picker>
+            </PickerWrapper>
+          </TitleRow>
 
-        <AltFoodRow>
-          <AltFoodButton>
-            <AltFoodText>육개장</AltFoodText>
-          </AltFoodButton>
-          <AltFoodButton>
-            <AltFoodText>김치찌개</AltFoodText>
-          </AltFoodButton>
-          <AltFoodButton>
-            <AltFoodText>순대국밥</AltFoodText>
-          </AltFoodButton>
-          <AltFoodButton>
-            <AltFoodText>음식 직접 검색하기 🔍</AltFoodText>
-          </AltFoodButton>
-        </AltFoodRow>
+          <AltFoodRow>
+            <AltFoodButton>
+              <AltFoodText>육개장</AltFoodText>
+            </AltFoodButton>
+            <AltFoodButton>
+              <AltFoodText>김치찌개</AltFoodText>
+            </AltFoodButton>
+            <AltFoodButton>
+              <AltFoodText>순대국밥</AltFoodText>
+            </AltFoodButton>
+            <AltFoodButton>
+              <AltFoodText>음식 직접 검색하기 🔍</AltFoodText>
+            </AltFoodButton>
+          </AltFoodRow>
 
-        <SummaryRow>
-          <SummaryLabel>총 섭취량</SummaryLabel>
-          <KcalText>938kcal</KcalText>
-        </SummaryRow>
+          <SummaryRow>
+            <SummaryLabel>총 섭취량</SummaryLabel>
+            <KcalText>{mealData.mainFood.kcal}kcal</KcalText>
+          </SummaryRow>
 
-        <MultiNutrientProgressBar
-          carbohydrate={10.4}
-          fat={83.4}
-          protein={45.1}
-        />
+          <MultiNutrientProgressBar
+            carbohydrate={mealData.mainFood.carbs}
+            fat={mealData.mainFood.fat}
+            protein={mealData.mainFood.protein}
+          />
+        </TitleContainer>
 
         <Divider />
+
         <Scroll>
           <FoodNutrientCard
-            foodName="돼지국밥"
-            servingInfo={'1인분 200g\n933kcal'}
-            nutrients={[
-              {label: '콜레스테롤', value: '79.4 mg'},
-              {label: '나트륨', value: '1152.8 mg'},
-            ]}
+            foodName={mealData.mainFood.name}
+            servingInfo={
+              mealData.mainFood.serving + '\n' + `${mealData.mainFood.kcal}kcal`
+            }
+            nutrients={Object.entries(mealData.mainFood.nutrients).map(
+              ([label, value]) => ({
+                label,
+                value,
+              }),
+            )}
             unit="g"
             inputValue={amount}
             onUnitChange={setUnit}
             onInputChange={setAmount}
             onInput={() => console.log('입력')}
-            showRemoveButton={false}
           />
-          <Divider />
+          <BoldDivider />
           <FoodNutrientCard
-            foodName="김치"
-            servingInfo={'1인분 200g\n933kcal'}
-            nutrients={[
-              {label: '콜레스테롤', value: '79.4 mg'},
-              {label: '나트륨', value: '1152.8 mg'},
-            ]}
+            foodName={mealData.mainFood.name}
+            servingInfo={
+              mealData.mainFood.serving + '\n' + `${mealData.mainFood.kcal}kcal`
+            }
+            nutrients={Object.entries(mealData.mainFood.nutrients).map(
+              ([label, value]) => ({
+                label,
+                value,
+              }),
+            )}
             unit="g"
             inputValue={amount}
             onUnitChange={setUnit}
             onInputChange={setAmount}
             onInput={() => console.log('입력')}
-            showRemoveButton={false}
           />
-
-          <Divider />
+          <BoldDivider />
 
           <MealTypeRow>
             <MealTypeLabel>추가 음식</MealTypeLabel>
@@ -105,6 +109,7 @@ const FoodUploadResultScreen = () => {
           </MealTypeRow>
         </Scroll>
 
+        <Divider />
         <BottomButtons>
           <SubmitButton>
             <SubmitText>제출</SubmitText>
@@ -131,12 +136,13 @@ const Container = styled.View`
   margin-top: -20px;
   border-radius: 12px;
   background-color: #fff;
+`;
+
+const TitleContainer = styled.View`
   padding: 20px;
 `;
 
-const Scroll = styled.ScrollView`
-  padding-top: 20px;
-`;
+const Scroll = styled.ScrollView``;
 
 const TitleRow = styled.View`
   flex-direction: row;
@@ -198,15 +204,21 @@ const KcalText = styled.Text`
 const Divider = styled.View`
   height: 1px;
   background-color: rgba(115, 26, 34, 0.5);
-  margin-vertical: 16px;
+  margin-horizontal: -20px;
+`;
+
+const BoldDivider = styled.View`
+  height: 6px;
+  background-color: rgba(115, 26, 34, 0.5);
+  margin-top: px;
   margin-horizontal: -20px;
 `;
 
 const MealTypeRow = styled.View`
+  padding: 20px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 40px;
 `;
 
 const MealTypeLabel = styled.Text`
@@ -227,10 +239,9 @@ const SearchInput = styled.TextInput`
 
 const BottomButtons = styled.View`
   flex-direction: row;
-  justify-content: space-around;
-  padding: 16px;
-  border-top-width: 1px;
-  border-color: #eee;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 95px;
 `;
 
 const SubmitButton = styled.TouchableOpacity`
