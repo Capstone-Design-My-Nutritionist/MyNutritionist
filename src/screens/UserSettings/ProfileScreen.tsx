@@ -5,9 +5,12 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2';
 import CustomToggle from '../../components/Toggle/CustomToggle';
 import TimePickerModal from '../../components/Modal/TimePickerModal';
+import SurveySkipModal from '../../components/Modal/SurveySkipModal';
+import {resetSurveyState} from '../../utils/surveyUtils';
 import RightArrowIcon from '../../components/Icon/RightArrowIcon';
 
 type RootStackParamList = {
+  ProfileScreen: undefined;
   PasswordVerifyScreen: {
     nextScreen:
       | 'PasswordChangeScreen'
@@ -18,6 +21,7 @@ type RootStackParamList = {
   PasswordChangeScreen: undefined;
   NicknameChangeScreen: undefined;
   AccountDeleteScreen: undefined;
+  SurveyGenderScreen: undefined;
 };
 
 const ProfileScreen = () => {
@@ -43,6 +47,15 @@ const ProfileScreen = () => {
     if (selectedTimeType === 'lunch') setLunchTime({hour, minute});
     if (selectedTimeType === 'dinner') setDinnerTime({hour, minute});
     setModalVisible(false);
+  };
+
+  // 설문조사 다시하기 핸들러
+  const handleRestartSurvey = async () => {
+    // 설문 상태 초기화
+    await resetSurveyState();
+    // 설문조사 첫 화면으로 이동
+    // @ts-ignore
+    navigation.navigate('SurveyGenderScreen');
   };
 
   return (
@@ -123,7 +136,14 @@ const ProfileScreen = () => {
               ].map((item, index) => (
                 <Touchable
                   key={index}
-                  onPress={() => console.log(`${item} 클릭됨`)}>
+                  onPress={() => {
+                    if (index === 0) {
+                      // 설문조사 다시하기
+                      handleRestartSurvey();
+                    } else {
+                      console.log(`${item} 클릭됨`);
+                    }
+                  }}>
                   <TextRow>
                     <TextLabel>{item}</TextLabel>
                     <RowRight>

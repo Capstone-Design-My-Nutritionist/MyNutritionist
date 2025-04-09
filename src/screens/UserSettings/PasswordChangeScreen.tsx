@@ -35,62 +35,52 @@ const PasswordChangeScreen = () => {
   const handleSubmit = () => {
     setModalVisible(false);
     console.log('비밀번호 변경 완료');
+    // 비밀번호 변경 API 호출 등의 로직 추가
+    
+    // 변경 완료 후 ProfileScreen으로 이동
     navigation.navigate('ProfileScreen');
   };
 
   return (
     <>
       <CommonHeader title="비밀번호 변경" />
-
       <Container>
-        <LogoBox>
-          <LogoText>Logo</LogoText>
-        </LogoBox>
-
         <Form>
-          <Label>새 비밀번호</Label>
-          <InputField
-            value={password}
-            onChangeText={setPassword}
-            placeholder="새 비밀번호를 입력해주세요."
-            secureTextEntry
-          />
-          <InputField
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            placeholder="다시 한 번 더 입력해주세요."
-            secureTextEntry
-          />
-
+          <InputGroup>
+            <Label>새 비밀번호</Label>
+            <Input
+              placeholder="새 비밀번호를 입력해주세요"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+          </InputGroup>
+          <InputGroup>
+            <Label>새 비밀번호 확인</Label>
+            <Input
+              placeholder="새 비밀번호를 다시 입력해주세요"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+          </InputGroup>
           {error ? <ErrorText>{error}</ErrorText> : null}
-
-          <ButtonRow>
-            <Shadow
-              distance={4}
-              offset={[0, 2]}
-              startColor="rgba(0, 0, 0, 0.05)"
-              style={{borderRadius: 8}}>
-              <PrimaryButton onPress={handleConfirm}>
-                <ButtonText>확인</ButtonText>
-              </PrimaryButton>
-            </Shadow>
-            <Shadow
-              distance={4}
-              offset={[0, 2]}
-              startColor="rgba(0, 0, 0, 0.05)"
-              style={{borderRadius: 8}}>
-              <SecondaryButton onPress={() => navigation.goBack()}>
-                <CancelText>취소</CancelText>
-              </SecondaryButton>
-            </Shadow>
-          </ButtonRow>
+          <Shadow
+            distance={4}
+            offset={[0, 2]}
+            startColor="rgba(0, 0, 0, 0.05)"
+            style={{width: '100%', borderRadius: 8, marginTop: 20}}>
+            <ConfirmButton onPress={handleConfirm}>
+              <ConfirmText>변경하기</ConfirmText>
+            </ConfirmButton>
+          </Shadow>
         </Form>
       </Container>
 
       <ConfirmModal
         visible={modalVisible}
         message="비밀번호를 변경하시겠습니까?"
-        confirmText="변경하기"
+        confirmText="변경"
         cancelText="취소"
         onConfirm={handleSubmit}
         onCancel={() => setModalVisible(false)}
@@ -104,82 +94,50 @@ export default PasswordChangeScreen;
 const Container = styled.View`
   flex: 1;
   background-color: #fff;
-  padding: 61px 90px;
+  padding: 20px;
 `;
 
-const LogoBox = styled.View`
-  width: 160px;
-  height: 40px;
-  border: 1px solid #000;
-  border-radius: 12px;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  margin-bottom: 40px;
+const Form = styled.View`
+  width: 100%;
 `;
 
-const LogoText = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: black;
+const InputGroup = styled.View`
+  margin-bottom: 20px;
 `;
-
-const Form = styled.View``;
 
 const Label = styled.Text`
-  font-family: 'Pretendard-Bold';
   font-size: 16px;
-  color: black;
-  margin-bottom: 4px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #070c26;
 `;
 
-const InputField = styled.TextInput`
-  height: 30px;
-  border: 1px solid black;
+const Input = styled.TextInput`
+  width: 100%;
+  height: 50px;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 0 8px;
-  font-size: 13px;
-  margin-bottom: 4px;
+  padding: 0 16px;
+  font-size: 14px;
 `;
 
 const ErrorText = styled.Text`
-  font-size: 10px;
-  color: #ff0707;
-  margin-bottom: 5px;
+  font-size: 14px;
+  color: #e44f68;
+  margin-bottom: 16px;
 `;
 
-const ButtonRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: 4px;
-`;
-
-const PrimaryButton = styled.TouchableOpacity`
-  background-color: #d95b72;
-  width: 100px;
-  height: 30px;
+const ConfirmButton = styled.TouchableOpacity`
+  width: 100%;
+  height: 50px;
+  background-color: #e44f68;
+  border-radius: 8px;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
-`;
-const ButtonText = styled.Text`
-  color: #fff;
-  font-size: 13px;
-  line-height: 20px;
 `;
 
-const SecondaryButton = styled.TouchableOpacity`
-  border: 1px solid #d95b72;
-  background-color: white;
-  width: 100px;
-  height: 30px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-`;
-
-const CancelText = styled.Text`
-  color: #d95b72;
-  font-size: 13px;
-  line-height: 20px;
+const ConfirmText = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
 `;
