@@ -1,10 +1,11 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2';
 import CustomToggle from '../../components/Toggle/CustomToggle';
 import TimePickerModal from '../../components/Modal/TimePickerModal';
+import RightArrowIcon from '../../components/Icon/RightArrowIcon';
 
 type RootStackParamList = {
   PasswordVerifyScreen: {
@@ -73,7 +74,7 @@ const ProfileScreen = () => {
                 }>
                 <TextRow>
                   <TextLabel>비밀번호 변경</TextLabel>
-                  <Arrow>＞</Arrow>
+                  <RightArrowIcon />
                 </TextRow>
               </Touchable>
               <Touchable
@@ -85,7 +86,7 @@ const ProfileScreen = () => {
                 }>
                 <TextRow>
                   <TextLabel>닉네임 변경</TextLabel>
-                  <Arrow>＞</Arrow>
+                  <RightArrowIcon />
                 </TextRow>
               </Touchable>
               <Touchable
@@ -97,7 +98,7 @@ const ProfileScreen = () => {
                 }>
                 <TextRow>
                   <TextLabel>회원탈퇴</TextLabel>
-                  <Arrow>＞</Arrow>
+                  <RightArrowIcon />
                 </TextRow>
               </Touchable>
             </Card>
@@ -127,7 +128,7 @@ const ProfileScreen = () => {
                     <TextLabel>{item}</TextLabel>
                     <RowRight>
                       <RecentDate>최근 진행 2025.01.01</RecentDate>
-                      <Arrow>＞</Arrow>
+                      <RightArrowIcon />
                     </RowRight>
                   </TextRow>
                 </Touchable>
@@ -151,6 +152,7 @@ const ProfileScreen = () => {
                   onToggle={() => setIsPushEnabled(prev => !prev)}
                 />
               </PushRow>
+
               <TouchableWrapper
                 onPress={() => isPushEnabled && openTimeModal('morning')}
                 disabled={!isPushEnabled}>
@@ -162,7 +164,7 @@ const ProfileScreen = () => {
                     <TimeText isPushEnabled={isPushEnabled}>
                       {morningTime.hour}:{morningTime.minute}
                     </TimeText>
-                    <Arrow isPushEnabled={isPushEnabled}>＞</Arrow>
+                    <RightArrowIcon disabled={!isPushEnabled} />
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
@@ -178,7 +180,7 @@ const ProfileScreen = () => {
                     <TimeText isPushEnabled={isPushEnabled}>
                       {lunchTime.hour}:{lunchTime.minute}
                     </TimeText>
-                    <Arrow isPushEnabled={isPushEnabled}>＞</Arrow>
+                    <RightArrowIcon disabled={!isPushEnabled} />
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
@@ -194,7 +196,7 @@ const ProfileScreen = () => {
                     <TimeText isPushEnabled={isPushEnabled}>
                       {dinnerTime.hour}:{dinnerTime.minute}
                     </TimeText>
-                    <Arrow isPushEnabled={isPushEnabled}>＞</Arrow>
+                    <RightArrowIcon disabled={!isPushEnabled} />
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
@@ -289,6 +291,7 @@ const Value = styled.Text`
   color: #d95b72;
 `;
 const Touchable = styled.TouchableOpacity``;
+const TouchableWrapper = styled.TouchableOpacity``;
 const TextRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
@@ -300,15 +303,6 @@ const TextLabel = styled.Text`
   font-family: 'Pretendard-Regular';
   color: #070c26;
 `;
-const TouchableWrapper = styled.TouchableOpacity``;
-interface ArrowProps {
-  isPushEnabled?: boolean;
-}
-const Arrow = styled.Text<ArrowProps>(({isPushEnabled = true}) => ({
-  color: isPushEnabled ? '#d95b72' : '#999999',
-  fontSize: 14,
-  marginLeft: 8,
-}));
 const RecentDate = styled.Text`
   font-size: 12px;
   color: #d95b72;
@@ -331,13 +325,11 @@ const TimeRow = styled.View`
 interface TimeProps {
   isPushEnabled: boolean;
 }
-
 const TimeLabel = styled.Text<TimeProps>(({isPushEnabled}: TimeProps) => ({
   fontSize: 14,
   fontFamily: 'Pretendard-Regular',
   color: isPushEnabled ? '#070c26' : '#999999',
 }));
-
 const TimeText = styled.Text<TimeProps>(({isPushEnabled}: TimeProps) => ({
   fontSize: 12,
   color: isPushEnabled ? '#d95b72' : '#999999',

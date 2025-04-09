@@ -44,7 +44,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="FoodUploadResultScreen"
+        initialRouteName="ProfileScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
         <Stack.Screen
