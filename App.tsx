@@ -102,7 +102,7 @@ const App = () => {
         <Stack.Screen name="MealRecord" component={MealRecords} />
         <Stack.Screen name="MealDetails" component={MealDetails} />
         <Stack.Screen name="FoodUpload" component={FoodUploadNavigator} />
-        <Stack.Screen name="Profile" component={ProfileNavigator} />
+        <Stack.Screen name="ProfileStack" component={ProfileNavigator} />
 
         {/* 설문조사 화면 */}
         <Stack.Screen

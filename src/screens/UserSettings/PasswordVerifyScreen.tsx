@@ -47,7 +47,7 @@ const PasswordVerifyScreen = () => {
     // 예시로 비밀번호가 '1234'라고 가정
     if (password === '1234') {
       setError('');
-      
+
       // 다음 화면으로 이동
       navigation.navigate(nextScreen);
     } else {

@@ -25,7 +25,7 @@ type RootStackParamList = {
 };
 
 const ProfileScreen = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<any>();
   const [isPushEnabled, setIsPushEnabled] = useState(true);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -80,9 +80,12 @@ const ProfileScreen = () => {
               </InfoRow>
               <Touchable
                 onPress={() =>
-                  navigation.navigate('PasswordVerifyScreen', {
-                    nextScreen: 'PasswordChangeScreen',
-                    title: '비밀번호 변경',
+                  navigation.navigate('ProfileStack', {
+                    screen: 'PasswordVerifyScreen',
+                    params: {
+                      nextScreen: 'PasswordChangeScreen',
+                      title: '비밀번호 변경',
+                    },
                   })
                 }>
                 <TextRow>
@@ -92,9 +95,12 @@ const ProfileScreen = () => {
               </Touchable>
               <Touchable
                 onPress={() =>
-                  navigation.navigate('PasswordVerifyScreen', {
-                    nextScreen: 'NicknameChangeScreen',
-                    title: '닉네임 변경',
+                  navigation.navigate('ProfileStack', {
+                    screen: 'PasswordVerifyScreen',
+                    params: {
+                      nextScreen: 'NicknameChangeScreen',
+                      title: '닉네임 변경',
+                    },
                   })
                 }>
                 <TextRow>
@@ -104,9 +110,12 @@ const ProfileScreen = () => {
               </Touchable>
               <Touchable
                 onPress={() =>
-                  navigation.navigate('PasswordVerifyScreen', {
-                    nextScreen: 'AccountDeleteScreen',
-                    title: '회원탈퇴',
+                  navigation.navigate('ProfileStack', {
+                    screen: 'PasswordVerifyScreen',
+                    params: {
+                      nextScreen: 'AccountDeleteScreen',
+                      title: '회원탈퇴',
+                    },
                   })
                 }>
                 <TextRow>
