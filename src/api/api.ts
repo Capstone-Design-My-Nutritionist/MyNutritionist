@@ -1,11 +1,13 @@
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import {API_URL} from '../utils/env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const API_ENDPOINTS = {
   //이 부분은 나중에 백엔드랑 연동할 때 수정 - endpoint 잘보기
   GET_SUPPLEMENTS: `${API_URL}/supplements`,
   GET_FOOD_HISTORY: `${API_URL}/food-history`,
   GET_PROGRESSBAR: `${API_URL}/progress-bar`,
+  CREATE_SURVEY: `${API_URL}/surveys`,
 };
 
 // 영양제 추천 카드 백엔드 연동 부분
@@ -83,4 +85,52 @@ export const fetchProgressBar = async () => {
     }
     return []; // 오류 발생 시 빈 배열 반환
   }
+};
+
+// 설문 생성
+export const createSurvey = async (): Promise<number> => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const response = await axios.post(
+    `${API_URL}/surveys`,
+    {},
+    {
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  const surveyId = response.data?.data?.id ?? response.data?.data;
+  if (!surveyId) throw new Error('❌ surveyId 없음');
+  return surveyId;
+};
+
+// 설문 항목 저장
+export const patchSurveyAnswer = async (
+  surveyId: number,
+  field: string,
+  value: any,
+) => {
+  const token = await AsyncStorage.getItem('accessToken');
+
+  const url = `${API_URL}/surveys/${surveyId}/${field}`;
+  const body = {[field]: value};
+
+  console.log('📡 PATCH 요청 정보:', {
+    url,
+    body,
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const response = await axios.patch(url, body, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
 };

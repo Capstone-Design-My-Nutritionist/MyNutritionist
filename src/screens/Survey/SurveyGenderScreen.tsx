@@ -9,6 +9,9 @@ import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
+import {createSurvey} from '../../api/api';
+import {setSurveyId, submitSurveyAnswer} from '../../utils/surveyUtils';
+
 type RootStackParamList = {
   SurveyGenderScreen: undefined;
   SurveyAgeScreen: undefined;
@@ -23,27 +26,39 @@ const SurveyGenderScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedGender) {
-      console.log('Navigating to SurveyAgeScreen...');
+  const genderMap: {[key: string]: string} = {
+    남성: 'MALE',
+    여성: 'FEMALE',
+  };
+
+  const handleNext = async () => {
+    if (!selectedGender) return;
+
+    try {
+      const mappedGender = genderMap[selectedGender];
+
+      // 1. 설문 생성
+      const surveyId = await createSurvey();
+      await setSurveyId(surveyId);
+      console.log('생성된 surveyId:', surveyId);
+
+      // 2. gender 답변 저장
+      await submitSurveyAnswer('gender', mappedGender);
+
+      // 3. 다음 화면으로 이동
       navigation.navigate('SurveyAgeScreen');
+    } catch (error) {
+      console.error('❌ 설문 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 사용 */}
       <SurveyHeader title="기본 정보" skipTarget="SurveyAgeScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={1 / 24} />
       </ProgressBarContainer>
-
-      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="성별을 알려주세요." />
-
-      {/* 성별 선택 버튼 */}
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
@@ -58,8 +73,6 @@ const SurveyGenderScreen = () => {
           />
         </ButtonContainer>
       </ButtonWrapper>
-
-      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -71,7 +84,6 @@ const SurveyGenderScreen = () => {
 
 export default SurveyGenderScreen;
 
-// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

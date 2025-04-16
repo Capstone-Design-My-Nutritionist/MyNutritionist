@@ -1,12 +1,42 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {patchSurveyAnswer} from '../api/api';
+
+export const setSurveyId = async (id: number): Promise<void> => {
+  await AsyncStorage.setItem('survey_id', String(id));
+};
+
+export const getSurveyId = async (): Promise<number> => {
+  const id = await AsyncStorage.getItem('survey_id');
+  if (!id) throw new Error('❌ surveyId가 존재하지 않습니다.');
+  return Number(id);
+};
+
+export const submitSurveyAnswer = async (
+  field: string,
+  value: any,
+  surveyIdOverride?: number,
+): Promise<void> => {
+  const id = surveyIdOverride ?? (await getSurveyId());
+
+  console.log('📤 [submitSurveyAnswer] 전달 값:', {
+    surveyId: id,
+    field,
+    value,
+  });
+
+  try {
+    await patchSurveyAnswer(id, field, value);
+    console.log(`✅ ${field} 저장 완료`);
+  } catch (e) {
+    console.error('❌ patchSurveyAnswer 실패:', e);
+  }
+};
 
 /**
- * 설문조사 상태를 초기화하는 함수
- * AsyncStorage에 저장된 모든 설문 관련 데이터를 삭제합니다.
+ * 설문 상태 초기화
  */
 export const resetSurveyState = async (): Promise<void> => {
   try {
-    // 설문 관련 키 목록 (필요에 따라 추가)
     const surveyKeys = [
       'survey_gender',
       'survey_age',
@@ -27,40 +57,38 @@ export const resetSurveyState = async (): Promise<void> => {
       'survey_smoking',
       'survey_drink',
       'survey_last_completed',
+      'survey_id', // 이 라인도 추가!
     ];
 
-    // 모든 설문 관련 키 삭제
     const promises = surveyKeys.map(key => AsyncStorage.removeItem(key));
     await Promise.all(promises);
-    
-    console.log('설문조사 상태가 초기화되었습니다.');
+    console.log('설문조사 상태 초기화 완료');
   } catch (error) {
-    console.error('설문조사 상태 초기화 중 오류 발생:', error);
+    console.error('설문조사 초기화 중 오류 발생:', error);
     throw error;
   }
 };
 
 /**
- * 설문조사 완료 시간을 저장하는 함수
+ * 마지막 설문 완료 시간 저장
  */
 export const saveSurveyCompletionTime = async (): Promise<void> => {
   try {
     const currentDate = new Date().toISOString();
     await AsyncStorage.setItem('survey_last_completed', currentDate);
   } catch (error) {
-    console.error('설문조사 완료 시간 저장 중 오류 발생:', error);
+    console.error('설문 완료 시간 저장 실패:', error);
   }
 };
 
 /**
- * 마지막 설문조사 완료 시간을 가져오는 함수
- * @returns {Promise<string | null>} 마지막 설문조사 완료 시간 (ISO 문자열) 또는 null
+ * 마지막 설문 완료 시간 조회
  */
 export const getLastSurveyCompletionTime = async (): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem('survey_last_completed');
   } catch (error) {
-    console.error('마지막 설문조사 완료 시간 조회 중 오류 발생:', error);
+    console.error('마지막 완료 시간 조회 실패:', error);
     return null;
   }
 };
