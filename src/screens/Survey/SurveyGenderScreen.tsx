@@ -11,6 +11,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
 import {createSurvey} from '../../api/api';
 import {setSurveyId, submitSurveyAnswer} from '../../utils/surveyUtils';
+import {getOrCreateSurvey} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyGenderScreen: undefined;
@@ -37,15 +38,12 @@ const SurveyGenderScreen = () => {
     try {
       const mappedGender = genderMap[selectedGender];
 
-      // 1. 설문 생성
-      const surveyId = await createSurvey();
-      await setSurveyId(surveyId);
-      console.log('생성된 surveyId:', surveyId);
+      // ✅ 설문 ID 생성 or 가져오기
+      const surveyId = await getOrCreateSurvey();
 
-      // 2. gender 답변 저장
-      await submitSurveyAnswer('gender', mappedGender);
+      // ✅ 성별 저장
+      await submitSurveyAnswer('gender', mappedGender, surveyId);
 
-      // 3. 다음 화면으로 이동
       navigation.navigate('SurveyAgeScreen');
     } catch (error) {
       console.error('❌ 설문 저장 실패:', error);

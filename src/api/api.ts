@@ -90,20 +90,37 @@ export const fetchProgressBar = async () => {
 // 설문 생성
 export const createSurvey = async (): Promise<number> => {
   const token = await AsyncStorage.getItem('accessToken');
-  const response = await axios.post(
-    `${API_URL}/surveys`,
-    {},
-    {
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json',
-      },
-    },
-  );
+  console.log('🪪 토큰:', token);
 
-  const surveyId = response.data?.data?.id ?? response.data?.data;
-  if (!surveyId) throw new Error('❌ surveyId 없음');
-  return surveyId;
+  try {
+    const response = await axios.post(
+      `${API_URL}/surveys`,
+      {},
+      {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    console.log('📦 설문 생성 응답:', response.data);
+
+    const surveyId = response.data?.data?.id ?? response.data?.data;
+    if (!surveyId) throw new Error('❌ surveyId 없음');
+    return surveyId;
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      console.error('❌ createSurvey AxiosError:', {
+        status: error.response?.status,
+        message: error.response?.data?.message,
+        data: error.response?.data,
+      });
+    } else {
+      console.error('❌ Unknown error:', String(error));
+    }
+    throw error;
+  }
 };
 
 // 설문 항목 저장

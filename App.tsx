@@ -3,6 +3,8 @@ import {setTestAccessToken} from './src/utils/setTestToken';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Navigation from './src/navigation/Navigation';
+import LoginScreen from './src/screens/Auth/LoginScreen';
+import SignUpScreen from './src/screens/Auth/SignUpScreen';
 import NutritionDetails from './src/screens/Main/NutritionDetailsScreen';
 import FoodRecommendation from './src/screens/Main/FoodRecommendationScreen';
 import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen'; // 경로는 네이밍에 맞게 조정
@@ -44,6 +46,12 @@ import SurveyDrinkScreen from './src/screens/Survey/SurveyDrinkScreen';
 const Stack = createNativeStackNavigator();
 const FoodUploadStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
+
+export type RootStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
+  Main: undefined;
+};
 
 const FoodUploadNavigator = () => {
   return (
@@ -94,6 +102,10 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
+        {/* 로그인 관련 */}
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        {/* <Stack.Screen name="Main" component={MainScreen} /> */}
         {/* 전체 탭 네비게이션 구조 */}
         <Stack.Screen name="Main" component={Navigation} />
         {/* 탭 외의 상세 페이지는 여기에서 관리 */}
