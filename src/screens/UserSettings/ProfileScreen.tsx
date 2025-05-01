@@ -64,7 +64,10 @@ const ProfileScreen = () => {
         <TitleUnderline />
       </TitleWrapper>
 
-      <Container>
+      <Container 
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
         <SectionTitle>정보수정</SectionTitle>
         <ShadowWrapper>
           <Shadow
@@ -277,6 +280,7 @@ const Container = styled.ScrollView`
   flex: 1;
   background-color: #fffbfb;
   padding: 14px;
+  padding-bottom: 80px;
 `;
 const SectionTitle = styled.Text`
   font-family: 'Pretendard-Bold';
