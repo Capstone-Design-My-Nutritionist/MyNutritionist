@@ -402,7 +402,7 @@ const SummaryHeader = styled.View`
 
 const DateInfoText = styled.Text`
   font-family: 'Pretendard-SemiBold';
-  font-size: 9px;
+  font-size: 12px;
   color: #8E8E8E;
 `;
 
