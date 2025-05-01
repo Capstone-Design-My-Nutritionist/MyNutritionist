@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Shadow} from 'react-native-shadow-2';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import CustomToggle from '../../components/Toggle/CustomToggle';
 import TimePickerModal from '../../components/Modal/TimePickerModal';
 import SurveySkipModal from '../../components/Modal/SurveySkipModal';
@@ -89,7 +90,7 @@ const ProfileScreen = () => {
                 }>
                 <TextRow>
                   <TextLabel>비밀번호 변경</TextLabel>
-                  <Arrow>＞</Arrow>
+                  <Icon name="chevron-right" size={16} color="#d95b72" />
                 </TextRow>
               </Touchable>
               <Touchable
@@ -101,7 +102,7 @@ const ProfileScreen = () => {
                 }>
                 <TextRow>
                   <TextLabel>닉네임 변경</TextLabel>
-                  <Arrow>＞</Arrow>
+                  <Icon name="chevron-right" size={16} color="#d95b72" />
                 </TextRow>
               </Touchable>
               <Touchable
@@ -113,7 +114,7 @@ const ProfileScreen = () => {
                 }>
                 <TextRow>
                   <TextLabel>회원탈퇴</TextLabel>
-                  <Arrow>＞</Arrow>
+                  <Icon name="chevron-right" size={16} color="#d95b72" />
                 </TextRow>
               </Touchable>
             </Card>
@@ -150,7 +151,7 @@ const ProfileScreen = () => {
                     <TextLabel>{item}</TextLabel>
                     <RowRight>
                       <RecentDate>최근 진행 2025.01.01</RecentDate>
-                      <Arrow>＞</Arrow>
+                      <Icon name="chevron-right" size={16} color="#d95b72" />
                     </RowRight>
                   </TextRow>
                 </Touchable>
@@ -185,7 +186,11 @@ const ProfileScreen = () => {
                     <TimeText isPushEnabled={isPushEnabled}>
                       {morningTime.hour}:{morningTime.minute}
                     </TimeText>
-                    <Arrow isPushEnabled={isPushEnabled}>＞</Arrow>
+                    <Icon 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isPushEnabled ? '#d95b72' : '#999999'} 
+                    />
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
@@ -201,7 +206,11 @@ const ProfileScreen = () => {
                     <TimeText isPushEnabled={isPushEnabled}>
                       {lunchTime.hour}:{lunchTime.minute}
                     </TimeText>
-                    <Arrow isPushEnabled={isPushEnabled}>＞</Arrow>
+                    <Icon 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isPushEnabled ? '#d95b72' : '#999999'} 
+                    />
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
@@ -217,7 +226,11 @@ const ProfileScreen = () => {
                     <TimeText isPushEnabled={isPushEnabled}>
                       {dinnerTime.hour}:{dinnerTime.minute}
                     </TimeText>
-                    <Arrow isPushEnabled={isPushEnabled}>＞</Arrow>
+                    <Icon 
+                      name="chevron-right" 
+                      size={16} 
+                      color={isPushEnabled ? '#d95b72' : '#999999'} 
+                    />
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
@@ -325,14 +338,7 @@ const TextLabel = styled.Text`
   color: #070c26;
 `;
 const TouchableWrapper = styled.TouchableOpacity``;
-interface ArrowProps {
-  isPushEnabled?: boolean;
-}
-const Arrow = styled.Text<ArrowProps>(({isPushEnabled = true}) => ({
-  color: isPushEnabled ? '#d95b72' : '#999999',
-  fontSize: 14,
-  marginLeft: 8,
-}));
+
 const RecentDate = styled.Text`
   font-size: 12px;
   color: #d95b72;
