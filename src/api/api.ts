@@ -98,7 +98,7 @@ export const createSurvey = async (): Promise<number> => {
       {},
       {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`, // ✅ 여기만 수정!
           'Content-Type': 'application/json',
         },
       },
