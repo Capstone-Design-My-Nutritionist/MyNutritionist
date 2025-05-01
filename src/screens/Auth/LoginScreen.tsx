@@ -5,7 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../../App'; // App.tsx 경로에 따라 조정
+import {RootStackParamList} from '../../../App';
+import {API_URL} from '../../utils/env';
 
 const LoginScreen = () => {
   const navigation =
@@ -22,22 +23,29 @@ const LoginScreen = () => {
     }
 
     try {
-      const response = await axios.post('https://your-api.com/login', {
+      console.log('📤 로그인 요청:', {email, password});
+
+      const response = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });
 
-      const token = response.data?.token;
+      console.log('✅ 로그인 응답:', response.data);
+
+      const token = response.headers['authorization']?.replace('Bearer ', '');
 
       if (token) {
         await AsyncStorage.setItem('accessToken', token);
-        console.log('✅ 로그인 성공, 토큰 저장 완료');
+        console.log('🔐 토큰 저장 완료:', token);
         setErrorMsg('');
-        navigation.replace('Main'); // 로그인 성공 → Main 화면으로 이동
+        Alert.alert('로그인 성공', '메인 화면으로 이동합니다.');
+        navigation.replace('Main');
       } else {
-        setErrorMsg('로그인 실패: 서버 응답 오류');
+        console.warn('❗ 응답 헤더에 토큰 없음:', response.headers);
+        setErrorMsg('로그인 실패: 토큰이 응답되지 않았습니다.');
       }
     } catch (error: any) {
+      console.log('❌ 로그인 에러:', error.response?.data || error.message);
       if (error.response?.status === 401) {
         setErrorMsg('이메일 또는 비밀번호가 올바르지 않습니다.');
       } else {

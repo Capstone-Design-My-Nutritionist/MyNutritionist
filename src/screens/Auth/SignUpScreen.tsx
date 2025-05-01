@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../App';
+import {API_URL} from '../../utils/env';
 
 const SignUpScreen = () => {
   const [name, setName] = useState('');
@@ -51,22 +52,45 @@ const SignUpScreen = () => {
       return;
     }
 
+    console.log('📤 보낸 회원가입 데이터:', {email, password, nickname});
+
     try {
-      const res = await axios.post('https://your-api.com/signup', {
+      // 1. 회원가입 요청
+      const signupRes = await axios.post(`${API_URL}/users/signup`, {
         email,
         password,
         nickname,
       });
 
-      const token = res.data?.token;
-      if (token) {
-        await AsyncStorage.setItem('accessToken', token);
-        Alert.alert('회원가입 완료', '로그인 상태로 이동합니다.');
-        // TODO: navigation.replace('Main') 등으로 이동
+      console.log('✅ 회원가입 응답:', signupRes.data);
+
+      if (signupRes.data?.success === true) {
+        console.log('✅ 회원가입 성공 → 로그인 시도');
+
+        // 2. 로그인 요청
+        const loginRes = await axios.post(`${API_URL}/auth/login`, {
+          email,
+          password,
+        });
+
+        console.log('✅ 로그인 응답:', loginRes.data);
+
+        // 로그인 응답에서 success만 확인하고 토큰 저장은 생략
+        if (loginRes.data?.success === true) {
+          Alert.alert('회원가입 완료', '로그인 화면으로 이동합니다.');
+          navigation.replace('Login'); // 또는 replace('Main') 도 가능
+        } else {
+          Alert.alert('로그인 실패', '로그인 중 문제가 발생했습니다.');
+        }
       } else {
-        Alert.alert('오류', '회원가입 후 토큰이 발급되지 않았습니다.');
+        Alert.alert(
+          '회원가입 실패',
+          signupRes.data?.message ?? '회원가입에 실패했습니다.',
+        );
       }
     } catch (err: any) {
+      console.log('❌ 에러:', err.response?.data || err.message);
+
       if (err.response?.status === 409) {
         Alert.alert('회원가입 실패', '이미 존재하는 이메일 또는 닉네임입니다.');
       } else {
@@ -74,7 +98,6 @@ const SignUpScreen = () => {
       }
     }
   };
-
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
