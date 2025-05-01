@@ -1,7 +1,8 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Platform} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import styled from 'styled-components/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeScreen from '../screens/Main/HomeScreen';
 import SupplementRecommendationScreen from '../screens/Supplement/SupplementRecommendationScreen';
@@ -9,58 +10,41 @@ import UploadScreen from '../screens/FoodUpload/FoodUploadScreen';
 import CalendarScreen from '../screens/Calendar/CalendarScreen';
 import ProfileScreen from '../screens/UserSettings/ProfileScreen';
 
-import HomeIcon from '../assets/icons/HomeIcon.svg';
-import SupplementIcon from '../assets/icons/SupplementIcon.svg';
-import UploadIcon from '../assets/icons/UploadIcon.svg';
-import CalendarIcon from '../assets/icons/CalendarIcon.svg';
-import ProfileIcon from '../assets/icons/ProfileIcon.svg';
-
-import {SvgProps} from 'react-native-svg';
-
 const Tab = createBottomTabNavigator();
+
+// Define colors
+const ACTIVE_COLOR = '#BF0404';  // Reddish tone for active tab
+const INACTIVE_COLOR = '#9E9E9E'; // Gray tone for inactive tabs
+const UPLOAD_BUTTON_COLOR = '#E44F68'; // Keeping the original upload button color
 
 const Navigation = () => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
-        tabBarShowLabel: false,
+        tabBarShowLabel: route.name !== 'Upload',
+        tabBarLabelStyle: styles.tabBarLabel,
         tabBarStyle: styles.tabBar,
-        tabBarIcon: ({focused}) => {
-          const icons: {[key: string]: React.FC<SvgProps>} = {
-            Home: HomeIcon,
-            Supplements: SupplementIcon,
-            Upload: UploadIcon,
-            Calendar: CalendarIcon,
-            Profile: ProfileIcon,
-          };
+        tabBarActiveTintColor: ACTIVE_COLOR,
+        tabBarInactiveTintColor: INACTIVE_COLOR,
+        tabBarIcon: ({focused, color, size}) => {
+          // Map route names to icon names from MaterialCommunityIcons
+          const iconName: string = {
+            Home: 'home',
+            Supplements: 'shopping',
+            Upload: 'plus',
+            Calendar: 'calendar-month',
+            Profile: 'account',
+          }[route.name] || '';
 
-          const sizes: {[key: string]: {width: number; height: number}} = {
-            Home: {width: 30, height: 25},
-            Supplements: {width: 32, height: 28},
-            Upload: {width: 28, height: 28},
-            Calendar: {width: 26, height: 25},
-            Profile: {width: 24, height: 25},
-          };
-
-          const Icon = icons[route.name];
-          const color =
-            route.name === 'Upload'
-              ? '#E44F68'
-              : focused
-              ? '#BF0404'
-              : '#D9D9D9';
-
-          const size = sizes[route.name];
-
-          // Upload 자리에는 빈 View를 리턴해서 정렬 유지
+          // Upload button placeholder
           if (route.name === 'Upload') {
             return <View style={{width: 70}} />;
           }
 
           return (
-            <IconWrapper>
-              <Icon width={size.width} height={size.height} fill={color} />
+            <IconWrapper focused={focused}>
+              <Icon name={iconName} size={26} color={color} />
             </IconWrapper>
           );
         },
@@ -74,10 +58,11 @@ const Navigation = () => {
         name="Upload"
         component={UploadScreen}
         options={{
+          tabBarLabel: () => null,
           tabBarIcon: () => (
             <UploadButtonContainer>
               <UploadButton>
-                <UploadIcon width={58} height={58} />
+                <Icon name="camera-plus" size={32} color="#FFFFFF" />
               </UploadButton>
             </UploadButtonContainer>
           ),
@@ -98,13 +83,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderTopWidth: 0,
     elevation: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+  },
+  tabBarLabel: {
+    fontSize: 10,
+    marginBottom: 5,
+    fontWeight: '500',
   },
 });
 
-const IconWrapper = styled.View`
+const IconWrapper = styled.View<{focused: boolean}>`
   align-items: center;
   justify-content: center;
   height: 50px;
+  padding-top: 10px;
+  opacity: ${(props: {focused: boolean}) => (props.focused ? 1 : 0.8)};
 `;
 
 const UploadButtonContainer = styled.View`
@@ -120,7 +117,7 @@ const UploadButtonContainer = styled.View`
 const UploadButton = styled.View`
   width: 70px;
   height: 70px;
-  background-color: #e44f68;
+  background-color: ${UPLOAD_BUTTON_COLOR};
   border-radius: 35px;
   justify-content: center;
   align-items: center;
