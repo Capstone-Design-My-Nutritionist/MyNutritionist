@@ -9,6 +9,8 @@ import ProgressBar from '../../components/ProgressBar';
 import SurveyInputField from '../../components/TextInputBox/SurveyInputField';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
+import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
+
 type RootStackParamList = {
   SurveyHeightScreen: undefined;
   SurveyWeightScreen: undefined;
@@ -24,27 +26,26 @@ const SurveyWeightScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [weight, setWeight] = useState<number | null>(null);
 
-  const handleNext = () => {
-    if (weight !== null) {
-      console.log('Navigating to NextSurveyScreen... Weight:', weight);
+  const handleNext = async () => {
+    if (weight === null) return;
+
+    try {
+      const surveyId = await getOrCreateSurvey();
+      await submitSurveyAnswer('weight', weight, surveyId);
+      console.log('✅ 몸무게 저장 완료:', weight);
       navigation.navigate('SurveyMedicationOkScreen');
+    } catch (error) {
+      console.error('❌ 몸무게 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 */}
       <SurveyHeader title="기본 정보" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={4 / 24} />
       </ProgressBarContainer>
-
-      {/* 질문 텍스트 */}
       <SurveyTitle text="몸무게를 입력해주세요." />
-
-      {/* 입력 필드 */}
       <InputWrapper>
         <SurveyInputField
           label=""
@@ -55,8 +56,6 @@ const SurveyWeightScreen = () => {
         />
         <UnitText>kg</UnitText>
       </InputWrapper>
-
-      {/* 버튼 그룹 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
