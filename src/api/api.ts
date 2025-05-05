@@ -152,6 +152,18 @@ export const patchSurveyAnswer = async (
     body = value; // { supplements: [...] }
   }
 
+  // diagnosed-disease-status
+  if (field === 'diagnosed-disease-status') {
+    url = `${API_URL}/surveys/${surveyId}/diagnosed-disease-status`;
+    body = value; // { hasDiagnosedDisease: true/false }
+  }
+
+  // diseases
+  if (field === 'diseases') {
+    url = `${API_URL}/surveys/${surveyId}/diseases`;
+    body = value; // { diseases: [...] }
+  }
+
   console.log('📡 PATCH 요청 정보:', {
     url,
     body,

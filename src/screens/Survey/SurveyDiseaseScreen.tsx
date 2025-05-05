@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+// ✅ SurveyDiseaseScreen.tsx 연동 완료 버전
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -8,6 +9,8 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyDiseaseOkScreen: undefined;
@@ -20,18 +23,17 @@ type NavigationProps = StackNavigationProp<
   'SurveyDiseaseScreen'
 >;
 
-const diseaseOptions = [
-  '당뇨병',
-  '고혈압',
-  '고지혈증',
-  '갑상선 질환',
-  '골다공증',
-  '빈혈',
-  '위장 장애',
-  '간 질환',
-  '신장 질환',
-  '해당 없음',
-];
+const diseaseOptions: {[k: string]: string} = {
+  당뇨병: 'DIABETES',
+  고혈압: 'HYPERTENSION',
+  고지혈증: 'HYPERLIPIDEMIA',
+  '갑상선 질환': 'THYROID_DISEASE',
+  골다공증: 'OSTEOPOROSIS',
+  빈혈: 'ANEMIA',
+  '위장 장애': 'GASTRIC_DISORDER',
+  '간 질환': 'LIVER_DISEASE',
+  '신장 질환': 'KIDNEY_DISEASE',
+};
 
 const SurveyDiseaseScreen = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -43,39 +45,45 @@ const SurveyDiseaseScreen = () => {
     );
   };
 
-  const handleNext = () => {
-    console.log('Selected diseases:', selectedDiseases);
+  const handleNext = async () => {
+    if (selectedDiseases.includes('해당 없음')) {
+      await submitSurveyAnswer('diseases', {diseases: []});
+    } else {
+      const diseaseCodes = selectedDiseases
+        .map(label => diseaseOptions[label])
+        .filter(code => !!code); // 필터링 안전 장치
+
+      await submitSurveyAnswer('diseases', {diseases: diseaseCodes});
+    }
+
     navigation.navigate('SurveyFamilyHistoryOkScreen');
   };
 
   return (
     <Container>
-      {/* 헤더 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={10 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 */}
       <SurveyTitle text="진단받은 질환을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* 버튼 목록 */}
       <ButtonGrid>
-        {diseaseOptions.map(item => (
-          <ButtonSpacing key={item}>
-            <MultiSelectButton
-              title={item}
-              isSelected={selectedDiseases.includes(item)}
-              onPress={() => toggleDisease(item)}
-            />
-          </ButtonSpacing>
-        ))}
+        {Object.keys(diseaseOptions)
+          .concat('해당 없음')
+          .map(item => (
+            <ButtonSpacing key={item}>
+              <MultiSelectButton
+                title={item}
+                isSelected={selectedDiseases.includes(item)}
+                onPress={() => toggleDisease(item)}
+              />
+            </ButtonSpacing>
+          ))}
       </ButtonGrid>
 
-      {/* 버튼 그룹 */}
       <SurveyButtonGroupWrapper>
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}

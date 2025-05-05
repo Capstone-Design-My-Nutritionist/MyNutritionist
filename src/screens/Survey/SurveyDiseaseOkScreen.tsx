@@ -9,6 +9,8 @@ import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
+import {submitSurveyAnswer} from '../../utils/surveyUtils'; // ✅ 추가된 부분
+
 type RootStackParamList = {
   SurveySupplementScreen: undefined;
   SurveyDiseaseOkScreen: undefined;
@@ -24,27 +26,31 @@ const SurveyDiseaseOkScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('SurveyDiseaseScreen'); // 다음 화면으로 이동
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    try {
+      // ✅ 서버에 PATCH 요청
+      await submitSurveyAnswer('diagnosed-disease-status', {
+        hasDiagnosedDisease: selectedOption === '예',
+      });
+      console.log('✅ 질환 여부 저장 완료');
+      navigation.navigate('SurveyDiseaseScreen');
+    } catch (error) {
+      console.error('❌ 질환 여부 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 사용 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={9 / 24} />
       </ProgressBarContainer>
 
-      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="현재 진단받은 질환이 있나요?" />
 
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
@@ -60,7 +66,6 @@ const SurveyDiseaseOkScreen = () => {
         </ButtonContainer>
       </ButtonWrapper>
 
-      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
