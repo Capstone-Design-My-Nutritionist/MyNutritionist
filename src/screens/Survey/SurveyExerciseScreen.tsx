@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveySleepTimeScreen: undefined;
@@ -30,31 +31,51 @@ const exerciseOptionsBottom = [
   '매일\n\n활동적이거나\n운동선수',
 ];
 
+const mapExerciseToEnum = (label: string): string => {
+  switch (label) {
+    case '거의 하지 않음':
+      return 'NONE';
+    case '1~3회\n\n가벼운 운동':
+      return 'LIGHT_1_3';
+    case '3~5회\n\n보통강도':
+      return 'MODERATE_3_5';
+    case '6~7회\n\n강도높은 운동':
+      return 'INTENSE_6_7';
+    case '매일\n\n활동적이거나\n운동선수':
+      return 'DAILY_ACTIVE';
+    default:
+      return '';
+  }
+};
+
 const SurveyExerciseScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Selected exercise frequency:', selectedOption);
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    const exerciseEnum = mapExerciseToEnum(selectedOption);
+    try {
+      await submitSurveyAnswer('exerciseFrequency', {
+        exerciseFrequency: exerciseEnum,
+      });
       navigation.navigate('SurveyMealScreen');
+    } catch (error) {
+      console.error('❌ 운동 빈도 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={16 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 */}
       <SurveyTitle text="주당 운동 빈도는 어떻게 되시나요?" />
 
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonRow>
           {exerciseOptionsTop.map(option => (
@@ -80,7 +101,6 @@ const SurveyExerciseScreen = () => {
         </ButtonRow>
       </ButtonWrapper>
 
-      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

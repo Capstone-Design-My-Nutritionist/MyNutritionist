@@ -194,6 +194,42 @@ export const patchSurveyAnswer = async (
     body = value; // { sleepTime: 'UNDER_5_HOURS' }
   }
 
+  // exerciseFrequency
+  if (field === 'exerciseFrequency') {
+    url = `${API_URL}/surveys/${surveyId}/exercise-frequency`;
+    body = value; // { exerciseFrequency: 'NONE' }
+  }
+
+  // meal-count
+  if (field === 'meal-count') {
+    url = `${API_URL}/surveys/${surveyId}/meal-count`;
+    body = value; // { mealCount: number }
+  }
+
+  // vegetable-fruit-intake
+  if (field === 'vegetable-fruit-intake') {
+    url = `${API_URL}/surveys/${surveyId}/vegetable-fruit-intake`;
+    body = value; // { vegetableFruitIntake: 'RARELY' | 'SOMETIMES' | 'DAILY' }
+  }
+
+  // water-intake
+  if (field === 'water-intake') {
+    url = `${API_URL}/surveys/${surveyId}/water-intake`;
+    body = value; // { waterIntake: 'UNDER_1L' | 'ONE_TO_TWO_L' | 'OVER_2L' }
+  }
+
+  // drinking
+  if (field === 'drinking') {
+    url = `${API_URL}/surveys/${surveyId}/drinking`;
+    body = value; // { drinking: 'NEVER' | 'SOMETIMES' | 'ONE_TWO_WEEKLY' | 'THREE_MORE_WEEKLY' }
+  }
+
+  // smoking
+  if (field === 'smoking') {
+    url = `${API_URL}/surveys/${surveyId}/smoking`;
+    body = value; // { smoking: 'NON_SMOKER' | 'PAST_SMOKER' | 'CURRENT_SMOKER' }
+  }
+
   console.log('📡 PATCH 요청 정보:', {
     url,
     body,
