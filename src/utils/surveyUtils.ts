@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSurvey, patchSurveyAnswer} from '../api/api';
 import axios from 'axios';
+import {API_URL} from './env';
 
 /** 설문 ID 저장 */
 export const setSurveyId = async (id: number): Promise<void> => {
@@ -15,47 +16,53 @@ export const getSurveyId = async (): Promise<number> => {
 };
 
 /** 설문 생성 또는 기존 설문 ID 반환 */
-export const getOrCreateSurvey = async (): Promise<number> => {
-  const existingId = await AsyncStorage.getItem('survey_id');
-  if (existingId) {
-    console.log('📦 기존 survey_id 사용:', existingId);
-    return Number(existingId);
-  }
+// 기존 설문 가져오는 함수
+export const fetchExistingSurvey = async (): Promise<number | null> => {
+  const token = await AsyncStorage.getItem('accessToken');
 
   try {
+    const response = await axios.get(`${API_URL}/surveys`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const surveyData = response.data?.data;
+    return surveyData?.id ?? null; // ✅ 배열이 아니라 객체에서 id 추출
+  } catch (error) {
+    console.error('❌ 기존 설문 조회 실패:', error);
+    return null;
+  }
+};
+
+// 설문 생성 또는 기존 설문 ID 사용
+export const getOrCreateSurvey = async (): Promise<number> => {
+  // 1. AsyncStorage에 있는 경우 우선 사용
+  const storedId = await AsyncStorage.getItem('survey_id');
+  if (storedId) {
+    console.log('📦 저장된 survey_id 사용:', storedId);
+    return Number(storedId);
+  }
+
+  // 2. 기존 설문 조회
+  const existingId = await fetchExistingSurvey();
+  if (existingId) {
+    await AsyncStorage.setItem('survey_id', String(existingId));
+    console.log('📦 조회된 기존 survey_id 사용:', existingId);
+    return existingId;
+  }
+
+  // 3. 없으면 새로 생성
+  try {
     const newId = await createSurvey();
-    await setSurveyId(newId);
+    await AsyncStorage.setItem('survey_id', String(newId));
     console.log('✅ 새로 생성된 survey_id:', newId);
     return newId;
-  } catch (error: any) {
-    // 설문이 이미 존재할 경우
-    if (
-      axios.isAxiosError(error) &&
-      error.response?.data?.message === '이미 설문이 존재합니다.'
-    ) {
-      console.warn('⚠️ 이미 설문이 존재함 → 기존 ID를 불러옵니다.');
-
-      const existingIdFromError = error.response?.data?.data?.id;
-
-      if (existingIdFromError) {
-        await setSurveyId(existingIdFromError);
-        console.log('✅ 에러 응답에서 추출한 survey_id:', existingIdFromError);
-        return existingIdFromError;
-      }
-
-      // ID가 없으면 초기화 후 재생성
-      await resetSurveyState();
-      const newId = 3;
-      await setSurveyId(newId);
-      console.log('✅ 초기화 후 재생성된 survey_id:', newId);
-      return newId;
-    }
-
+  } catch (error) {
     console.error('❌ 설문 생성 실패:', error);
     throw error;
   }
 };
-
 /** 설문 항목 저장 */
 export const submitSurveyAnswer = async (
   field: string,

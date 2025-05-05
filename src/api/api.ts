@@ -128,16 +128,28 @@ export const patchSurveyAnswer = async (
   let url = `${API_URL}/surveys/${surveyId}/${field}`;
   let body = {[field]: value};
 
-  // 🔹 medication-status는 별도 경로 및 구조
+  // medication-status
   if (field === 'medication-status') {
     url = `${API_URL}/surveys/${surveyId}/medication-status`;
     body = value; // { takingMedication: true }
   }
 
-  // 🔹 medications도 별도 경로 및 구조
+  // medications
   if (field === 'medications') {
     url = `${API_URL}/surveys/${surveyId}/medications`;
     body = value; // { medications: [...] }
+  }
+
+  // supplement-status
+  if (field === 'supplement-status') {
+    url = `${API_URL}/surveys/${surveyId}/supplement-status`;
+    body = value; // { takingSupplements: true }
+  }
+
+  // supplements
+  if (field === 'supplements') {
+    url = `${API_URL}/surveys/${surveyId}/supplements`;
+    body = value; // { supplements: [...] }
   }
 
   console.log('📡 PATCH 요청 정보:', {

@@ -9,6 +9,8 @@ import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
+import {getOrCreateSurvey, submitSurveyAnswer} from '../../utils/surveyUtils';
+
 type RootStackParamList = {
   SurveyMedicationScreen: undefined;
   SurveySupplementOkScreen: undefined;
@@ -24,30 +26,34 @@ const SurveySupplementOkScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('SurveySupplementScreen'); // 다음 화면으로 이동
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    const isTaking = selectedOption === '예';
+    try {
+      const surveyId = await getOrCreateSurvey();
+      await submitSurveyAnswer(
+        'supplement-status',
+        {takingSupplements: isTaking},
+        surveyId,
+      );
+      console.log('✅ supplement-status 저장 완료');
+      navigation.navigate('SurveySupplementScreen');
+    } catch (error) {
+      console.error('❌ 설문 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 사용 */}
       <SurveyHeader
         title="복용약 & 건강기능식품 정보"
         skipTarget="NextSurveyScreen"
       />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={7 / 24} />
       </ProgressBarContainer>
-
-      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="현재 복용 중이신 건강기능식품(영양제)가 있으신가요?" />
-
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
@@ -62,8 +68,6 @@ const SurveySupplementOkScreen = () => {
           />
         </ButtonContainer>
       </ButtonWrapper>
-
-      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
