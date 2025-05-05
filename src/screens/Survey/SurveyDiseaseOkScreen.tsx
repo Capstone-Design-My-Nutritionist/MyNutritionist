@@ -9,12 +9,12 @@ import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
-import {submitSurveyAnswer} from '../../utils/surveyUtils'; // ✅ 추가된 부분
+import {submitSurveyAnswer} from '../../utils/surveyUtils'; // ✅ 추가
 
 type RootStackParamList = {
-  SurveySupplementScreen: undefined;
   SurveyDiseaseOkScreen: undefined;
   SurveyDiseaseScreen: undefined;
+  SurveyFamilyHistoryOkScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -29,13 +29,24 @@ const SurveyDiseaseOkScreen = () => {
   const handleNext = async () => {
     if (!selectedOption) return;
 
+    const hasDisease = selectedOption === '예';
+
     try {
-      // ✅ 서버에 PATCH 요청
+      // 1. 질환 여부 저장
       await submitSurveyAnswer('diagnosed-disease-status', {
-        hasDiagnosedDisease: selectedOption === '예',
+        hasDiagnosedDisease: hasDisease,
       });
-      console.log('✅ 질환 여부 저장 완료');
-      navigation.navigate('SurveyDiseaseScreen');
+
+      if (hasDisease) {
+        // 2. '예'인 경우 → 상세 질환 입력 화면
+        navigation.navigate('SurveyDiseaseScreen');
+      } else {
+        // 3. '아니오'인 경우 → 빈 배열 저장 후 다음 화면
+        await submitSurveyAnswer('diseases', {
+          diseases: [],
+        });
+        navigation.navigate('SurveyFamilyHistoryOkScreen'); // 다음 화면으로 변경 가능
+      }
     } catch (error) {
       console.error('❌ 질환 여부 저장 실패:', error);
     }
@@ -43,7 +54,10 @@ const SurveyDiseaseOkScreen = () => {
 
   return (
     <Container>
-      <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
+      <SurveyHeader
+        title="질병 & 건강정보"
+        skipTarget="SurveyFamilyHistoryOkScreen"
+      />
 
       <ProgressBarContainer>
         <ProgressBar progress={9 / 24} />
@@ -77,7 +91,7 @@ const SurveyDiseaseOkScreen = () => {
 
 export default SurveyDiseaseOkScreen;
 
-// 스타일 정의
+// ---------------- 스타일 정의 ----------------
 const Container = styled.View`
   flex: 1;
   background-color: white;

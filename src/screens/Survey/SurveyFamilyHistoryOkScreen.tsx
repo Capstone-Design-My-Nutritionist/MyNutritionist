@@ -14,6 +14,7 @@ type RootStackParamList = {
   SurveyDiseaseScreen: undefined;
   SurveyFamilyHistoryOkScreen: undefined;
   SurveyFamilyHistoryScreen: undefined;
+  SurveyHealthConcernsScreen: undefined; // ✅ 다음으로 이동할 화면
 };
 
 type NavigationProps = StackNavigationProp<
@@ -26,22 +27,38 @@ const SurveyFamilyHistoryOkScreen = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
-    if (selectedOption) {
-      const hasFamilyHistory = selectedOption === '예';
-      try {
-        await submitSurveyAnswer('family-history-status', {
-          hasFamilyHistory,
-        });
+    if (!selectedOption) return;
+
+    const hasFamilyHistory = selectedOption === '예';
+
+    try {
+      // 1. 가족력 상태 저장
+      await submitSurveyAnswer('family-history-status', {
+        hasFamilyHistory,
+      });
+
+      if (hasFamilyHistory) {
+        // 2. 예 → 가족력 상세 입력 화면으로 이동
         navigation.navigate('SurveyFamilyHistoryScreen');
-      } catch (error) {
-        console.error('❌ 가족력 저장 실패:', error);
+      } else {
+        // 3. 아니오 → 빈 배열 저장하고 다음 단계로 바로 이동
+        await submitSurveyAnswer('family-histories', {
+          familyDiseases: [],
+        });
+        navigation.navigate('SurveyHealthConcernsScreen');
       }
+    } catch (error) {
+      console.error('❌ 가족력 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
+      <SurveyHeader
+        title="질병 & 건강정보"
+        skipTarget="SurveyHealthConcernsScreen"
+      />
+
       <ProgressBarContainer>
         <ProgressBar progress={11 / 24} />
       </ProgressBarContainer>
@@ -74,7 +91,7 @@ const SurveyFamilyHistoryOkScreen = () => {
 
 export default SurveyFamilyHistoryOkScreen;
 
-// 스타일 정의
+// ---------------- 스타일 정의 ----------------
 const Container = styled.View`
   flex: 1;
   background-color: white;

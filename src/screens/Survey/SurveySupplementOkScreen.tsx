@@ -3,18 +3,19 @@ import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import ProgressBar from '../../components/ProgressBar';
-import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
 import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
+import ProgressBar from '../../components/ProgressBar';
+import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
-import {getOrCreateSurvey, submitSurveyAnswer} from '../../utils/surveyUtils';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
+// ✅ 네비게이션 타입 정의
 type RootStackParamList = {
-  SurveyMedicationScreen: undefined;
   SurveySupplementOkScreen: undefined;
   SurveySupplementScreen: undefined;
+  SurveyDiseaseOkScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -29,31 +30,39 @@ const SurveySupplementOkScreen = () => {
   const handleNext = async () => {
     if (!selectedOption) return;
 
-    const isTaking = selectedOption === '예';
+    const takingSupplements = selectedOption === '예';
+
     try {
-      const surveyId = await getOrCreateSurvey();
-      await submitSurveyAnswer(
-        'supplement-status',
-        {takingSupplements: isTaking},
-        surveyId,
-      );
-      console.log('✅ supplement-status 저장 완료');
-      navigation.navigate('SurveySupplementScreen');
+      // 1. 복용 여부 저장
+      await submitSurveyAnswer('supplement-status', {
+        takingSupplements: takingSupplements,
+      });
+
+      if (takingSupplements) {
+        // 2. '예'인 경우 → 복용 목록 입력 화면으로 이동
+        navigation.navigate('SurveySupplementScreen');
+      } else {
+        // 3. '아니오'인 경우 → 빈 배열 저장 + 다음 화면 이동
+        await submitSurveyAnswer('supplements', {
+          supplements: [],
+        });
+        navigation.navigate('SurveyDiseaseOkScreen');
+      }
     } catch (error) {
-      console.error('❌ 설문 저장 실패:', error);
+      console.error('❌ 영양제 정보 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      <SurveyHeader
-        title="복용약 & 건강기능식품 정보"
-        skipTarget="NextSurveyScreen"
-      />
+      <SurveyHeader title="영양제" skipTarget="SurveyDiseaseOkScreen" />
+
       <ProgressBarContainer>
         <ProgressBar progress={7 / 24} />
       </ProgressBarContainer>
-      <SurveyTitle text="현재 복용 중이신 건강기능식품(영양제)가 있으신가요?" />
+
+      <SurveyTitle text="현재 복용 중인 영양제가 있나요?" />
+
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
@@ -68,6 +77,7 @@ const SurveySupplementOkScreen = () => {
           />
         </ButtonContainer>
       </ButtonWrapper>
+
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -79,7 +89,7 @@ const SurveySupplementOkScreen = () => {
 
 export default SurveySupplementOkScreen;
 
-// 스타일 정의
+// ---------------- 스타일 정의 ----------------
 const Container = styled.View`
   flex: 1;
   background-color: white;
