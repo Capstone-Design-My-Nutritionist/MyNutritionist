@@ -176,6 +176,24 @@ export const patchSurveyAnswer = async (
     body = value; // { familyDiseases: [...] }
   }
 
+  // concerns
+  if (field === 'concerns') {
+    url = `${API_URL}/surveys/${surveyId}/concerns`;
+    body = value; // { concerns: [...] }
+  }
+
+  // goals
+  if (field === 'goals') {
+    url = `${API_URL}/surveys/${surveyId}/goals`;
+    body = value; // { goals: [...] }
+  }
+
+  // sleepTime
+  if (field === 'sleepTime') {
+    url = `${API_URL}/surveys/${surveyId}/sleep-time`;
+    body = value; // { sleepTime: 'UNDER_5_HOURS' }
+  }
+
   console.log('📡 PATCH 요청 정보:', {
     url,
     body,
