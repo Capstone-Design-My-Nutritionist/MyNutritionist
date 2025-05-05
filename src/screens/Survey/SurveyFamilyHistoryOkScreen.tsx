@@ -8,6 +8,7 @@ import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
 import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyDiseaseScreen: undefined;
@@ -24,27 +25,29 @@ const SurveyFamilyHistoryOkScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedOption) {
-      console.log('Navigating to NextSurveyScreen...');
-      navigation.navigate('SurveyFamilyHistoryScreen'); // 다음 화면으로 이동
+      const hasFamilyHistory = selectedOption === '예';
+      try {
+        await submitSurveyAnswer('family-history-status', {
+          hasFamilyHistory,
+        });
+        navigation.navigate('SurveyFamilyHistoryScreen');
+      } catch (error) {
+        console.error('❌ 가족력 저장 실패:', error);
+      }
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 사용 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={11 / 24} />
       </ProgressBarContainer>
 
-      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="가족력(유전적 질병 위험)이 있나요?" />
 
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
@@ -60,7 +63,6 @@ const SurveyFamilyHistoryOkScreen = () => {
         </ButtonContainer>
       </ButtonWrapper>
 
-      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

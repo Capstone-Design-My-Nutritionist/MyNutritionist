@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyFamilyHistoryOkScreen: undefined;
@@ -32,6 +33,32 @@ const familyHistoryOptions = [
   '신장 질환',
 ];
 
+// 서버에 보낼 값으로 매핑
+const mapToApiValue = (korean: string): string => {
+  switch (korean) {
+    case '당뇨병':
+      return 'DIABETES';
+    case '고혈압':
+      return 'HYPERTENSION';
+    case '심혈관 질환':
+      return 'CARDIOVASCULAR';
+    case '갑상선 질환':
+      return 'THYROID_DISEASE';
+    case '골다공증':
+      return 'OSTEOPOROSIS';
+    case '고지혈증':
+      return 'HYPERLIPIDEMIA';
+    case '암':
+      return 'CANCER';
+    case '알츠하이머병':
+      return 'ALZHEIMER';
+    case '신장 질환':
+      return 'KIDNEY_DISEASE';
+    default:
+      return '';
+  }
+};
+
 const SurveyFamilyHistoryScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
@@ -42,26 +69,28 @@ const SurveyFamilyHistoryScreen = () => {
     );
   };
 
-  const handleNext = () => {
-    console.log('Selected family history:', selectedHistory);
-    navigation.navigate('SurveyHealthConcernsScreen');
+  const handleNext = async () => {
+    const apiValues = selectedHistory.map(mapToApiValue).filter(Boolean);
+    try {
+      await submitSurveyAnswer('family-histories', {
+        familyDiseases: apiValues,
+      });
+      navigation.navigate('SurveyHealthConcernsScreen');
+    } catch (error) {
+      console.error('❌ 가족력 질환 저장 실패:', error);
+    }
   };
 
   return (
     <Container>
-      {/* 헤더 */}
       <SurveyHeader title="질병 & 건강정보" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={12 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 */}
       <SurveyTitle text="가족력이 있는 질환을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* 버튼 목록 */}
       <ButtonGrid>
         {familyHistoryOptions.map(item => (
           <ButtonSpacing key={item}>
@@ -74,7 +103,6 @@ const SurveyFamilyHistoryScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* 버튼 그룹 */}
       <SurveyButtonGroupWrapper>
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}

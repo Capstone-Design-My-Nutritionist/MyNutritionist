@@ -164,6 +164,18 @@ export const patchSurveyAnswer = async (
     body = value; // { diseases: [...] }
   }
 
+  // family-history-status
+  if (field === 'family-history-status') {
+    url = `${API_URL}/surveys/${surveyId}/family-history-status`;
+    body = value; // { hasFamilyHistory: true }
+  }
+
+  // family-histories
+  if (field === 'family-histories') {
+    url = `${API_URL}/surveys/${surveyId}/family-histories`;
+    body = value; // { familyDiseases: [...] }
+  }
+
   console.log('📡 PATCH 요청 정보:', {
     url,
     body,
