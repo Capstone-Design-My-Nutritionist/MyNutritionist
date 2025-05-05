@@ -132,22 +132,25 @@ export const patchSurveyAnswer = async (
   const token = await AsyncStorage.getItem('accessToken');
 
   const url = `${API_URL}/surveys/${surveyId}/${field}`;
-  const body = {[field]: value};
+
+  // ✅ medication-status의 경우 value 자체를 body로 사용
+  const body = field === 'medication-status' ? value : {[field]: value};
 
   console.log('📡 PATCH 요청 정보:', {
     url,
     body,
     headers: {
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });
 
   const response = await axios.patch(url, body, {
     headers: {
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });
+
   return response.data;
 };

@@ -9,6 +9,8 @@ import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
+import {getOrCreateSurvey, submitSurveyAnswer} from '../../utils/surveyUtils';
+
 type RootStackParamList = {
   SurveyMedicationOkScreen: undefined;
   SurveyMedicationScreen: undefined;
@@ -23,30 +25,38 @@ const SurveyMedicationOkScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Navigating to NextSurveyScreen...');
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    const isTaking = selectedOption === '예'; // 문자열 → boolean 변환
+
+    try {
+      const surveyId = await getOrCreateSurvey();
+
+      // 명세에 따라 medication-status 엔드포인트로 PATCH 요청
+      await submitSurveyAnswer(
+        'medication-status',
+        {takingMedication: isTaking},
+        surveyId,
+      );
+
+      console.log('✅ medication-status 저장 완료');
       navigation.navigate('SurveyMedicationScreen');
+    } catch (error) {
+      console.error('❌ 설문 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 사용 */}
       <SurveyHeader
         title="복용약 & 건강기능식품 정보"
-        skipTarget="NextSurveyScreen"
+        skipTarget="SurveyMedicationScreen"
       />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={5 / 24} />
       </ProgressBarContainer>
-
-      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="현재 복용 중이신 약이 있으신가요?" />
-
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
@@ -61,8 +71,6 @@ const SurveyMedicationOkScreen = () => {
           />
         </ButtonContainer>
       </ButtonWrapper>
-
-      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
