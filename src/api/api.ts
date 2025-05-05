@@ -230,6 +230,18 @@ export const patchSurveyAnswer = async (
     body = value; // { smoking: 'NON_SMOKER' | 'PAST_SMOKER' | 'CURRENT_SMOKER' }
   }
 
+  // allergy-status
+  if (field === 'allergy-status') {
+    url = `${API_URL}/surveys/${surveyId}/allergy-status`;
+    body = value; // { hasAllergy: true }
+  }
+
+  // allergy-status
+  if (field === 'allergies') {
+    url = `${API_URL}/surveys/${surveyId}/allergies`;
+    body = value; // { allergies: 'NUTS' }
+  }
+
   console.log('📡 PATCH 요청 정보:', {
     url,
     body,
@@ -247,4 +259,35 @@ export const patchSurveyAnswer = async (
   });
 
   return response.data;
+};
+
+export const completeSurvey = async () => {
+  const token = await AsyncStorage.getItem('accessToken');
+
+  const url = `${API_URL}/surveys/complete`;
+
+  try {
+    const response = await axios.patch(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    console.log('✅ 설문 완료 성공:', response.data);
+    return response.data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      console.error('❌ 설문 완료 AxiosError:', {
+        status: error.response?.status,
+        message: error.response?.data?.message,
+      });
+    } else {
+      console.error('❌ Unknown error:', error);
+    }
+    throw error;
+  }
 };

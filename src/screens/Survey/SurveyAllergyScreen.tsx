@@ -1,3 +1,4 @@
+// 📦 알레르기 선택 저장 + 설문 완료
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
@@ -8,11 +9,26 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {
+  submitSurveyAnswer,
+  saveSurveyCompletionTime,
+} from '../../utils/surveyUtils';
+import {completeSurvey} from '../../api/api'; // 파일 경로에 따라 조정
 
+// ✅ 알레르기 맵핑
+const allergyMap: Record<string, string> = {
+  견과류: 'NUTS',
+  유제품: 'DAIRY',
+  갑각류: 'SHELLFISH',
+  글루텐: 'GLUTEN',
+  '해당 없음': 'NONE',
+};
+
+// ✅ Stack 타입
 type RootStackParamList = {
   SurveyAllergyOkScreen: undefined;
   SurveyAllergyScreen: undefined;
-  NextSurveyScreen: undefined;
+  ProfileStack: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -27,27 +43,34 @@ const SurveyAllergyScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Selected allergy:', selectedOption);
-      navigation.navigate('NextSurveyScreen');
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    try {
+      await submitSurveyAnswer('allergies', {
+        allergies: [allergyMap[selectedOption]],
+      });
+
+      await completeSurvey();
+      await saveSurveyCompletionTime();
+
+      console.log('🎉 설문 완료!');
+      navigation.replace('ProfileStack'); // ✅ 설문 완료 후 마이페이지로 이동
+    } catch (error) {
+      console.error('❌ 설문 완료 중 오류:', error);
     }
   };
 
   return (
     <Container>
-      {/* 헤더 */}
       <SurveyHeader title="알레르기" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={23 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 */}
       <SurveyTitle text="어떤 알레르기를 앓고 계신가요?" />
 
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonRow>
           {allergyOptionsTop.map(option => (
@@ -73,7 +96,6 @@ const SurveyAllergyScreen = () => {
         </ButtonRow>
       </ButtonWrapper>
 
-      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -85,7 +107,7 @@ const SurveyAllergyScreen = () => {
 
 export default SurveyAllergyScreen;
 
-// 스타일 정의
+// ---------------- 스타일 정의 ----------------
 const Container = styled.View`
   flex: 1;
   background-color: white;

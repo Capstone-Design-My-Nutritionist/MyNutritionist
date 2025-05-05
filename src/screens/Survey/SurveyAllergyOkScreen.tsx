@@ -8,6 +8,7 @@ import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
 import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveySmokingScreen: undefined;
@@ -24,27 +25,27 @@ const SurveyAllergyOkScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Navigating to NextSurveyScreen...');
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    const hasAllergy = selectedOption === '예';
+
+    try {
+      await submitSurveyAnswer('allergy-status', {hasAllergy});
+      console.log('✅ 알레르기 여부 저장 완료:', hasAllergy);
       navigation.navigate('SurveyAllergyScreen');
+    } catch (error) {
+      console.error('❌ 알레르기 여부 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 사용 */}
       <SurveyHeader title="알레르기 정보" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={22 / 24} />
       </ProgressBarContainer>
-
-      {/* 공통 질문 텍스트 사용 */}
       <SurveyTitle text="현재 알레르기를 앓고 계신가요?" />
-
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonContainer>
           <MonoSelectButton
@@ -59,8 +60,6 @@ const SurveyAllergyOkScreen = () => {
           />
         </ButtonContainer>
       </ButtonWrapper>
-
-      {/* 공통 버튼 그룹 사용 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
