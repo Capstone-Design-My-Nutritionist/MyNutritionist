@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {
   title: string;
@@ -13,7 +14,7 @@ const CommonHeader = ({title}: Props) => {
   return (
     <Wrapper>
       <BackButton onPress={() => navigation.goBack()}>
-        <BackText>{'<'}</BackText>
+        <Icon name="chevron-back" size={24} color="#731A22" />
       </BackButton>
       <Title>{title}</Title>
       <Underline />
@@ -45,10 +46,11 @@ const Underline = styled.View`
 
 const BackButton = styled.TouchableOpacity`
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   justify-content: center;
   align-items: center;
+  left: 4px;
 `;
 
 const BackText = styled.Text`

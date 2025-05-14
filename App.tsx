@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Navigation from './src/navigation/Navigation';
 import NutritionDetails from './src/screens/Main/NutritionDetailsScreen';
 import FoodRecommendation from './src/screens/Main/FoodRecommendationScreen';
-import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen'; // 경로는 네이밍에 맞게 조정
+import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen';
 import MealRecords from './src/screens/Main/MealRecordsScreen';
 import MealDetails from './src/screens/Calendar/MealDetailsScreen';
 import FoodUploadScreen from './src/screens/FoodUpload/FoodUploadScreen';
@@ -41,64 +41,31 @@ import SurveySmokingScreen from './src/screens/Survey/SurveySmokingScreen';
 import SurveyDrinkScreen from './src/screens/Survey/SurveyDrinkScreen';
 
 const Stack = createNativeStackNavigator();
-const FoodUploadStack = createNativeStackNavigator();
-const ProfileStack = createNativeStackNavigator();
-
-const FoodUploadNavigator = () => {
-  return (
-    <FoodUploadStack.Navigator 
-      initialRouteName="FoodUploadResultScreen"
-      screenOptions={{headerShown: false}}>
-      <FoodUploadStack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
-      <FoodUploadStack.Screen
-        name="FoodUploadResultScreen"
-        component={FoodUploadResultScreen}
-      />
-    </FoodUploadStack.Navigator>
-  );
-};
-
-const ProfileNavigator = () => {
-  return (
-    <ProfileStack.Navigator screenOptions={{headerShown: false}}>
-      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
-      <ProfileStack.Screen
-        name="PasswordVerifyScreen"
-        component={PasswordVerifyScreen}
-        options={{headerShown: false}}
-      />
-      <ProfileStack.Screen
-        name="PasswordChangeScreen"
-        component={PasswordChangeScreen}
-      />
-      <ProfileStack.Screen
-        name="NicknameChangeScreen"
-        component={NicknameChangeScreen}
-      />
-      <ProfileStack.Screen
-        name="AccountDeleteScreen"
-        component={AccountDeleteScreen}
-      />
-    </ProfileStack.Navigator>
-  );
-};
 
 const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* 전체 탭 네비게이션 구조 */}
+        {/* 메인 탭 */}
         <Stack.Screen name="Main" component={Navigation} />
-        {/* 탭 외의 상세 페이지는 여기에서 관리 */}
+
+        {/* 일반 화면 */}
         <Stack.Screen name="NutritionDetails" component={NutritionDetails} />
         <Stack.Screen name="FoodRecommendation" component={FoodRecommendation} />
         <Stack.Screen name="SupplementDetails" component={SupplementDetails} /> 
         <Stack.Screen name="MealRecord" component={MealRecords} />
         <Stack.Screen name="MealDetails" component={MealDetails} />
-        <Stack.Screen name="FoodUpload" component={FoodUploadNavigator} />
-        <Stack.Screen name="Profile" component={ProfileNavigator} />
+        <Stack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
+        <Stack.Screen name="FoodUploadResultScreen" component={FoodUploadResultScreen as any} />
         
-        {/* 설문조사 화면 */}
+        {/* 프로필 관련 */}
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="PasswordVerifyScreen" component={PasswordVerifyScreen} />
+        <Stack.Screen name="PasswordChangeScreen" component={PasswordChangeScreen} />
+        <Stack.Screen name="NicknameChangeScreen" component={NicknameChangeScreen} />
+        <Stack.Screen name="AccountDeleteScreen" component={AccountDeleteScreen} />
+
+        {/* 설문조사 */}
         <Stack.Screen name="SurveyGenderScreen" component={SurveyGenderScreen} />
         <Stack.Screen name="SurveyAgeScreen" component={SurveyAgeScreen} />
         <Stack.Screen name="SurveyHeightScreen" component={SurveyHeightScreen} />

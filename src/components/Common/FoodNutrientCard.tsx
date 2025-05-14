@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {Picker} from '@react-native-picker/picker';
-import {Shadow} from 'react-native-shadow-2';
+import {Modal, TouchableOpacity} from 'react-native';
 
 interface Nutrient {
   label: string;
@@ -18,6 +17,7 @@ interface Props {
   onInputChange: (value: string) => void;
   onInput: () => void;
   showRemoveButton?: boolean;
+  onRemove?: () => void;
 }
 
 const FoodNutrientCard: React.FC<Props> = ({
@@ -29,23 +29,20 @@ const FoodNutrientCard: React.FC<Props> = ({
   onUnitChange,
   onInputChange,
   onInput,
-  showRemoveButton = true,
+  showRemoveButton = false,
+  onRemove,
 }) => {
   return (
     <Container>
       {/* 음식 이름 + 단위 선택 */}
       <TopRow>
         <FoodName>{foodName}</FoodName>
-        <UnitPickerWrapper>
-          <Picker
-            selectedValue={unit}
-            onValueChange={onUnitChange}
-            mode="dropdown"
-            style={{width: 73, height: 22}}>
-            <Picker.Item label="g" value="g" />
-            <Picker.Item label="개" value="개" />
-          </Picker>
-        </UnitPickerWrapper>
+        <CustomDropdown 
+          value={unit}
+          options={['g', '개', '인분']}
+          onSelect={onUnitChange}
+          width={70}
+        />
       </TopRow>
 
       {/* 1인분 정보 + 입력 필드 */}
@@ -63,26 +60,34 @@ const FoodNutrientCard: React.FC<Props> = ({
             value={inputValue}
             onChangeText={onInputChange}
           />
-          <Shadow
-            distance={4}
-            offset={[1, 4]}
-            startColor="rgba(0, 0, 0, 0.05)"
-            containerStyle={{borderRadius: 6}}>
-            <InputButton onPress={onInput}>
-              <InputButtonText>입력</InputButtonText>
-            </InputButton>
-          </Shadow>
+          <InputButton onPress={onInput}>
+            <InputButtonText>입력</InputButtonText>
+          </InputButton>
         </InputGroup>
       </MiddleRow>
+      
+      {/* 삭제 버튼 - 더 눈에 띄게 상단에 배치 */}
+      {showRemoveButton && onRemove && (
+        <RemoveButtonContainer>
+          <RemoveButton onPress={onRemove}>
+            <RemoveButtonText>삭제</RemoveButtonText>
+          </RemoveButton>
+        </RemoveButtonContainer>
+      )}
 
       <Divider />
 
-      {nutrients.map((nutrient, idx) => (
-        <NutrientRow key={idx}>
-          <NutrientLabel>{nutrient.label}</NutrientLabel>
-          <NutrientValue>{nutrient.value}</NutrientValue>
-        </NutrientRow>
-      ))}
+      <NutrientContainer>
+        {nutrients.map((nutrient, idx) => (
+          <React.Fragment key={idx}>
+            <NutrientRow>
+              <NutrientLabel>{nutrient.label}</NutrientLabel>
+              <NutrientValue>{nutrient.value}</NutrientValue>
+            </NutrientRow>
+            {idx < nutrients.length - 1 && <NutrientDivider />}
+          </React.Fragment>
+        ))}
+      </NutrientContainer>
     </Container>
   );
 };
@@ -105,12 +110,106 @@ const FoodName = styled.Text`
   color: black;
 `;
 
-const UnitPickerWrapper = styled.View`
+// 커스텀 드롭다운 컴포넌트
+interface CustomDropdownProps {
+  value: string;
+  options: string[];
+  onSelect: (value: string) => void;
+  width?: number;
+}
+
+const CustomDropdown: React.FC<CustomDropdownProps> = ({ value, options, onSelect, width = 80 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <DropdownContainer style={{ width }}>
+      <DropdownButton onPress={() => setIsOpen(true)}>
+        <DropdownButtonText>{value}</DropdownButtonText>
+        <DropdownArrow>▼</DropdownArrow>
+      </DropdownButton>
+
+      <Modal
+        transparent={true}
+        visible={isOpen}
+        animationType="fade"
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <ModalOverlay onPress={() => setIsOpen(false)}>
+          <ModalContent>
+            {options.map((option, index) => (
+              <OptionButton
+                key={index}
+                onPress={() => {
+                  onSelect(option);
+                  setIsOpen(false);
+                }}
+                isSelected={option === value}
+              >
+                <OptionText isSelected={option === value}>{option}</OptionText>
+              </OptionButton>
+            ))}
+          </ModalContent>
+        </ModalOverlay>
+      </Modal>
+    </DropdownContainer>
+  );
+};
+
+const DropdownContainer = styled.View`
+  position: relative;
+`;
+
+const DropdownButton = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 24px;
+  padding-horizontal: 8px;
   border: 1px solid #ccc;
-  width: 72px;
-  height: 22px;
+  border-radius: 8px;
+  background-color: white;
+`;
+
+const DropdownButtonText = styled.Text`
+  font-size: 12px;
+  color: #000;
+  font-family: 'Pretendard-Regular';
+`;
+
+const DropdownArrow = styled.Text`
+  font-size: 8px;
+  color: #999;
+  margin-left: 4px;
+`;
+
+const ModalOverlay = styled.TouchableOpacity`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+
+const ModalContent = styled.View`
+  width: 120px;
+  background-color: white;
   border-radius: 8px;
   overflow: hidden;
+  elevation: 5;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.25;
+  shadow-radius: 3.84px;
+`;
+
+const OptionButton = styled.TouchableOpacity<{ isSelected: boolean }>`
+  padding: 10px 12px;
+  background-color: ${(props: { isSelected: boolean }) => props.isSelected ? 'rgba(217, 91, 114, 0.1)' : 'white'};
+`;
+
+const OptionText = styled.Text<{ isSelected: boolean }>`
+  font-size: 12px;
+  color: ${(props: { isSelected: boolean }) => props.isSelected ? '#d95b72' : '#000'};
+  font-family: ${(props: { isSelected: boolean }) => props.isSelected ? 'Pretendard-SemiBold' : 'Pretendard-Regular'};
 `;
 
 const MiddleRow = styled.View`
@@ -157,7 +256,32 @@ const InputButton = styled.TouchableOpacity`
 const InputButtonText = styled.Text`
   color: white;
   font-size: 12px;
-  font-family: 'Pretendard-Bold';
+  font-family: 'Pretendard-Medium';
+`;
+
+const RemoveButtonContainer = styled.View`
+  align-items: flex-end;
+  margin-top: 8px;
+  margin-bottom: 4px;
+`;
+
+const RemoveButton = styled.TouchableOpacity`
+  background-color: #FF6B6B;
+  padding: 8px 12px;
+  border-radius: 4px;
+  justify-content: center;
+  align-items: center;
+  elevation: 2;
+  shadow-opacity: 0.2;
+  shadow-radius: 2px;
+  shadow-color: #000;
+  shadow-offset: 0px 1px;
+`;
+
+const RemoveButtonText = styled.Text`
+  color: white;
+  font-size: 13px;
+  font-family: 'Pretendard-SemiBold';
 `;
 
 const Divider = styled.View`
@@ -166,20 +290,32 @@ const Divider = styled.View`
   margin-vertical: 12px;
 `;
 
+const NutrientContainer = styled.View`
+  margin-top: 8px;
+`;
+
 const NutrientRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: 4px;
+  padding-vertical: 8px;
+`;
+
+const NutrientDivider = styled.View`
+  height: 1px;
+  background-color: #EEEEEE;
+  width: 100%;
 `;
 
 const NutrientLabel = styled.Text`
   font-size: 14px;
   font-family: 'Pretendard-Regular';
   color: black;
+  margin-left: 4px;
 `;
 
 const NutrientValue = styled.Text`
   font-size: 14px;
   font-family: 'Pretendard-SemiBold';
   color: black;
+  margin-right: 4px;
 `;

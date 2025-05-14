@@ -1,18 +1,34 @@
-import React, {useState} from 'react';
-import {Modal, Image, Platform} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {Modal, Image, Platform, Alert, ActivityIndicator, PermissionsAndroid} from 'react-native';
 import styled from 'styled-components/native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary, CameraOptions} from 'react-native-image-picker';
+import {useNavigation} from '@react-navigation/native';
+import {AppNavigationProp} from '../../navigation/types';
 import CommonHeader from '../../components/Common/CommonHeader';
+import {predictImage} from '../../native_modules/FoodLensModule';
 
 const FoodUploadScreen = () => {
+  const navigation = useNavigation<AppNavigationProp>();
   const [modalVisible, setModalVisible] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [currentDate, setCurrentDate] = useState('');
+  
+  // 현재 날짜를 포맷팅하여 설정
+  useEffect(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // getMonth()는 0부터 시작하므로 1을 더함
+    const day = now.getDate();
+    
+    setCurrentDate(`${year}년 ${month}월 ${day}일`);
+  }, []);
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
 
   const handleImagePick = () => {
-    launchImageLibrary({mediaType: 'photo'}, response => {
+    launchImageLibrary({mediaType: 'photo', quality: 0.8}, response => {
       if (response.assets && response.assets[0]) {
         setImageUri(response.assets[0].uri ?? null);
       }
@@ -20,13 +36,99 @@ const FoodUploadScreen = () => {
     });
   };
 
-  const handleCamera = () => {
-    launchCamera({mediaType: 'photo'}, response => {
-      if (response.assets && response.assets[0]) {
+  // 카메라 권한 요청 함수
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: "카메라 권한 요청",
+            message: "음식 사진을 찍기 위해 카메라 권한이 필요합니다.",
+            buttonNeutral: "나중에 묻기",
+            buttonNegative: "취소",
+            buttonPositive: "확인"
+          }
+        );
+        
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          return true;
+        } else {
+          Alert.alert('권한 거부됨', '카메라 권한이 거부되었습니다.');
+          return false;
+        }
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true; // iOS는 항상 true 반환
+  };
+
+  const handleCamera = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) {
+      closeModal();
+      return;
+    }
+    
+    const options: CameraOptions = {
+      mediaType: 'photo',
+      quality: 0.8,
+      saveToPhotos: true, // 촬영한 사진을 갤러리에 저장
+      includeBase64: false,
+      cameraType: 'back'
+    };
+    
+    launchCamera(options, (response) => {
+      if (response.didCancel) {
+        console.log('사용자가 카메라를 취소했습니다');
+      } else if (response.errorCode) {
+        console.error('카메라 오류:', response.errorMessage);
+        Alert.alert('카메라 오류', response.errorMessage || '카메라를 실행하는 중 오류가 발생했습니다.');
+      } else if (response.assets && response.assets[0]) {
+        console.log('카메라로 촬영한 이미지:', response.assets[0].uri);
         setImageUri(response.assets[0].uri ?? null);
       }
       closeModal();
     });
+  };
+  
+  const handleSubmit = async () => {
+    if (!imageUri) {
+      Alert.alert('알림', '이미지를 먼저 업로드해주세요.');
+      return;
+    }
+    
+    console.log('📷 imageUri before predictImage:', imageUri);
+
+    try {
+      setLoading(true);
+      const result = await predictImage(imageUri);
+      setLoading(false);
+      
+      // FoodLens로부터 받은 데이터를 JSON 형식으로 콘솔에 출력
+      console.log('FoodLens 분석 결과 (JSON):', JSON.stringify(result, null, 2));
+      
+      // 각 음식 항목별 상세 정보 출력
+      if (result?.foods && result.foods.length > 0) {
+        console.log(`총 ${result.foods.length}개의 음식이 인식되었습니다:`);
+        result.foods.forEach((food, index) => {
+          console.log(`음식 ${index + 1}: ${food.name}`);
+          console.log(`영양 정보:`, JSON.stringify(food.nutritionInfo, null, 2));
+        });
+      }
+      
+      // 결과 화면으로 이동
+      navigation.navigate('FoodUploadResultScreen', { result, imageUri });
+    } catch (error) {
+      setLoading(false);
+      Alert.alert(
+        '분석 실패', 
+        '음식 이미지 분석에 실패했습니다. 다시 시도해주세요.'
+      );
+      console.error('FoodLens 분석 오류:', error);
+    }
   };
 
   return (
@@ -35,7 +137,7 @@ const FoodUploadScreen = () => {
 
       <Content>
         <DateTitle>오늘의 날짜</DateTitle>
-        <DateText>2025년 1월 5일</DateText>
+        <DateText>{currentDate}</DateText>
 
         <UploadBox onPress={openModal}>
           {imageUri ? (
@@ -48,8 +150,12 @@ const FoodUploadScreen = () => {
           )}
         </UploadBox>
 
-        <SubmitButton>
-          <SubmitText>제출하기</SubmitText>
+        <SubmitButton onPress={handleSubmit} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <SubmitText>제출하기</SubmitText>
+          )}
         </SubmitButton>
       </Content>
 
@@ -119,7 +225,7 @@ const UploadBox = styled.TouchableOpacity`
   border-radius: 15px;
   justify-content: center;
   align-items: center;
-  margin-bottom: 195px;
+  margin-bottom: 100px;
 `;
 
 const UploadIcon = styled.Text`
