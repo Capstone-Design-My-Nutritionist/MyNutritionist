@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyWaterScreen: undefined;
@@ -23,31 +24,45 @@ type NavigationProps = StackNavigationProp<
 const drinkOptionsTop = ['전혀 안함', '가끔'];
 const drinkOptionsBottom = ['주 1~2회', '주 3회 이상'];
 
+const mapDrinkingToEnum = (label: string): string => {
+  switch (label) {
+    case '전혀 안함':
+      return 'NEVER';
+    case '가끔':
+      return 'SOMETIMES';
+    case '주 1~2회':
+      return 'ONE_TWO_WEEKLY';
+    case '주 3회 이상':
+      return 'THREE_MORE_WEEKLY';
+    default:
+      return '';
+  }
+};
+
 const SurveyDrinkScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedOption) {
-      console.log('Selected drinking frequency:', selectedOption);
-      navigation.navigate('SurveySmokingScreen');
+      const enumValue = mapDrinkingToEnum(selectedOption);
+      try {
+        await submitSurveyAnswer('drinking', {drinking: enumValue});
+        console.log('✅ drinking 저장 완료:', enumValue);
+        navigation.navigate('SurveySmokingScreen');
+      } catch (error) {
+        console.error('❌ drinking 저장 실패:', error);
+      }
     }
   };
 
   return (
     <Container>
-      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={20 / 24} />
       </ProgressBarContainer>
-
-      {/* 질문 */}
       <SurveyTitle text="음주를 얼마나 하시나요?" />
-
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonRow>
           {drinkOptionsTop.map(option => (
@@ -72,8 +87,6 @@ const SurveyDrinkScreen = () => {
           ))}
         </ButtonRow>
       </ButtonWrapper>
-
-      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

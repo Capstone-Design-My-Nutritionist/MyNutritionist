@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyHealthConcernsScreen: undefined;
@@ -29,6 +30,26 @@ const healthGoals = [
   '면역력 강화',
 ];
 
+// 한글 → API ENUM 변환
+const mapGoalToApiValue = (goal: string): string => {
+  switch (goal) {
+    case '체중 조절':
+      return 'WEIGHT_CONTROL';
+    case '근육 증가':
+      return 'MUSCLE_GAIN';
+    case '에너지 증진':
+      return 'ENERGY';
+    case '혈압 조절':
+      return 'BLOOD_PRESSURE_CONTROL';
+    case '소화 개선':
+      return 'DIGESTIVE_HEALTH';
+    case '면역력 강화':
+      return 'IMMUNE_SUPPORT';
+    default:
+      return '';
+  }
+};
+
 const SurveyHealthGoalsScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
@@ -39,26 +60,27 @@ const SurveyHealthGoalsScreen = () => {
     );
   };
 
-  const handleNext = () => {
-    console.log('Selected health goals:', selectedGoals);
-    navigation.navigate('SurveySleepTimeScreen');
+  const handleNext = async () => {
+    const apiValues = selectedGoals.map(mapGoalToApiValue).filter(Boolean);
+    try {
+      await submitSurveyAnswer('goals', {goals: apiValues});
+      navigation.navigate('SurveySleepTimeScreen');
+    } catch (error) {
+      console.error('❌ 건강 목표 저장 실패:', error);
+    }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 */}
       <SurveyHeader title="건강고민 & 목표" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={14 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 텍스트 */}
       <SurveyTitle text="개선하고 싶은 건강목표는 무엇인가요?" />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* 다중선택 버튼 */}
       <ButtonGrid>
         {healthGoals.map(goal => (
           <ButtonSpacing key={goal}>
@@ -71,7 +93,6 @@ const SurveyHealthGoalsScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* SurveyButtonGroup으로 변경 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

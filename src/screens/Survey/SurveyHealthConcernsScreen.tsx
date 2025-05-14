@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyFamilyHistoryScreen: undefined;
@@ -29,6 +30,26 @@ const healthConcerns = [
   '피부 문제',
 ];
 
+// 한글 → API 전송용 enum 값으로 변환
+const mapToApiValue = (korean: string): string => {
+  switch (korean) {
+    case '피로감':
+      return 'FATIGUE';
+    case '체중 조절':
+      return 'WEIGHT_CONTROL';
+    case '소화 문제':
+      return 'DIGESTIVE_PROBLEM';
+    case '면역력 저하':
+      return 'IMMUNITY';
+    case '수면 문제':
+      return 'SLEEP';
+    case '피부 문제':
+      return 'SKIN_PROBLEM';
+    default:
+      return '';
+  }
+};
+
 const SurveyHealthConcernsScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedConcerns, setSelectedConcerns] = useState<string[]>([]);
@@ -41,26 +62,27 @@ const SurveyHealthConcernsScreen = () => {
     );
   };
 
-  const handleNext = () => {
-    console.log('Selected health concerns:', selectedConcerns);
-    navigation.navigate('SurveyHealthGoalsScreen');
+  const handleNext = async () => {
+    const apiValues = selectedConcerns.map(mapToApiValue).filter(Boolean);
+    try {
+      await submitSurveyAnswer('concerns', {concerns: apiValues});
+      navigation.navigate('SurveyHealthGoalsScreen');
+    } catch (error) {
+      console.error('❌ 건강 고민 저장 실패:', error);
+    }
   };
 
   return (
     <Container>
-      {/* 상단 헤더 */}
       <SurveyHeader title="건강고민 & 목표" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={13 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 텍스트 */}
       <SurveyTitle text="현재 가장 신경쓰이는 건강고민이 무엇인가요?" />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* 다중 선택 버튼 */}
       <ButtonGrid>
         {healthConcerns.map(concern => (
           <ButtonSpacing key={concern}>
@@ -73,7 +95,6 @@ const SurveyHealthConcernsScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* 공통 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

@@ -9,6 +9,8 @@ import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
+import {getOrCreateSurvey, submitSurveyAnswer} from '../../utils/surveyUtils';
+
 type RootStackParamList = {
   SurveyMedicationOkScreen: undefined;
   SurveyMedicationScreen: undefined;
@@ -24,13 +26,26 @@ const medicationOptions = [
   '혈압약',
   '혈액응고제',
   '당뇨약',
-  '갑상선 약',
+  '갑상선약',
   '스테로이드',
   '위장약',
   '우울증약',
   '피임약',
   '진통제',
 ];
+
+// 백엔드에 보내야 하는 코드 매핑
+const medicationMap: {[key: string]: string} = {
+  혈압약: 'BLOOD_PRESSURE',
+  혈액응고제: 'ANTICOAGULANT',
+  당뇨약: 'DIABETES',
+  갑상선약: 'THYROID',
+  스테로이드: 'STEROID',
+  위장약: 'GASTRIC',
+  우울증약: 'DEPRESSION',
+  피임약: 'CONTRACEPTIVE',
+  진통제: 'PAINKILLER',
+};
 
 const SurveyMedicationScreen = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -42,29 +57,39 @@ const SurveyMedicationScreen = () => {
     );
   };
 
-  const handleNext = () => {
-    console.log('Selected medications:', selectedMedications);
-    navigation.navigate('SurveySupplementOkScreen');
+  const handleNext = async () => {
+    if (selectedMedications.length === 0) return;
+
+    const medicationCodes = selectedMedications.map(
+      item => medicationMap[item],
+    );
+
+    try {
+      const surveyId = await getOrCreateSurvey();
+      await submitSurveyAnswer(
+        'medications',
+        {medications: medicationCodes},
+        surveyId,
+      );
+      console.log('✅ medications 저장 완료');
+      navigation.navigate('SurveySupplementOkScreen');
+    } catch (error) {
+      console.error('❌ 설문 저장 실패:', error);
+    }
   };
 
   return (
     <Container>
-      {/* 헤더 */}
       <SurveyHeader
         title="복용약 & 건강기능식품 정보"
         skipTarget="NextSurveyScreen"
       />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={6 / 24} />
       </ProgressBarContainer>
-
-      {/* 질문 */}
       <SurveyTitle text="현재 복용중이신 약을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* 버튼 목록 */}
       <ButtonGrid>
         {medicationOptions.map(item => (
           <ButtonSpacing key={item}>
@@ -77,7 +102,6 @@ const SurveyMedicationScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* 버튼 그룹 */}
       <SurveyButtonGroupWrapper>
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}

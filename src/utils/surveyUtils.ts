@@ -1,12 +1,82 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createSurvey, patchSurveyAnswer} from '../api/api';
+import axios from 'axios';
+import {API_URL} from './env';
 
-/**
- * 설문조사 상태를 초기화하는 함수
- * AsyncStorage에 저장된 모든 설문 관련 데이터를 삭제합니다.
- */
+/** 설문 ID 저장 */
+export const setSurveyId = async (id: number): Promise<void> => {
+  await AsyncStorage.setItem('survey_id', String(id));
+};
+
+/** 설문 ID 불러오기 */
+export const getSurveyId = async (): Promise<number> => {
+  const id = await AsyncStorage.getItem('survey_id');
+  if (!id) throw new Error('❌ surveyId가 존재하지 않습니다.');
+  return Number(id);
+};
+
+/** 설문 생성 또는 기존 설문 ID 반환 */
+// 기존 설문 가져오는 함수
+export const fetchExistingSurvey = async (): Promise<number | null> => {
+  const token = await AsyncStorage.getItem('accessToken');
+
+  try {
+    const response = await axios.get(`${API_URL}/surveys`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const surveyData = response.data?.data;
+    return surveyData?.id ?? null; // ✅ 배열이 아니라 객체에서 id 추출
+  } catch (error) {
+    console.error('❌ 기존 설문 조회 실패:', error);
+    return null;
+  }
+};
+
+// 설문 생성 또는 기존 설문 ID 사용
+export const getOrCreateSurvey = async (): Promise<number> => {
+  // 1. AsyncStorage에 있는 경우 우선 사용
+  const storedId = await AsyncStorage.getItem('survey_id');
+  if (storedId) {
+    console.log('📦 저장된 survey_id 사용:', storedId);
+    return Number(storedId);
+  }
+
+  // 2. 기존 설문 조회
+  const existingId = await fetchExistingSurvey();
+  if (existingId) {
+    await AsyncStorage.setItem('survey_id', String(existingId));
+    console.log('📦 조회된 기존 survey_id 사용:', existingId);
+    return existingId;
+  }
+
+  // 3. 없으면 새로 생성
+  try {
+    const newId = await createSurvey();
+    await AsyncStorage.setItem('survey_id', String(newId));
+    console.log('✅ 새로 생성된 survey_id:', newId);
+    return newId;
+  } catch (error) {
+    console.error('❌ 설문 생성 실패:', error);
+    throw error;
+  }
+};
+/** 설문 항목 저장 */
+export const submitSurveyAnswer = async (
+  field: string,
+  value: any,
+  surveyIdOverride?: number,
+): Promise<void> => {
+  const id = surveyIdOverride ?? (await getSurveyId());
+  await patchSurveyAnswer(id, field, value);
+  console.log(`✅ ${field} 저장 완료`);
+};
+
+/** 설문 상태 초기화 */
 export const resetSurveyState = async (): Promise<void> => {
   try {
-    // 설문 관련 키 목록 (필요에 따라 추가)
     const surveyKeys = [
       'survey_gender',
       'survey_age',
@@ -27,40 +97,33 @@ export const resetSurveyState = async (): Promise<void> => {
       'survey_smoking',
       'survey_drink',
       'survey_last_completed',
+      'survey_id',
     ];
 
-    // 모든 설문 관련 키 삭제
-    const promises = surveyKeys.map(key => AsyncStorage.removeItem(key));
-    await Promise.all(promises);
-    
-    console.log('설문조사 상태가 초기화되었습니다.');
+    await Promise.all(surveyKeys.map(key => AsyncStorage.removeItem(key)));
+    console.log('🧹 설문 상태 초기화 완료');
   } catch (error) {
-    console.error('설문조사 상태 초기화 중 오류 발생:', error);
+    console.error('❌ 설문 상태 초기화 중 오류 발생:', error);
     throw error;
   }
 };
 
-/**
- * 설문조사 완료 시간을 저장하는 함수
- */
+/** 마지막 설문 완료 시간 저장 */
 export const saveSurveyCompletionTime = async (): Promise<void> => {
   try {
     const currentDate = new Date().toISOString();
     await AsyncStorage.setItem('survey_last_completed', currentDate);
   } catch (error) {
-    console.error('설문조사 완료 시간 저장 중 오류 발생:', error);
+    console.error('설문 완료 시간 저장 실패:', error);
   }
 };
 
-/**
- * 마지막 설문조사 완료 시간을 가져오는 함수
- * @returns {Promise<string | null>} 마지막 설문조사 완료 시간 (ISO 문자열) 또는 null
- */
+/** 마지막 설문 완료 시간 불러오기 */
 export const getLastSurveyCompletionTime = async (): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem('survey_last_completed');
   } catch (error) {
-    console.error('마지막 설문조사 완료 시간 조회 중 오류 발생:', error);
+    console.error('마지막 완료 시간 조회 실패:', error);
     return null;
   }
 };

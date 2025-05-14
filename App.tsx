@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {setTestAccessToken} from './src/utils/setTestToken';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Navigation from './src/navigation/Navigation';
+import LoginScreen from './src/screens/Auth/LoginScreen';
+import SignUpScreen from './src/screens/Auth/SignUpScreen';
 import NutritionDetails from './src/screens/Main/NutritionDetailsScreen';
 import FoodRecommendation from './src/screens/Main/FoodRecommendationScreen';
 import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen'; // 경로는 네이밍에 맞게 조정
@@ -44,12 +47,21 @@ const Stack = createNativeStackNavigator();
 const FoodUploadStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 
+export type RootStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
+  Main: undefined;
+};
+
 const FoodUploadNavigator = () => {
   return (
-    <FoodUploadStack.Navigator 
+    <FoodUploadStack.Navigator
       initialRouteName="FoodUploadResultScreen"
       screenOptions={{headerShown: false}}>
-      <FoodUploadStack.Screen name="FoodUploadScreen" component={FoodUploadScreen} />
+      <FoodUploadStack.Screen
+        name="FoodUploadScreen"
+        component={FoodUploadScreen}
+      />
       <FoodUploadStack.Screen
         name="FoodUploadResultScreen"
         component={FoodUploadResultScreen}
@@ -84,43 +96,110 @@ const ProfileNavigator = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    setTestAccessToken(); // 앱 실행 시 한 번만 accessToken 저장
+  }, []);
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {/* 로그인 관련 */}
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        {/* <Stack.Screen name="Main" component={MainScreen} /> */}
         {/* 전체 탭 네비게이션 구조 */}
         <Stack.Screen name="Main" component={Navigation} />
         {/* 탭 외의 상세 페이지는 여기에서 관리 */}
         <Stack.Screen name="NutritionDetails" component={NutritionDetails} />
-        <Stack.Screen name="FoodRecommendation" component={FoodRecommendation} />
-        <Stack.Screen name="SupplementDetails" component={SupplementDetails} /> 
+        <Stack.Screen
+          name="FoodRecommendation"
+          component={FoodRecommendation}
+        />
+        <Stack.Screen name="SupplementDetails" component={SupplementDetails} />
         <Stack.Screen name="MealRecord" component={MealRecords} />
         <Stack.Screen name="MealDetails" component={MealDetails} />
         <Stack.Screen name="FoodUpload" component={FoodUploadNavigator} />
-        <Stack.Screen name="Profile" component={ProfileNavigator} />
-        
+        <Stack.Screen name="ProfileStack" component={ProfileNavigator} />
+
         {/* 설문조사 화면 */}
-        <Stack.Screen name="SurveyGenderScreen" component={SurveyGenderScreen} />
+        <Stack.Screen
+          name="SurveyGenderScreen"
+          component={SurveyGenderScreen}
+        />
         <Stack.Screen name="SurveyAgeScreen" component={SurveyAgeScreen} />
-        <Stack.Screen name="SurveyHeightScreen" component={SurveyHeightScreen} />
-        <Stack.Screen name="SurveyWeightScreen" component={SurveyWeightScreen} />
-        <Stack.Screen name="SurveyHealthGoalsScreen" component={SurveyHealthGoalsScreen} />
-        <Stack.Screen name="SurveyHealthConcernsScreen" component={SurveyHealthConcernsScreen} />
-        <Stack.Screen name="SurveyAllergyScreen" component={SurveyAllergyScreen} />
-        <Stack.Screen name="SurveyAllergyOkScreen" component={SurveyAllergyOkScreen} />
-        <Stack.Screen name="SurveyDiseaseScreen" component={SurveyDiseaseScreen} />
-        <Stack.Screen name="SurveyDiseaseOkScreen" component={SurveyDiseaseOkScreen} />
-        <Stack.Screen name="SurveyFamilyHistoryScreen" component={SurveyFamilyHistoryScreen} />
-        <Stack.Screen name="SurveyFamilyHistoryOkScreen" component={SurveyFamilyHistoryOkScreen} />
-        <Stack.Screen name="SurveyMedicationScreen" component={SurveyMedicationScreen} />
-        <Stack.Screen name="SurveyMedicationOkScreen" component={SurveyMedicationOkScreen} />
-        <Stack.Screen name="SurveySupplementScreen" component={SurveySupplementScreen} />
-        <Stack.Screen name="SurveySupplementOkScreen" component={SurveySupplementOkScreen} />
-        <Stack.Screen name="SurveyExerciseScreen" component={SurveyExerciseScreen} />
-        <Stack.Screen name="SurveySleepTimeScreen" component={SurveySleepTimeScreen} />
+        <Stack.Screen
+          name="SurveyHeightScreen"
+          component={SurveyHeightScreen}
+        />
+        <Stack.Screen
+          name="SurveyWeightScreen"
+          component={SurveyWeightScreen}
+        />
+        <Stack.Screen
+          name="SurveyHealthGoalsScreen"
+          component={SurveyHealthGoalsScreen}
+        />
+        <Stack.Screen
+          name="SurveyHealthConcernsScreen"
+          component={SurveyHealthConcernsScreen}
+        />
+        <Stack.Screen
+          name="SurveyAllergyScreen"
+          component={SurveyAllergyScreen}
+        />
+        <Stack.Screen
+          name="SurveyAllergyOkScreen"
+          component={SurveyAllergyOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyDiseaseScreen"
+          component={SurveyDiseaseScreen}
+        />
+        <Stack.Screen
+          name="SurveyDiseaseOkScreen"
+          component={SurveyDiseaseOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyFamilyHistoryScreen"
+          component={SurveyFamilyHistoryScreen}
+        />
+        <Stack.Screen
+          name="SurveyFamilyHistoryOkScreen"
+          component={SurveyFamilyHistoryOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyMedicationScreen"
+          component={SurveyMedicationScreen}
+        />
+        <Stack.Screen
+          name="SurveyMedicationOkScreen"
+          component={SurveyMedicationOkScreen}
+        />
+        <Stack.Screen
+          name="SurveySupplementScreen"
+          component={SurveySupplementScreen}
+        />
+        <Stack.Screen
+          name="SurveySupplementOkScreen"
+          component={SurveySupplementOkScreen}
+        />
+        <Stack.Screen
+          name="SurveyExerciseScreen"
+          component={SurveyExerciseScreen}
+        />
+        <Stack.Screen
+          name="SurveySleepTimeScreen"
+          component={SurveySleepTimeScreen}
+        />
         <Stack.Screen name="SurveyMealScreen" component={SurveyMealScreen} />
-        <Stack.Screen name="SurveyVegetableScreen" component={SurveyVegetableScreen} />
+        <Stack.Screen
+          name="SurveyVegetableScreen"
+          component={SurveyVegetableScreen}
+        />
         <Stack.Screen name="SurveyWaterScreen" component={SurveyWaterScreen} />
-        <Stack.Screen name="SurveySmokingScreen" component={SurveySmokingScreen} />
+        <Stack.Screen
+          name="SurveySmokingScreen"
+          component={SurveySmokingScreen}
+        />
         <Stack.Screen name="SurveyDrinkScreen" component={SurveyDrinkScreen} />
       </Stack.Navigator>
     </NavigationContainer>

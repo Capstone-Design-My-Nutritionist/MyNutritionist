@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import LeftArrowIcon from '../Icon/LeftArrowIcon';
 
 interface Props {
   title: string;
@@ -13,7 +14,7 @@ const CommonHeader = ({title}: Props) => {
   return (
     <Wrapper>
       <BackButton onPress={() => navigation.goBack()}>
-        <BackText>{'<'}</BackText>
+        <LeftArrowIcon />
       </BackButton>
       <Title>{title}</Title>
       <Underline />
@@ -49,9 +50,4 @@ const BackButton = styled.TouchableOpacity`
   height: 50px;
   justify-content: center;
   align-items: center;
-`;
-
-const BackText = styled.Text`
-  font-size: 20px;
-  color: #731a22;
 `;

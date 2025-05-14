@@ -9,6 +9,8 @@ import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
+import {getOrCreateSurvey, submitSurveyAnswer} from '../../utils/surveyUtils';
+
 type RootStackParamList = {
   SurveySupplementOkScreen: undefined;
   SurveySupplementScreen: undefined;
@@ -32,6 +34,18 @@ const supplementOptions = [
   '홍삼(인삼)',
 ];
 
+const supplementMap: {[key: string]: string} = {
+  '오메가-3': 'OMEGA3',
+  비타민K: 'VITAMIN_K',
+  마그네슘: 'MAGNESIUM',
+  칼슘: 'CALCIUM',
+  철분: 'IRON',
+  비타민C: 'VITAMIN_C',
+  프로바이오틱스: 'PROBIOTICS',
+  비타민D: 'VITAMIN_D',
+  '홍삼(인삼)': 'GINSENG',
+};
+
 const SurveySupplementScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedSupplements, setSelectedSupplements] = useState<string[]>([]);
@@ -42,29 +56,39 @@ const SurveySupplementScreen = () => {
     );
   };
 
-  const handleNext = () => {
-    console.log('Selected supplements:', selectedSupplements);
-    navigation.navigate('SurveyDiseaseOkScreen');
+  const handleNext = async () => {
+    if (selectedSupplements.length === 0) return;
+
+    const supplementCodes = selectedSupplements.map(
+      item => supplementMap[item],
+    );
+
+    try {
+      const surveyId = await getOrCreateSurvey();
+      await submitSurveyAnswer(
+        'supplements',
+        {supplements: supplementCodes},
+        surveyId,
+      );
+      console.log('✅ supplements 저장 완료');
+      navigation.navigate('SurveyDiseaseOkScreen');
+    } catch (error) {
+      console.error('❌ 설문 저장 실패:', error);
+    }
   };
 
   return (
     <Container>
-      {/* 헤더 */}
       <SurveyHeader
         title="복용약 & 건강기능식품 정보"
         skipTarget="NextSurveyScreen"
       />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={8 / 24} />
       </ProgressBarContainer>
-
-      {/* 질문 */}
       <SurveyTitle text="현재 복용중이신 건강기능식품을 선택해주세요." />
       <SubText>(다중선택 가능)</SubText>
 
-      {/* 버튼 목록 */}
       <ButtonGrid>
         {supplementOptions.map(item => (
           <ButtonSpacing key={item}>
@@ -77,7 +101,6 @@ const SurveySupplementScreen = () => {
         ))}
       </ButtonGrid>
 
-      {/* 버튼 그룹 */}
       <SurveyButtonGroupWrapper>
         <SurveyButtonGroup
           onPrevious={() => navigation.goBack()}

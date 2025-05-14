@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SurveyInputField from '../../components/TextInputBox/SurveyInputField';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyExerciseScreen: undefined;
@@ -24,24 +25,29 @@ const SurveyMealScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [mealCount, setMealCount] = useState<number | null>(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (mealCount !== null) {
-      console.log('Navigating to NextSurveyScreen... Meal Count:', mealCount);
-      navigation.navigate('SurveyVegetableScreen');
+      try {
+        await submitSurveyAnswer('meal-count', {mealCount});
+        console.log('✅ mealCount 저장 완료:', mealCount);
+        navigation.navigate('SurveyVegetableScreen');
+      } catch (error) {
+        console.error('❌ mealCount 저장 실패:', error);
+      }
     }
   };
 
   return (
     <Container>
-      {/* 공통 헤더 */}
+      {/* 상단 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
+      {/* 진행률 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={17 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 타이틀 */}
+      {/* 질문 */}
       <SurveyTitle text="하루에 평균 몇 끼를 드시나요?" />
 
       {/* 입력 필드 */}
@@ -50,13 +56,13 @@ const SurveyMealScreen = () => {
           label=""
           placeholder="횟수를 입력해주세요."
           value={mealCount !== null ? mealCount.toString() : ''}
-          onChangeText={text => setMealCount(text ? parseInt(text, 10) : 0)}
+          onChangeText={text => setMealCount(text ? parseInt(text, 10) : null)}
           keyboardType="numeric"
         />
         <UnitText>끼</UnitText>
       </InputWrapper>
 
-      {/* 버튼 그룹 */}
+      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

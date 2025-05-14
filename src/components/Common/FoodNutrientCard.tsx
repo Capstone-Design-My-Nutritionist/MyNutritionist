@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components/native';
 import {Picker} from '@react-native-picker/picker';
 import {Shadow} from 'react-native-shadow-2';
+import {View} from 'react-native';
+import {Dimensions} from 'react-native';
 
 interface Nutrient {
   label: string;
@@ -19,6 +21,8 @@ interface Props {
   onInput: () => void;
   showRemoveButton?: boolean;
 }
+
+const screenWidth = Dimensions.get('window').width;
 
 const FoodNutrientCard: React.FC<Props> = ({
   foodName,
@@ -47,7 +51,6 @@ const FoodNutrientCard: React.FC<Props> = ({
           </Picker>
         </UnitPickerWrapper>
       </TopRow>
-
       {/* 1인분 정보 + 입력 필드 */}
       <MiddleRow>
         <InfoColumn>
@@ -74,14 +77,18 @@ const FoodNutrientCard: React.FC<Props> = ({
           </Shadow>
         </InputGroup>
       </MiddleRow>
-
-      <Divider />
+      <Divider width={screenWidth} />
 
       {nutrients.map((nutrient, idx) => (
-        <NutrientRow key={idx}>
-          <NutrientLabel>{nutrient.label}</NutrientLabel>
-          <NutrientValue>{nutrient.value}</NutrientValue>
-        </NutrientRow>
+        <View key={idx}>
+          <NutrientRow>
+            <NutrientLabel>{nutrient.label}</NutrientLabel>
+            <NutrientValue>{nutrient.value}</NutrientValue>
+          </NutrientRow>
+
+          {/* 마지막 아이템이면 Divider 생략 */}
+          {idx !== nutrients.length - 1 && <InnerDivider />}
+        </View>
       ))}
     </Container>
   );
@@ -90,7 +97,8 @@ const FoodNutrientCard: React.FC<Props> = ({
 export default FoodNutrientCard;
 
 const Container = styled.View`
-  margin-bottom: 16px;
+  padding-vertical: 12px;
+  padding-horizontal: 20px;
 `;
 
 const TopRow = styled.View`
@@ -117,7 +125,7 @@ const MiddleRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 4px;
+  margin-top: 8px;
 `;
 
 const InfoColumn = styled.View``;
@@ -160,10 +168,18 @@ const InputButtonText = styled.Text`
   font-family: 'Pretendard-Bold';
 `;
 
-const Divider = styled.View`
+const Divider = styled.View<{width: number}>`
+  width: ${(props: {width: number}) => props.width}px;
   height: 1px;
   background-color: rgba(115, 26, 34, 0.5);
-  margin-vertical: 12px;
+  align-self: center;
+  margin-vertical: 16px;
+`;
+
+const InnerDivider = styled.View`
+  height: 1px;
+  background-color: rgba(142, 142, 142, 0.5);
+  margin-vertical: 16px;
 `;
 
 const NutrientRow = styled.View`
@@ -174,7 +190,7 @@ const NutrientRow = styled.View`
 
 const NutrientLabel = styled.Text`
   font-size: 14px;
-  font-family: 'Pretendard-Regular';
+  font-family: 'Pretendard-SemiBold';
   color: black;
 `;
 
