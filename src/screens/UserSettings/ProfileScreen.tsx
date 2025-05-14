@@ -2,12 +2,17 @@ import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Alert, ActivityIndicator} from 'react-native';
 import {Shadow} from 'react-native-shadow-2';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import CustomToggle from '../../components/Toggle/CustomToggle';
 import TimePickerModal from '../../components/Modal/TimePickerModal';
 import SurveySkipModal from '../../components/Modal/SurveySkipModal';
 import {resetSurveyState} from '../../utils/surveyUtils';
 import RightArrowIcon from '../../components/Icon/RightArrowIcon';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {API_URL} from '../../utils/env';
 
 type RootStackParamList = {
   ProfileScreen: undefined;
@@ -27,6 +32,7 @@ type RootStackParamList = {
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const [isPushEnabled, setIsPushEnabled] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTimeType, setSelectedTimeType] = useState<
@@ -58,6 +64,73 @@ const ProfileScreen = () => {
     navigation.navigate('SurveyGenderScreen');
   };
 
+  // 로그아웃 핸들러
+  const handleLogout = async () => {
+    try {
+      // 토큰 가져오기
+      const token = await AsyncStorage.getItem('accessToken');
+      
+      if (!token) {
+        // 토큰이 없는 경우 바로 로그인 화면으로 이동
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+        return;
+      }
+      
+      // API URL 디버깅
+      console.log('로그아웃 API URL:', `${API_URL}/auth/logout`);
+      console.log('토큰:', token);
+      
+      try {
+        // API 호출 시도
+        const response = await axios.post(
+          `${API_URL}/auth/logout`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            timeout: 10000, // 10초 타임아웃 설정
+          }
+        );
+        
+        console.log('로그아웃 응답:', response.data);
+      } catch (apiError) {
+        // API 호출 실패는 로깅만 하고 계속 진행
+        console.log('로그아웃 API 호출 실패:', apiError);
+        // 서버 로그아웃에 실패해도 로컬 로그아웃은 진행
+      }
+      
+      // 서버 응답 성공 여부와 관계없이 로컬 로그아웃 진행
+      await AsyncStorage.removeItem('accessToken');
+      
+      // 로그인 화면으로 이동
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+      
+    } catch (error: any) {
+      console.error('로그아웃 처리 중 오류:', error);
+      
+      // 에러가 발생해도 로컬 로그아웃 시도
+      try {
+        await AsyncStorage.removeItem('accessToken');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      } catch (storageError) {
+        console.error('로컬 로그아웃 실패:', storageError);
+        Alert.alert('로그아웃 실패', '로그아웃 처리 중 오류가 발생했습니다. 앱을 재시작해 주세요.');
+      }
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <>
       <TitleWrapper>
@@ -65,7 +138,10 @@ const ProfileScreen = () => {
         <TitleUnderline />
       </TitleWrapper>
 
-      <Container>
+      <Container 
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
         <SectionTitle>정보수정</SectionTitle>
         <ShadowWrapper>
           <Shadow
@@ -232,6 +308,25 @@ const ProfileScreen = () => {
             </Card>
           </Shadow>
         </ShadowWrapper>
+
+        <SectionTitle>계정</SectionTitle>
+        <ShadowWrapper>
+          <Shadow
+            distance={4}
+            offset={[0, 2]}
+            startColor="rgba(0, 0, 0, 0.05)"
+            style={{width: '100%', borderRadius: 8}}>
+            <Card>
+              <LogoutButton onPress={handleLogout} disabled={isLoggingOut}>
+                {isLoggingOut ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <LogoutText>로그아웃</LogoutText>
+                )}
+              </LogoutButton>
+            </Card>
+          </Shadow>
+        </ShadowWrapper>
       </Container>
 
       {selectedTimeType && (
@@ -288,6 +383,7 @@ const Container = styled.ScrollView`
   flex: 1;
   background-color: #fffbfb;
   padding: 14px;
+  padding-bottom: 80px;
 `;
 const SectionTitle = styled.Text`
   font-family: 'Pretendard-Bold';
@@ -363,3 +459,17 @@ const TimeText = styled.Text<TimeProps>(({isPushEnabled}: TimeProps) => ({
   fontSize: 12,
   color: isPushEnabled ? '#d95b72' : '#999999',
 }));
+
+const LogoutButton = styled.TouchableOpacity`
+  background-color: #d95b72;
+  padding: 12px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LogoutText = styled.Text`
+  color: #ffffff;
+  font-size: 16px;
+  font-family: 'Pretendard-Medium';
+`;

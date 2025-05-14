@@ -5,12 +5,18 @@ interface StackedNutrientBarProps {
   carbohydrate: number;
   fat: number;
   protein: number;
+  carbValue?: number;
+  fatValue?: number;
+  proteinValue?: number;
 }
 
 const StackedNutrientBar: React.FC<StackedNutrientBarProps> = ({
   carbohydrate,
   fat,
   protein,
+  carbValue = 0,
+  fatValue = 0,
+  proteinValue = 0,
 }) => {
   const total = carbohydrate + fat + protein;
 
@@ -23,15 +29,15 @@ const StackedNutrientBar: React.FC<StackedNutrientBarProps> = ({
       <LegendRow>
         <LegendItem>
           <ColorDot color="#FD384C" />
-          <LegendText>탄수화물 {carbohydrate}g</LegendText>
+          <LegendText>탄수화물 {carbValue.toFixed(2)}g</LegendText>
         </LegendItem>
         <LegendItem>
           <ColorDot color="#FD9E38" />
-          <LegendText>지방 {fat}g</LegendText>
+          <LegendText>지방 {fatValue.toFixed(2)}g</LegendText>
         </LegendItem>
         <LegendItem>
           <ColorDot color="#D95B72" />
-          <LegendText>단백질 {protein}g</LegendText>
+          <LegendText>단백질 {proteinValue.toFixed(2)}g</LegendText>
         </LegendItem>
       </LegendRow>
 
@@ -46,7 +52,9 @@ const StackedNutrientBar: React.FC<StackedNutrientBarProps> = ({
 
 export default StackedNutrientBar;
 
-const Wrapper = styled.View``;
+const Wrapper = styled.View`
+margin-top: 12px;
+`;
 
 const LegendRow = styled.View`
   flex-direction: row;

@@ -24,6 +24,7 @@ const LoginScreen = () => {
 
     try {
       console.log('📤 로그인 요청:', {email, password});
+      console.log('🌐 API_URL:', API_URL);
 
       const response = await axios.post(`${API_URL}/auth/login`, {
         email,

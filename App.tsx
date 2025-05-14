@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {setTestAccessToken} from './src/utils/setTestToken';
+// import {setTestAccessToken} from './src/utils/setTestToken';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Navigation from './src/navigation/Navigation';
@@ -7,16 +7,16 @@ import LoginScreen from './src/screens/Auth/LoginScreen';
 import SignUpScreen from './src/screens/Auth/SignUpScreen';
 import NutritionDetails from './src/screens/Main/NutritionDetailsScreen';
 import FoodRecommendation from './src/screens/Main/FoodRecommendationScreen';
-import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen'; // 경로는 네이밍에 맞게 조정
+import SupplementDetails from './src/screens/Supplement/SupplementDetailsScreen';
 import MealRecords from './src/screens/Main/MealRecordsScreen';
 import MealDetails from './src/screens/Calendar/MealDetailsScreen';
-import FoodUploadScreen from './src/screens/FoodUpload/FoodUploadScreen';
-import FoodUploadResultScreen from './src/screens/FoodUpload/FoodUploadResultScreen';
+import FoodUploadNavigator from './src/navigation/FoodUploadNavigator';
 import ProfileScreen from './src/screens/UserSettings/ProfileScreen';
 import PasswordVerifyScreen from './src/screens/UserSettings/PasswordVerifyScreen';
 import PasswordChangeScreen from './src/screens/UserSettings/PasswordChangeScreen';
 import NicknameChangeScreen from './src/screens/UserSettings/NicknameChangeScreen';
 import AccountDeleteScreen from './src/screens/UserSettings/AccountDeleteScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Survey Screens
 import SurveyGenderScreen from './src/screens/Survey/SurveyGenderScreen';
@@ -44,30 +44,12 @@ import SurveySmokingScreen from './src/screens/Survey/SurveySmokingScreen';
 import SurveyDrinkScreen from './src/screens/Survey/SurveyDrinkScreen';
 
 const Stack = createNativeStackNavigator();
-const FoodUploadStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 
 export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
   Main: undefined;
-};
-
-const FoodUploadNavigator = () => {
-  return (
-    <FoodUploadStack.Navigator
-      initialRouteName="FoodUploadResultScreen"
-      screenOptions={{headerShown: false}}>
-      <FoodUploadStack.Screen
-        name="FoodUploadScreen"
-        component={FoodUploadScreen}
-      />
-      <FoodUploadStack.Screen
-        name="FoodUploadResultScreen"
-        component={FoodUploadResultScreen}
-      />
-    </FoodUploadStack.Navigator>
-  );
 };
 
 const ProfileNavigator = () => {
@@ -96,11 +78,39 @@ const ProfileNavigator = () => {
 };
 
 const App = () => {
+  // 네비게이션 참조 생성
+  const navigationRef = React.useRef(null);
+
   useEffect(() => {
-    setTestAccessToken(); // 앱 실행 시 한 번만 accessToken 저장
+    // 앱 시작 시 저장된 토큰 확인
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (token) {
+          console.log('✅ 저장된 토큰 발견:', token.substring(0, 20) + '...');
+          // 토큰이 있으면 메인 화면으로 자동 이동
+          // 네비게이션 참조가 준비된 후에 실행
+          setTimeout(() => {
+            if (navigationRef.current) {
+              // @ts-ignore - 타입 에러 무시
+              navigationRef.current.reset({
+                index: 0,
+                routes: [{ name: 'Main' }]
+              });
+            }
+          }, 100);
+        } else {
+          console.log('❌ 저장된 토큰 없음, 로그인 화면 표시');
+        }
+      } catch (error) {
+        console.error('토큰 확인 중 오류:', error);
+      }
+    };
+    
+    checkToken();
   }, []);
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {/* 로그인 관련 */}
         <Stack.Screen name="Login" component={LoginScreen} />
@@ -108,7 +118,8 @@ const App = () => {
         {/* <Stack.Screen name="Main" component={MainScreen} /> */}
         {/* 전체 탭 네비게이션 구조 */}
         <Stack.Screen name="Main" component={Navigation} />
-        {/* 탭 외의 상세 페이지는 여기에서 관리 */}
+
+        {/* 일반 화면 */}
         <Stack.Screen name="NutritionDetails" component={NutritionDetails} />
         <Stack.Screen
           name="FoodRecommendation"
