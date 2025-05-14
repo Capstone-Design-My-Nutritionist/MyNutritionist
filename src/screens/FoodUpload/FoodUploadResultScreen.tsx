@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import styled from 'styled-components/native';
 import {Alert, ToastAndroid, Platform, ScrollView, FlatList, TouchableOpacity, Modal, Text, View, Image} from 'react-native';
 import {useRoute, useNavigation} from '@react-navigation/native';
@@ -61,6 +61,7 @@ interface SelectedFood {
   amount: string;
   unit: string;
   calculatedNutrition: Record<string, number>;
+  tempAmount: string; // 임시 입력값을 저장하기 위한 필드
 }
 
 // 결과 타입 정의
@@ -78,6 +79,18 @@ const FoodUploadResultScreen = () => {
   const [mealType, setMealType] = useState('아침');
   const [loading, setLoading] = useState(false);
   
+    // 영양소 계산 함수 - 인분에 따라 영양소 값 계산
+  const calculateNutrition = (nutrition: Record<string, number>, amount: number): Record<string, number> => {
+    const result: Record<string, number> = {};
+    
+    // 원본 영양소 값에 인분 값을 곱함
+    Object.entries(nutrition).forEach(([key, value]) => {
+      result[key] = value * amount;
+    });
+    
+    return result;
+  };
+
   // 음식 선택 관리
   const [selectedFoods, setSelectedFoods] = useState<SelectedFood[]>(
     // 초기값으로 첫 번째 음식 설정
@@ -87,10 +100,16 @@ const FoodUploadResultScreen = () => {
             food: result.foods[0],
             amount: '1',
             unit: '인분',
-            calculatedNutrition: { ...result.foods[0]?.nutrition || {} }
+            calculatedNutrition: calculateNutrition(result.foods[0]?.nutrition || {}, 1),
+            tempAmount: '1' // 임시 입력값을 저장하기 위한 필드
           }
         ] 
       : []
+  );
+  
+  // 선택되지 않은 음식 목록 관리
+  const [unselectedFoods, setUnselectedFoods] = useState<FoodItem[]>(
+    result.foods.length > 1 ? result.foods.slice(1) : []
   );
   
   // 총 영양소 값 계산
@@ -141,10 +160,10 @@ const FoodUploadResultScreen = () => {
   }, [selectedFoods]);
 
   // 영양소 값 필터링하여 FoodNutrientCard에 표시할 형태로 변환
-  const getNutrientItems = () => {
+  const getNutrientItems = (nutrition: Record<string, number>) => {
     const items = [];
     
-    for (const [key, value] of Object.entries(totalNutrition)) {
+    for (const [key, value] of Object.entries(nutrition)) {
       // 음수나 -1은 표시하지 않음
       // 칼로리, 탄수화물, 단백질, 지방은 위에 이미 표시되어 있으므로 제외
       if (value > 0 && !['energy', 'carbohydrate', 'protein', 'fat'].includes(key)) {
@@ -167,20 +186,21 @@ const FoodUploadResultScreen = () => {
     
     return items;
   };
+  
+  // 총 영양소 정보를 기반으로 영양소 항목 생성
+  const totalNutrientItems = useMemo(() => {
+    return getNutrientItems(totalNutrition);
+  }, [totalNutrition]);
 
-  // 대체 음식 선택 처리
-  const handleFoodSelect = (index: number, food: FoodItem) => {
+  
+
+  // 음식 추가 처리
+  const addFood = (food: FoodItem) => {
     if (!food || !food.nutrition) {
       Alert.alert('오류', '유효하지 않은 음식 데이터입니다.');
       return;
     }
-    const newSelectedFoods = [...selectedFoods];
-    newSelectedFoods[index] = { food, amount: '1', unit: '인분', calculatedNutrition: { ...food.nutrition } };
-    setSelectedFoods(newSelectedFoods);
-  };
-  
-  // 음식 추가
-  const addFood = (food: any) => {
+    
     // 이미 선택된 음식인지 확인
     const alreadySelected = selectedFoods.some(item => item.food.name === food.name);
     if (alreadySelected) {
@@ -188,15 +208,20 @@ const FoodUploadResultScreen = () => {
       return;
     }
     
+    // 선택된 음식 목록에 추가
     setSelectedFoods(prev => [
       ...prev,
       {
         food,
         amount: '1',
         unit: '인분',
-        calculatedNutrition: { ...food.nutrition }
+        calculatedNutrition: calculateNutrition(food.nutrition, 1),
+        tempAmount: '1' // 임시 입력값 초기화
       }
     ]);
+    
+    // 선택되지 않은 음식 목록에서 제거
+    setUnselectedFoods(prev => prev.filter(item => item.name !== food.name));
   };
   
   // 음식 제거
@@ -224,31 +249,18 @@ const FoodUploadResultScreen = () => {
       }
       
       // 삭제할 음식 정보 로그 (디버깅용)
-      console.log('삭제할 음식:', selectedFoods[index]?.food?.name);
+      const foodToRemove = selectedFoods[index];
+      console.log('삭제할 음식:', foodToRemove?.food?.name);
       
       // 새 배열 생성 및 해당 인덱스 삭제
       const newSelectedFoods = selectedFoods.filter((_, i) => i !== index);
       console.log('삭제 후 음식 개수:', newSelectedFoods.length);
       
-      // 모든 음식이 삭제된 경우 result.foods에서 첫 번째 음식을 다시 추가
-      // 이 부분은 위에서 이미 검사하기 때문에 실행되지 않지만 안전을 위해 남겨둡니다
-      if (newSelectedFoods.length === 0 && result.foods && result.foods.length > 0) {
-        const defaultFood = result.foods[0];
-        console.log('기본 음식 추가:', defaultFood?.name);
-        
-        if (defaultFood && defaultFood.nutrition) {
-          newSelectedFoods.push({
-            food: defaultFood,
-            amount: '1',
-            unit: '인분',
-            calculatedNutrition: { ...(defaultFood.nutrition || {}) }
-          });
-        } else {
-          console.log('기본 음식 또는 영양 정보가 없습니다');
-        }
+      // 삭제된 음식을 unselectedFoods에 다시 추가
+      if (foodToRemove && foodToRemove.food) {
+        setUnselectedFoods(prev => [...prev, foodToRemove.food]);
       }
       
-      console.log('최종 음식 개수:', newSelectedFoods.length);
       setSelectedFoods(newSelectedFoods);
     } catch (error) {
       console.error('음식 삭제 중 오류:', error);
@@ -346,43 +358,40 @@ const FoodUploadResultScreen = () => {
         </TitleRow>
 
         <AltFoodRow>
-          <FlatList
-            data={result.foods}
-            horizontal
-            keyExtractor={(item: FoodItem, index: number) => `alt-food-${index}`}
-            renderItem={({item, index}: {item: FoodItem, index: number}) => {
-              // item이 유효한지 확인
-              if (!item || !item.name || !item.nutrition) {
-                console.log(`경고: 대체 음식[${index}]가 유효하지 않습니다:`, item);
-                return null;
-              }
-              
-              return (
-                <AltFoodButton 
-                  onPress={() => {
-                    try {
-                      console.log(`대체 음식 선택: ${index}, ${item.name}`);
-                      // 현재 selectedFoods가 있는지 확인
-                      if (!Array.isArray(selectedFoods) || selectedFoods.length === 0) {
-                        console.error('선택된 음식이 없습니다');
-                        return;
-                      }
-                      // 첫 번째 음식만 대체하도록 수정
-                      handleFoodSelect(0, item);
-                    } catch (error) {
-                      console.error('대체 음식 선택 중 오류:', error);
-                      Alert.alert('오류', '대체 음식 선택 중 오류가 발생했습니다.');
-                    }
-                  }}
-                >
-                  <AltFoodText>{item.name}</AltFoodText>
-                </AltFoodButton>
-              );
-            }}
-          />
-
-          {result.foods.length <= 1 && (
-            <AltFoodText>다른 음식 후보가 없습니다</AltFoodText>
+          {unselectedFoods.length > 0 ? (
+            <>
+              <AltFoodLabel>추가할 음식:</AltFoodLabel>
+              <FlatList
+                data={unselectedFoods}
+                horizontal
+                keyExtractor={(item: FoodItem, index: number) => `alt-food-${index}`}
+                renderItem={({item, index}: {item: FoodItem, index: number}) => {
+                  // item이 유효한지 확인
+                  if (!item || !item.name || !item.nutrition) {
+                    console.log(`경고: 대체 음식[${index}]가 유효하지 않습니다:`, item);
+                    return null;
+                  }
+                  
+                  return (
+                    <AltFoodButton 
+                      onPress={() => {
+                        try {
+                          console.log(`음식 추가: ${index}, ${item.name}`);
+                          addFood(item);
+                        } catch (error) {
+                          console.error('음식 추가 중 오류:', error);
+                          Alert.alert('오류', '음식 추가 중 오류가 발생했습니다.');
+                        }
+                      }}
+                    >
+                      <AltFoodText>{item.name}</AltFoodText>
+                    </AltFoodButton>
+                  );
+                }}
+              />
+            </>
+          ) : (
+            <AltFoodText>추가할 수 있는 음식이 없습니다</AltFoodText>
           )}
         </AltFoodRow>
 
@@ -399,9 +408,8 @@ const FoodUploadResultScreen = () => {
           proteinValue={proteinValue}
           fatValue={fatValue}
         />
-
-        <Divider />
-        <ScrollView>
+        <FoodCardsTitle>선택된 음식 ({selectedFoods.length}개)</FoodCardsTitle>
+        <FoodCardsScrollView>
           {selectedFoods.map((item, index) => {
             // item이 유효한지 확인
             if (!item) {
@@ -429,15 +437,18 @@ const FoodUploadResultScreen = () => {
             // 고유한 키 생성 (음식 이름 + 인덱스)
             const foodKey = `food-${item.food.name}-${index}`;
             
+            // 개별 음식의 영양소 항목 생성
+            const foodNutrientItems = getNutrientItems(item.calculatedNutrition);
+            
             return (
-              <React.Fragment key={foodKey}>
-                {index > 0 && <FoodDivider />}
+              <FoodCardWrapper key={foodKey}>
                 <FoodNutrientCard
                   foodName={item.food.name || '이름 없음'}
-                  servingInfo={`1인분\n${energyPerServing}kcal`}
-                  nutrients={getNutrientItems()}
-                  unit="인분"
-                  inputValue={item.amount || '1'}
+                  servingInfo={`1인분
+${energyPerServing}kcal`}
+                  nutrients={foodNutrientItems}
+                  unit={item.unit}
+                  inputValue={item.tempAmount || '1'}
                   onUnitChange={(unit: string) => {
                     try {
                       console.log(`단위 변경: ${index}, ${unit}`);
@@ -452,30 +463,58 @@ const FoodUploadResultScreen = () => {
                   }}
                   onInputChange={(amount: string) => {
                     try {
-                      console.log(`수량 변경: ${index}, ${amount}`);
+                      console.log(`임시 수량 변경: ${index}, ${amount}`);
                       const newSelectedFoods = [...selectedFoods];
                       if (newSelectedFoods[index]) {
-                        newSelectedFoods[index].amount = amount;
+                        // 임시 수량 값만 업데이트 (실제 계산에는 영향 없음)
+                        newSelectedFoods[index].tempAmount = amount;
                         setSelectedFoods(newSelectedFoods);
                       }
                     } catch (error) {
                       console.error('수량 변경 중 오류:', error);
                     }
                   }}
-                  onInput={() => console.log(`입력 완료: ${index}, 값: ${selectedFoods[index]?.amount}`)}
+                  onInput={() => {
+                    try {
+                      const tempAmount = selectedFoods[index]?.tempAmount || '';
+                      console.log(`입력 완료: ${index}, 값: ${tempAmount}`);
+                      
+                      // 임시 값을 실제 amount에 적용하고 영양소 계산
+                      const newSelectedFoods = [...selectedFoods];
+                      if (newSelectedFoods[index]) {
+                        // 빈 문자열이면 기본값 1로 설정
+                        const finalAmount = tempAmount.trim() === '' ? '1' : tempAmount;
+                        const amountValue = parseFloat(finalAmount) || 1;
+                        
+                        // 실제 amount 값 업데이트
+                        newSelectedFoods[index].amount = finalAmount;
+                        newSelectedFoods[index].tempAmount = finalAmount;
+                        
+                        // 영양소 값 재계산
+                        newSelectedFoods[index].calculatedNutrition = calculateNutrition(
+                          newSelectedFoods[index].food.nutrition,
+                          amountValue
+                        );
+                        
+                        setSelectedFoods(newSelectedFoods);
+                      }
+                    } catch (error) {
+                      console.error('입력 완료 중 오류:', error);
+                    }
+                  }}
                   showRemoveButton={selectedFoods.length > 1}
                   onRemove={() => {
                     console.log(`삭제 버튼 클릭: ${index}`);
                     removeFood(index);
                   }}
                 />
-              </React.Fragment>
+              </FoodCardWrapper>
             );
           })}
-        </ScrollView>
+        </FoodCardsScrollView>
+
+        <Divider style={{ marginTop: 10 }} />
         
-
-
         <BottomButtons>
           <SubmitButton onPress={handleSubmit} disabled={loading}>
             <SubmitText>{loading ? '제출 중...' : '제출하기'}</SubmitText>
@@ -503,6 +542,7 @@ const Container = styled.View`
   border-radius: 12px;
   background-color: #fff;
   padding: 20px;
+  padding-bottom: 0;
 `;
 
 const TitleRow = styled.View`
@@ -630,6 +670,14 @@ const AltFoodRow = styled.View`
   gap: 12px;
   margin-top: 20px;
   margin-bottom: 10px;
+  align-items: center;
+`;
+
+const AltFoodLabel = styled.Text`
+  font-size: 14px;
+  font-family: 'Pretendard-SemiBold';
+  color: #333;
+  margin-right: 8px;
 `;
 
 const AltFoodButton = styled.TouchableOpacity`
@@ -678,6 +726,27 @@ const FoodDivider = styled.View`
   border-radius: 1px;
 `;
 
+const FoodCardsScrollView = styled.ScrollView`
+  flex: 1;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`;
+
+const FoodCardsTitle = styled.Text`
+  font-size: 16px;
+  font-family: 'Pretendard-Bold';
+  color: #333;
+  margin-bottom: 12px;
+`;
+
+const FoodCardWrapper = styled.View`
+  margin-bottom: 16px;
+  border: 1px solid rgba(217, 91, 114, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #FFFAFA;
+`;
+
 const MealTypeRow = styled.View`
   flex-direction: row;
   align-items: center;
@@ -712,6 +781,7 @@ const BottomButtons = styled.View`
   padding: 16px;
   border-top-width: 1px;
   border-color: #eee;
+  margin-top: auto;
 `;
 
 const SubmitButton = styled.TouchableOpacity`

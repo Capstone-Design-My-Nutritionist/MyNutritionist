@@ -59,6 +59,8 @@ const FoodNutrientCard: React.FC<Props> = ({
             placeholder={`${unit}을 입력해주세요.`}
             value={inputValue}
             onChangeText={onInputChange}
+            keyboardType="numeric"
+            selectTextOnFocus={true}
           />
           <InputButton onPress={onInput}>
             <InputButtonText>입력</InputButtonText>
