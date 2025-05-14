@@ -3,12 +3,13 @@ import {Modal, Image, Platform, Alert, ActivityIndicator, PermissionsAndroid} fr
 import styled from 'styled-components/native';
 import {launchCamera, launchImageLibrary, CameraOptions} from 'react-native-image-picker';
 import {useNavigation} from '@react-navigation/native';
-import {AppNavigationProp} from '../../navigation/types';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {FoodUploadStackParamList} from '../../navigation/types';
 import CommonHeader from '../../components/Common/CommonHeader';
 import {predictImage} from '../../native_modules/FoodLensModule';
 
 const FoodUploadScreen = () => {
-  const navigation = useNavigation<AppNavigationProp>();
+  const navigation = useNavigation<NativeStackNavigationProp<FoodUploadStackParamList>>();
   const [modalVisible, setModalVisible] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -119,7 +120,7 @@ const FoodUploadScreen = () => {
         });
       }
       
-      // 결과 화면으로 이동
+      // 결과 화면으로 이동 - 중첩 네비게이터 내부에서 이동
       navigation.navigate('FoodUploadResultScreen', { result, imageUri });
     } catch (error) {
       setLoading(false);

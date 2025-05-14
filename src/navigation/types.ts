@@ -38,14 +38,19 @@ export type RootStackParamList = {
   Upload: undefined;
   Calendar: undefined;
   Profile: undefined;
+  // Add other screens as needed
+};
+
+// Define the type for FoodUpload navigator
+export type FoodUploadStackParamList = {
   FoodUploadScreen: undefined;
   FoodUploadResultScreen: {
     result: RecognitionResult;
     imageUri: string;
   };
-  // Add other screens as needed
 };
 
 // Export types for useNavigation and useRoute hooks
 export type AppNavigationProp = NavigationProp<RootStackParamList>;
-export type FoodUploadResultScreenRouteProp = RouteProp<RootStackParamList, 'FoodUploadResultScreen'>;
+export type FoodUploadNavigationProp = NavigationProp<FoodUploadStackParamList>;
+export type FoodUploadResultScreenRouteProp = RouteProp<FoodUploadStackParamList, 'FoodUploadResultScreen'>;

@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import styled from 'styled-components/native';
 import {Alert, ToastAndroid, Platform, ScrollView, FlatList, TouchableOpacity, Modal, Text, View, Image} from 'react-native';
-import {useRoute, useNavigation} from '@react-navigation/native';
-import {FoodUploadResultScreenRouteProp, AppNavigationProp} from '../../navigation/types';
+import {useRoute, useNavigation, CommonActions} from '@react-navigation/native';
+import {FoodUploadResultScreenRouteProp, FoodUploadNavigationProp} from '../../navigation/types';
 import axios from 'axios';
 import {API_URL} from '../../utils/env';
 import CommonHeader from '../../components/Common/CommonHeader';
@@ -73,7 +73,7 @@ interface FoodResult {
 // FoodUploadResultScreen 컴포넌트
 const FoodUploadResultScreen = () => {
   const route = useRoute<FoodUploadResultScreenRouteProp>();
-  const navigation = useNavigation<AppNavigationProp>();
+  const navigation = useNavigation<FoodUploadNavigationProp>();
   const {result, imageUri} = route.params as { result: FoodResult; imageUri: string };
   
   const [mealType, setMealType] = useState('아침');
@@ -297,8 +297,13 @@ const FoodUploadResultScreen = () => {
         Alert.alert('알림', '제출이 완료되었습니다.');
       }
       
-      // 메인 화면으로 이동
-      navigation.navigate('Home');
+      // 메인 화면으로 이동 - 중첩 네비게이터에서 루트 네비게이터로 이동
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        })
+      );
     } catch (error) {
       console.error('음식 데이터 제출 오류:', error);
       Alert.alert('오류', '음식 데이터 제출 중 오류가 발생했습니다.');
@@ -541,6 +546,10 @@ const Container = styled.View`
   margin-top: -20px;
   border-radius: 12px;
   background-color: #fff;
+  padding-horizontal: 16px;
+`;
+
+const TitleContainer = styled.View`
   padding: 20px;
   padding-bottom: 0;
 `;
@@ -549,6 +558,7 @@ const TitleRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-top: 16px;
 `;
 
 const FoodTitle = styled.Text`
@@ -714,15 +724,21 @@ const KcalText = styled.Text`
 const Divider = styled.View`
   height: 1px;
   background-color: rgba(115, 26, 34, 0.5);
-  margin-vertical: 16px;
-  margin-horizontal: -20px;
+  margin-horizontal: -16px;
+`;
+
+const BoldDivider = styled.View`
+  height: 6px;
+  background-color: rgba(115, 26, 34, 0.5);
+  margin-top: 8px;
+  margin-horizontal: -16px;
 `;
 
 const FoodDivider = styled.View`
   height: 2px;
   background-color: rgba(217, 91, 114, 0.3);
   margin-vertical: 12px;
-  margin-horizontal: -10px;
+  margin-horizontal: -6px;
   border-radius: 1px;
 `;
 
@@ -736,6 +752,7 @@ const FoodCardsTitle = styled.Text`
   font-size: 16px;
   font-family: 'Pretendard-Bold';
   color: #333;
+  margin-top: 20px;
   margin-bottom: 12px;
 `;
 
@@ -748,16 +765,17 @@ const FoodCardWrapper = styled.View`
 `;
 
 const MealTypeRow = styled.View`
+  padding-vertical: 20px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 40px;
 `;
 
 const MealTypeContainer = styled.View`
   flex-direction: row;
   align-items: center;
 `;
+
 
 const MealTypeLabel = styled.Text`
   color: black;
@@ -782,6 +800,7 @@ const BottomButtons = styled.View`
   border-top-width: 1px;
   border-color: #eee;
   margin-top: auto;
+  margin-horizontal: -16px;
 `;
 
 const SubmitButton = styled.TouchableOpacity`

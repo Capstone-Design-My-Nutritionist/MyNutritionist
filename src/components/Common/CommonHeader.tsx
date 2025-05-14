@@ -52,8 +52,3 @@ const BackButton = styled.TouchableOpacity`
   align-items: center;
   left: 4px;
 `;
-
-const BackText = styled.Text`
-  font-size: 20px;
-  color: #731a22;
-`;

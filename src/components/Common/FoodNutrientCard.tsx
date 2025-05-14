@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {Modal, TouchableOpacity} from 'react-native';
+import {Modal, TouchableOpacity, Dimensions} from 'react-native';
 
 interface Nutrient {
   label: string;
@@ -19,6 +19,7 @@ interface Props {
   showRemoveButton?: boolean;
   onRemove?: () => void;
 }
+const screenWidth = Dimensions.get('window').width;
 
 const FoodNutrientCard: React.FC<Props> = ({
   foodName,
@@ -44,7 +45,6 @@ const FoodNutrientCard: React.FC<Props> = ({
           width={70}
         />
       </TopRow>
-
       {/* 1인분 정보 + 입력 필드 */}
       <MiddleRow>
         <InfoColumn>
@@ -97,7 +97,8 @@ const FoodNutrientCard: React.FC<Props> = ({
 export default FoodNutrientCard;
 
 const Container = styled.View`
-  margin-bottom: 16px;
+  padding-vertical: 12px;
+  padding-horizontal: 20px;
 `;
 
 const TopRow = styled.View`
@@ -218,7 +219,7 @@ const MiddleRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 4px;
+  margin-top: 8px;
 `;
 
 const InfoColumn = styled.View``;
@@ -286,15 +287,25 @@ const RemoveButtonText = styled.Text`
   font-family: 'Pretendard-SemiBold';
 `;
 
-const Divider = styled.View`
+const Divider = styled.View<{width: number}>`
+  width: ${(props: {width: number}) => props.width}px;
   height: 1px;
   background-color: rgba(115, 26, 34, 0.5);
-  margin-vertical: 12px;
+  align-self: center;
+  margin-vertical: 16px;
+`;
+
+const InnerDivider = styled.View`
+  height: 1px;
+  background-color: rgba(142, 142, 142, 0.5);
+  margin-vertical: 16px;
 `;
 
 const NutrientContainer = styled.View`
   margin-top: 8px;
 `;
+
+
 
 const NutrientRow = styled.View`
   flex-direction: row;
@@ -310,7 +321,7 @@ const NutrientDivider = styled.View`
 
 const NutrientLabel = styled.Text`
   font-size: 14px;
-  font-family: 'Pretendard-Regular';
+  font-family: 'Pretendard-SemiBold';
   color: black;
   margin-left: 4px;
 `;

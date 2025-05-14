@@ -6,7 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeScreen from '../screens/Main/HomeScreen';
 import SupplementRecommendationScreen from '../screens/Supplement/SupplementRecommendationScreen';
-import UploadScreen from '../screens/FoodUpload/FoodUploadScreen';
+// Import the FoodUploadNavigator and tab bar visibility function
+import FoodUploadNavigator, { getTabBarVisibility } from './FoodUploadNavigator';
 import CalendarScreen from '../screens/Calendar/CalendarScreen';
 import ProfileScreen from '../screens/UserSettings/ProfileScreen';
 
@@ -49,27 +50,36 @@ const Navigation = () => {
           );
         },
       })}>
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: '홈' }} />
       <Tab.Screen
         name="Supplements"
         component={SupplementRecommendationScreen}
+        options={{ tabBarLabel: '영양제' }}
       />
       <Tab.Screen
         name="Upload"
-        component={UploadScreen}
-        options={{
-          tabBarLabel: () => null,
-          tabBarIcon: () => (
-            <UploadButtonContainer>
-              <UploadButton>
-                <Icon name="camera-plus" size={32} color="#FFFFFF" />
-              </UploadButton>
-            </UploadButtonContainer>
-          ),
+        component={FoodUploadNavigator}
+        options={({ route }) => {
+          const tabBarVisibility = getTabBarVisibility(route);
+          return {
+            tabBarLabel: () => null,
+            tabBarIcon: () => (
+              <UploadButtonContainer>
+                <UploadButton>
+                  <Icon name="camera-plus" size={32} color="#FFFFFF" />
+                </UploadButton>
+              </UploadButtonContainer>
+            ),
+            tabBarStyle: tabBarVisibility.tabBarStyle ? {
+              display: 'none',
+              position: 'absolute',
+              height: 0
+            } : styles.tabBar
+          };
         }}
       />
-      <Tab.Screen name="Calendar" component={CalendarScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: '캘린더' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: '프로필' }} />
     </Tab.Navigator>
   );
 };

@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyMealScreen: undefined;
@@ -22,31 +23,45 @@ type NavigationProps = StackNavigationProp<
 
 const vegetableOptions = ['거의 먹지 않음', '가끔 먹음', '매일 먹음'];
 
+const mapVegetableOptionToEnum = (label: string): string => {
+  switch (label) {
+    case '거의 먹지 않음':
+      return 'RARELY';
+    case '가끔 먹음':
+      return 'SOMETIMES';
+    case '매일 먹음':
+      return 'DAILY';
+    default:
+      return '';
+  }
+};
+
 const SurveyVegetableScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedOption) {
-      console.log('Selected vegetable intake:', selectedOption);
-      navigation.navigate('SurveyWaterScreen');
+      const enumValue = mapVegetableOptionToEnum(selectedOption);
+      try {
+        await submitSurveyAnswer('vegetable-fruit-intake', {
+          vegetableFruitIntake: enumValue,
+        });
+        console.log('✅ vegetableFruitIntake 저장 완료:', enumValue);
+        navigation.navigate('SurveyWaterScreen');
+      } catch (error) {
+        console.error('❌ vegetableFruitIntake 저장 실패:', error);
+      }
     }
   };
 
   return (
     <Container>
-      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={18 / 24} />
       </ProgressBarContainer>
-
-      {/* 질문 */}
       <SurveyTitle text="채소와 과일 섭취 빈도수는 어떻게 되시나요?" />
-
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonGrid>
           {vegetableOptions.map(option => (
@@ -60,8 +75,6 @@ const SurveyVegetableScreen = () => {
           ))}
         </ButtonGrid>
       </ButtonWrapper>
-
-      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

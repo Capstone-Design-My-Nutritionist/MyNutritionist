@@ -53,7 +53,7 @@ const StackedNutrientBar: React.FC<StackedNutrientBarProps> = ({
 export default StackedNutrientBar;
 
 const Wrapper = styled.View`
-  margin-top: 12px;
+margin-top: 12px;
 `;
 
 const LegendRow = styled.View`

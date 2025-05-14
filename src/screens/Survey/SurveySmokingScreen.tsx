@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyDrinkScreen: undefined;
@@ -22,31 +23,44 @@ type NavigationProps = StackNavigationProp<
 
 const smokingOptions = ['비흡연', '과거 흡연', '현재 흡연'];
 
+const mapSmokingToEnum = (label: string): string => {
+  switch (label) {
+    case '비흡연':
+      return 'NON_SMOKER';
+    case '과거 흡연':
+      return 'PAST_SMOKER';
+    case '현재 흡연':
+      return 'CURRENT_SMOKER';
+    default:
+      return '';
+  }
+};
+
 const SurveySmokingScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Selected smoking status:', selectedOption);
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    const enumValue = mapSmokingToEnum(selectedOption);
+
+    try {
+      await submitSurveyAnswer('smoking', {smoking: enumValue});
+      console.log('✅ smoking 저장 완료:', enumValue);
       navigation.navigate('SurveyAllergyOkScreen');
+    } catch (error) {
+      console.error('❌ smoking 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={21 / 24} />
       </ProgressBarContainer>
-
-      {/* 질문 */}
       <SurveyTitle text="흡연을 하시나요?" />
-
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonGrid>
           {smokingOptions.map(option => (
@@ -60,8 +74,6 @@ const SurveySmokingScreen = () => {
           ))}
         </ButtonGrid>
       </ButtonWrapper>
-
-      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

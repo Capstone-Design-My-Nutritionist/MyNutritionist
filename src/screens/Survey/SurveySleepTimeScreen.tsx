@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyHealthGoalsScreen: undefined;
@@ -22,31 +23,45 @@ type NavigationProps = StackNavigationProp<
 
 const sleepOptions = ['5시간 이하', '6~7 시간', '8시간 이상'];
 
+const mapSleepTimeToEnum = (label: string): string => {
+  switch (label) {
+    case '5시간 이하':
+      return 'UNDER_5_HOURS';
+    case '6~7 시간':
+      return 'SIX_TO_SEVEN_HOURS';
+    case '8시간 이상':
+      return 'OVER_8_HOURS';
+    default:
+      return '';
+  }
+};
+
 const SurveySleepTimeScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
-    if (selectedOption) {
-      console.log('Selected sleep time:', selectedOption);
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
+    const sleepTimeEnum = mapSleepTimeToEnum(selectedOption);
+    try {
+      await submitSurveyAnswer('sleepTime', {sleepTime: sleepTimeEnum});
       navigation.navigate('SurveyExerciseScreen');
+    } catch (error) {
+      console.error('❌ 수면 시간 저장 실패:', error);
     }
   };
 
   return (
     <Container>
-      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
 
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={15 / 24} />
       </ProgressBarContainer>
 
-      {/* 질문 */}
       <SurveyTitle text="하루 평균 수면 시간은 몇 시간인가요?" />
 
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonGrid>
           {sleepOptions.map(option => (
@@ -61,7 +76,6 @@ const SurveySleepTimeScreen = () => {
         </ButtonGrid>
       </ButtonWrapper>
 
-      {/* 하단 공통 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

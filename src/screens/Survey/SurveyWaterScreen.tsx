@@ -8,6 +8,7 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
+import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyVegetableScreen: undefined;
@@ -22,31 +23,45 @@ type NavigationProps = StackNavigationProp<
 
 const waterOptions = ['1L 이하', '1~2L', '2L 이상'];
 
+const mapWaterOptionToEnum = (label: string): string => {
+  switch (label) {
+    case '1L 이하':
+      return 'UNDER_1L';
+    case '1~2L':
+      return 'ONE_TO_TWO_L';
+    case '2L 이상':
+      return 'OVER_2L';
+    default:
+      return '';
+  }
+};
+
 const SurveyWaterScreen = () => {
   const navigation = useNavigation<NavigationProps>();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedOption) {
-      console.log('Selected water intake:', selectedOption);
-      navigation.navigate('SurveyDrinkScreen');
+      const enumValue = mapWaterOptionToEnum(selectedOption);
+      try {
+        await submitSurveyAnswer('water-intake', {
+          waterIntake: enumValue,
+        });
+        console.log('✅ waterIntake 저장 완료:', enumValue);
+        navigation.navigate('SurveyDrinkScreen');
+      } catch (error) {
+        console.error('❌ waterIntake 저장 실패:', error);
+      }
     }
   };
 
   return (
     <Container>
-      {/* 상단 헤더 */}
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
-
-      {/* 진행 바 */}
       <ProgressBarContainer>
         <ProgressBar progress={19 / 24} />
       </ProgressBarContainer>
-
-      {/* 질문 */}
       <SurveyTitle text="하루 물 섭취량이 어느 정도 되시나요?" />
-
-      {/* 선택 버튼 */}
       <ButtonWrapper>
         <ButtonGrid>
           {waterOptions.map(option => (
@@ -60,8 +75,6 @@ const SurveyWaterScreen = () => {
           ))}
         </ButtonGrid>
       </ButtonWrapper>
-
-      {/* 하단 버튼 */}
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
