@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 상단에 추가
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
@@ -55,6 +56,7 @@ const SurveyAllergyScreen = () => {
       await saveSurveyCompletionTime();
 
       console.log('🎉 설문 완료!');
+      await AsyncStorage.setItem('hasCompletedSurvey', 'true');
       navigation.replace('ProfileStack'); // ✅ 설문 완료 후 마이페이지로 이동
     } catch (error) {
       console.error('❌ 설문 완료 중 오류:', error);
