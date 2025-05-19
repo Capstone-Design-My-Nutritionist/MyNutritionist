@@ -12,6 +12,9 @@ export interface FoodCardProps {
   protein: number;
   fat: number;
   onPress?: () => void;
+  isDeleteMode?: boolean;
+  foodName?: string;
+  onDeletePress?: () => void;
 }
 
 const FoodCard: React.FC<FoodCardProps> = ({
@@ -22,6 +25,9 @@ const FoodCard: React.FC<FoodCardProps> = ({
   protein,
   fat,
   onPress,
+  isDeleteMode = false,
+  foodName,
+  onDeletePress,
 }) => {
   const totalNutrients = carbs + protein + fat;
 
@@ -31,37 +37,45 @@ const FoodCard: React.FC<FoodCardProps> = ({
       startColor="rgba(0, 0, 0, 0.05)"
       offset={[0, 0.5]}
       style={{borderRadius: 12}}>
-      <CardContainer>
+      <CardContainer isDeleteMode={isDeleteMode} onPress={isDeleteMode ? onDeletePress : onPress}>
         <FoodImage source={{uri: imageUrl}} resizeMode="cover" />
         <InfoContainer>
           <TextBox>
             <Header>
               <MealType>{mealType}</MealType>
-              <DetailButton onPress={onPress}>
-                <DetailText>자세히</DetailText>
-                <Icon name="chevron-right" size={14} color="#8E8E8E" />
-              </DetailButton>
+              {isDeleteMode ? (
+                <DeleteIndicator>
+                  <Icon name="delete-outline" size={16} color="#D95B72" />
+                  <DeleteText>삭제하기</DeleteText>
+                </DeleteIndicator>
+              ) : (
+                <DetailButton onPress={onPress}>
+                  <DetailText>자세히</DetailText>
+                  <Icon name="chevron-right" size={14} color="#8E8E8E" />
+                </DetailButton>
+              )}
             </Header>
+
 
             <TotalCalories>
               <TotalText>총 섭취량</TotalText>
-              <CalorieText>{totalCalories}kcal</CalorieText>
+              <CalorieText>{totalCalories.toFixed(1)}kcal</CalorieText>
             </TotalCalories>
 
             <NutritionRow>
               <Dot color="#FD384C" />
               <NutritionText>탄수화물</NutritionText>
-              <ValueText color="#FD384C">{carbs}g</ValueText>
+              <ValueText color="#FD384C">{carbs.toFixed(1)}g</ValueText>
             </NutritionRow>
             <NutritionRow>
               <Dot color="#D95B72" />
               <NutritionText>단백질</NutritionText>
-              <ValueText color="#D95B72">{protein}g</ValueText>
+              <ValueText color="#D95B72">{protein.toFixed(1)}g</ValueText>
             </NutritionRow>
             <NutritionRow>
               <Dot color="#FD9E38" />
               <NutritionText>지방</NutritionText>
-              <ValueText color="#FD9E38">{fat}g</ValueText>
+              <ValueText color="#FD9E38">{fat.toFixed(1)}g</ValueText>
             </NutritionRow>
 
             <ProgressBar>
@@ -84,13 +98,14 @@ const FoodCard: React.FC<FoodCardProps> = ({
 
 export default FoodCard;
 
-const CardContainer = styled.View`
+const CardContainer = styled.TouchableOpacity<{isDeleteMode?: boolean}>`
   flex-direction: row;
-  background-color: white;
+  background-color: ${(props: {isDeleteMode?: boolean}) => props.isDeleteMode ? '#FFF8F8' : 'white'};
   border-radius: 16px;
   padding: 10px;
   width: 360px;
   align-items: center;
+  border: ${(props: {isDeleteMode?: boolean}) => props.isDeleteMode ? '1px solid #D95B72' : 'none'};
 `;
 
 const FoodImage = styled.Image`
@@ -128,9 +143,20 @@ const DetailButton = styled.TouchableOpacity`
 `;
 
 const DetailText = styled.Text`
-  font-size: 10px;
-  font-family: 'Pretendard-Regular';
-  color: #8e8e8e;
+  font-size: 12px;
+  color: #8E8E8E;
+  margin-right: 2px;
+`;
+
+const DeleteIndicator = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+const DeleteText = styled.Text`
+  font-size: 12px;
+  color: #D95B72;
+  margin-left: 2px;
 `;
 
 const TextBox = styled.View`
@@ -202,3 +228,5 @@ const Progress = styled.View<{color: string; width: number}>`
   background-color: ${(props: {color: string}) => props.color};
   width: ${(props: {width: number}) => props.width}%;
 `;
+
+
