@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -11,9 +11,10 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
-  SurveyDrinkScreen: undefined;
-  SurveySmokingScreen: undefined;
-  SurveyAllergyOkScreen: undefined;
+  SurveyDrinkScreen: {from?: string};
+  SurveySmokingScreen: {from?: string};
+  SurveyAllergyOkScreen: {from?: string};
+  ProfileStack: {screen: 'ProfileScreen'};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -37,7 +38,10 @@ const mapSmokingToEnum = (label: string): string => {
 };
 
 const SurveySmokingScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
@@ -48,7 +52,12 @@ const SurveySmokingScreen = () => {
     try {
       await submitSurveyAnswer('smoking', {smoking: enumValue});
       console.log('✅ smoking 저장 완료:', enumValue);
-      navigation.navigate('SurveyAllergyOkScreen');
+
+      if (from === 'partial-lifestyle') {
+        navigation.navigate('ProfileStack', {screen: 'ProfileScreen'});
+      } else {
+        navigation.navigate('SurveyAllergyOkScreen', from ? {from} : undefined);
+      }
     } catch (error) {
       console.error('❌ smoking 저장 실패:', error);
     }

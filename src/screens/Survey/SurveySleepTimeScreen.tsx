@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -8,12 +8,12 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import SmallMonoSelectButton from '../../components/SelectButton/SmallMonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
-import {submitSurveyAnswer} from '../../utils/surveyUtils';
+import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyHealthGoalsScreen: undefined;
-  SurveySleepTimeScreen: undefined;
-  SurveyExerciseScreen: undefined;
+  SurveySleepTimeScreen: {from?: string};
+  SurveyExerciseScreen: {from?: string};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -37,16 +37,27 @@ const mapSleepTimeToEnum = (label: string): string => {
 };
 
 const SurveySleepTimeScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
     if (!selectedOption) return;
 
     const sleepTimeEnum = mapSleepTimeToEnum(selectedOption);
+
     try {
-      await submitSurveyAnswer('sleepTime', {sleepTime: sleepTimeEnum});
-      navigation.navigate('SurveyExerciseScreen');
+      const surveyId = await getOrCreateSurvey(); // ✅ surveyId 가져오기
+
+      await submitSurveyAnswer(
+        'sleepTime',
+        {sleepTime: sleepTimeEnum},
+        surveyId, // ✅ 전달
+      );
+
+      navigation.navigate('SurveyExerciseScreen', from ? {from} : undefined);
     } catch (error) {
       console.error('❌ 수면 시간 저장 실패:', error);
     }
@@ -55,13 +66,10 @@ const SurveySleepTimeScreen = () => {
   return (
     <Container>
       <SurveyHeader title="생활 습관" skipTarget="NextSurveyScreen" />
-
       <ProgressBarContainer>
         <ProgressBar progress={15 / 24} />
       </ProgressBarContainer>
-
       <SurveyTitle text="하루 평균 수면 시간은 몇 시간인가요?" />
-
       <ButtonWrapper>
         <ButtonGrid>
           {sleepOptions.map(option => (
@@ -75,7 +83,6 @@ const SurveySleepTimeScreen = () => {
           ))}
         </ButtonGrid>
       </ButtonWrapper>
-
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -87,7 +94,6 @@ const SurveySleepTimeScreen = () => {
 
 export default SurveySleepTimeScreen;
 
-// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -11,9 +11,9 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
-  SurveyVegetableScreen: undefined;
-  SurveyWaterScreen: undefined;
-  SurveyDrinkScreen: undefined;
+  SurveyVegetableScreen: {from?: string};
+  SurveyWaterScreen: {from?: string};
+  SurveyDrinkScreen: {from?: string};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -37,7 +37,10 @@ const mapWaterOptionToEnum = (label: string): string => {
 };
 
 const SurveyWaterScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
@@ -48,7 +51,7 @@ const SurveyWaterScreen = () => {
           waterIntake: enumValue,
         });
         console.log('✅ waterIntake 저장 완료:', enumValue);
-        navigation.navigate('SurveyDrinkScreen');
+        navigation.navigate('SurveyDrinkScreen', from ? {from} : undefined);
       } catch (error) {
         console.error('❌ waterIntake 저장 실패:', error);
       }
@@ -85,8 +88,6 @@ const SurveyWaterScreen = () => {
 };
 
 export default SurveyWaterScreen;
-
-// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

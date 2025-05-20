@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -11,9 +11,9 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
-  SurveySleepTimeScreen: undefined;
-  SurveyExerciseScreen: undefined;
-  SurveyMealScreen: undefined;
+  SurveySleepTimeScreen: {from?: string};
+  SurveyExerciseScreen: {from?: string};
+  SurveyMealScreen: {from?: string};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -49,7 +49,10 @@ const mapExerciseToEnum = (label: string): string => {
 };
 
 const SurveyExerciseScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
@@ -60,7 +63,7 @@ const SurveyExerciseScreen = () => {
       await submitSurveyAnswer('exerciseFrequency', {
         exerciseFrequency: exerciseEnum,
       });
-      navigation.navigate('SurveyMealScreen');
+      navigation.navigate('SurveyMealScreen', from ? {from} : undefined);
     } catch (error) {
       console.error('❌ 운동 빈도 저장 실패:', error);
     }
@@ -112,7 +115,6 @@ const SurveyExerciseScreen = () => {
 
 export default SurveyExerciseScreen;
 
-// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;
