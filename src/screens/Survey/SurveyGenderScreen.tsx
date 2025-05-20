@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native'; // 🔥 추가
 
 import ProgressBar from '../../components/ProgressBar';
 import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
@@ -9,13 +10,11 @@ import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
-import {createSurvey} from '../../api/api';
-import {setSurveyId, submitSurveyAnswer} from '../../utils/surveyUtils';
-import {getOrCreateSurvey} from '../../utils/surveyUtils';
+import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
-  SurveyGenderScreen: undefined;
-  SurveyAgeScreen: undefined;
+  SurveyGenderScreen: {from?: string};
+  SurveyAgeScreen: {from?: string};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -23,9 +22,16 @@ type NavigationProps = StackNavigationProp<
   'SurveyGenderScreen'
 >;
 
+// ✅ 🔽 이 부분이 중요! useRoute 타입 지정
+type RouteProps = RouteProp<RootStackParamList, 'SurveyGenderScreen'>;
+
 const SurveyGenderScreen = () => {
   const navigation = useNavigation<NavigationProps>();
+  const route = useRoute<RouteProps>(); // ✅ 타입 명시
+
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
+
+  const from = route.params?.from; // 이제 에러 X
 
   const genderMap: {[key: string]: string} = {
     남성: 'MALE',
@@ -38,13 +44,10 @@ const SurveyGenderScreen = () => {
     try {
       const mappedGender = genderMap[selectedGender];
 
-      // ✅ 설문 ID 생성 or 가져오기
       const surveyId = await getOrCreateSurvey();
-
-      // ✅ 성별 저장
       await submitSurveyAnswer('gender', mappedGender, surveyId);
 
-      navigation.navigate('SurveyAgeScreen');
+      navigation.navigate('SurveyAgeScreen', {from}); // 다음 스크린에도 전달
     } catch (error) {
       console.error('❌ 설문 저장 실패:', error);
     }

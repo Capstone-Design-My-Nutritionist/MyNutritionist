@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -13,8 +13,8 @@ import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyAgeScreen: undefined;
-  SurveyHeightScreen: undefined;
-  SurveyWeightScreen: undefined;
+  SurveyHeightScreen: {from?: string}; // <- from 추가
+  SurveyWeightScreen: {from?: string};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -24,6 +24,9 @@ type NavigationProps = StackNavigationProp<
 
 const SurveyHeightScreen = () => {
   const navigation = useNavigation<NavigationProps>();
+  const route = useRoute(); // <- route 가져오기
+  const from = (route.params as any)?.from;
+
   const [height, setHeight] = useState<number | null>(null);
 
   const handleNext = async () => {
@@ -33,7 +36,8 @@ const SurveyHeightScreen = () => {
       const surveyId = await getOrCreateSurvey();
       await submitSurveyAnswer('height', height, surveyId);
       console.log('✅ 키 저장 완료:', height);
-      navigation.navigate('SurveyWeightScreen');
+
+      navigation.navigate('SurveyWeightScreen', from ? {from} : {}); // ✅ 여기 수정
     } catch (error) {
       console.error('❌ 키 저장 실패:', error);
     }

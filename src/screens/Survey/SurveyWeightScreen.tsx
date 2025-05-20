@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -13,8 +13,9 @@ import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyHeightScreen: undefined;
-  SurveyWeightScreen: undefined;
+  SurveyWeightScreen: {from?: string} | undefined;
   SurveyMedicationOkScreen: undefined;
+  ProfileScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -24,6 +25,9 @@ type NavigationProps = StackNavigationProp<
 
 const SurveyWeightScreen = () => {
   const navigation = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [weight, setWeight] = useState<number | null>(null);
 
   const handleNext = async () => {
@@ -33,7 +37,15 @@ const SurveyWeightScreen = () => {
       const surveyId = await getOrCreateSurvey();
       await submitSurveyAnswer('weight', weight, surveyId);
       console.log('✅ 몸무게 저장 완료:', weight);
-      navigation.navigate('SurveyMedicationOkScreen');
+
+      if (from === 'partial-body') {
+        // @ts-ignore
+        navigation.navigate('ProfileStack', {
+          screen: 'ProfileScreen',
+        });
+      } else {
+        navigation.navigate('SurveyMedicationOkScreen');
+      }
     } catch (error) {
       console.error('❌ 몸무게 저장 실패:', error);
     }

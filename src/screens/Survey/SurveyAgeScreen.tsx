@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
@@ -9,13 +10,12 @@ import ProgressBar from '../../components/ProgressBar';
 import SurveyInputField from '../../components/TextInputBox/SurveyInputField';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
-import {submitSurveyAnswer} from '../../utils/surveyUtils';
-import {getOrCreateSurvey} from '../../utils/surveyUtils';
+import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
-  SurveyGenderScreen: undefined;
-  SurveyAgeScreen: undefined;
-  SurveyHeightScreen: undefined;
+  SurveyGenderScreen: {from?: string};
+  SurveyAgeScreen: {from?: string};
+  SurveyHeightScreen: {from?: string};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -23,9 +23,14 @@ type NavigationProps = StackNavigationProp<
   'SurveyAgeScreen'
 >;
 
+type RouteProps = RouteProp<RootStackParamList, 'SurveyAgeScreen'>;
+
 const SurveyAgeScreen = () => {
   const navigation = useNavigation<NavigationProps>();
+  const route = useRoute<RouteProps>();
   const [age, setAge] = useState<number | null>(null);
+
+  const from = route.params?.from;
 
   const handleNext = async () => {
     if (age === null) return;
@@ -34,7 +39,8 @@ const SurveyAgeScreen = () => {
       const surveyId = await getOrCreateSurvey();
       await submitSurveyAnswer('age', age, surveyId);
       console.log('✅ 나이 저장 완료:', age);
-      navigation.navigate('SurveyHeightScreen');
+
+      navigation.navigate('SurveyHeightScreen', {from}); // ✅ 다음으로 from 전달
     } catch (error) {
       console.error('❌ 나이 저장 실패:', error);
     }

@@ -14,21 +14,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {API_URL} from '../../utils/env';
 
-type RootStackParamList = {
-  ProfileScreen: undefined;
-  PasswordVerifyScreen: {
-    nextScreen:
-      | 'PasswordChangeScreen'
-      | 'NicknameChangeScreen'
-      | 'AccountDeleteScreen';
-    title: string;
-  };
-  PasswordChangeScreen: undefined;
-  NicknameChangeScreen: undefined;
-  AccountDeleteScreen: undefined;
-  SurveyGenderScreen: undefined;
-};
-
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const [isPushEnabled, setIsPushEnabled] = useState(true);
@@ -55,76 +40,41 @@ const ProfileScreen = () => {
     setModalVisible(false);
   };
 
-  // 설문조사 다시하기 핸들러
   const handleRestartSurvey = async () => {
-    // 설문 상태 초기화
     await resetSurveyState();
-    // 설문조사 첫 화면으로 이동
-    // @ts-ignore
     navigation.navigate('SurveyGenderScreen');
   };
 
-  // 로그아웃 핸들러
   const handleLogout = async () => {
     try {
-      // 토큰 가져오기
       const token = await AsyncStorage.getItem('accessToken');
-      
+
       if (!token) {
-        // 토큰이 없는 경우 바로 로그인 화면으로 이동
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Login' }],
-        });
+        navigation.reset({index: 0, routes: [{name: 'Login'}]});
         return;
       }
-      
-      // API URL 디버깅
-      console.log('로그아웃 API URL:', `${API_URL}/auth/logout`);
-      console.log('토큰:', token);
-      
+
       try {
-        // API 호출 시도
         const response = await axios.post(
           `${API_URL}/auth/logout`,
           {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            timeout: 10000, // 10초 타임아웃 설정
-          }
+          {headers: {Authorization: `Bearer ${token}`}, timeout: 10000},
         );
-        
         console.log('로그아웃 응답:', response.data);
       } catch (apiError) {
-        // API 호출 실패는 로깅만 하고 계속 진행
         console.log('로그아웃 API 호출 실패:', apiError);
-        // 서버 로그아웃에 실패해도 로컬 로그아웃은 진행
       }
-      
-      // 서버 응답 성공 여부와 관계없이 로컬 로그아웃 진행
+
       await AsyncStorage.removeItem('accessToken');
-      
-      // 로그인 화면으로 이동
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-      
+      navigation.reset({index: 0, routes: [{name: 'Login'}]});
     } catch (error: any) {
       console.error('로그아웃 처리 중 오류:', error);
-      
-      // 에러가 발생해도 로컬 로그아웃 시도
       try {
         await AsyncStorage.removeItem('accessToken');
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Login' }],
-        });
+        navigation.reset({index: 0, routes: [{name: 'Login'}]});
       } catch (storageError) {
         console.error('로컬 로그아웃 실패:', storageError);
-        Alert.alert('로그아웃 실패', '로그아웃 처리 중 오류가 발생했습니다. 앱을 재시작해 주세요.');
+        Alert.alert('로그아웃 실패', '앱을 재시작해 주세요.');
       }
     } finally {
       setIsLoggingOut(false);
@@ -138,10 +88,9 @@ const ProfileScreen = () => {
         <TitleUnderline />
       </TitleWrapper>
 
-      <Container 
-        contentContainerStyle={{ paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-      >
+      <Container
+        contentContainerStyle={{paddingBottom: 100}}
+        showsVerticalScrollIndicator={false}>
         <SectionTitle>정보수정</SectionTitle>
         <ShadowWrapper>
           <Shadow
@@ -221,12 +170,39 @@ const ProfileScreen = () => {
               ].map((item, index) => (
                 <Touchable
                   key={index}
-                  onPress={() => {
-                    if (index === 0) {
-                      // 설문조사 다시하기
-                      handleRestartSurvey();
-                    } else {
-                      console.log(`${item} 클릭됨`);
+                  onPress={async () => {
+                    await resetSurveyState();
+                    switch (index) {
+                      case 0:
+                        navigation.navigate('SurveyGenderScreen');
+                        break;
+                      case 1:
+                        navigation.navigate('SurveyGenderScreen', {
+                          from: 'partial-body',
+                        });
+                        break;
+                      case 2:
+                        navigation.navigate('SurveyDiseaseOkScreen', {
+                          from: 'partial-health',
+                        });
+                        break;
+                      case 3:
+                        navigation.navigate('SurveySleepTimeScreen', {
+                          from: 'partial-lifestyle',
+                        });
+                        break;
+                      case 4:
+                        navigation.navigate('SurveyHealthConcernsScreen', {
+                          from: 'partial-goal',
+                        });
+                        break;
+                      case 5:
+                        navigation.navigate('SurveyMedicationOkScreen', {
+                          from: 'partial-medicine',
+                        });
+                        break;
+                      default:
+                        break;
                     }
                   }}>
                   <TextRow>
@@ -257,7 +233,6 @@ const ProfileScreen = () => {
                   onToggle={() => setIsPushEnabled(prev => !prev)}
                 />
               </PushRow>
-
               <TouchableWrapper
                 onPress={() => isPushEnabled && openTimeModal('morning')}
                 disabled={!isPushEnabled}>
@@ -273,7 +248,6 @@ const ProfileScreen = () => {
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
-
               <TouchableWrapper
                 onPress={() => isPushEnabled && openTimeModal('lunch')}
                 disabled={!isPushEnabled}>
@@ -289,7 +263,6 @@ const ProfileScreen = () => {
                   </RowRight>
                 </TimeRow>
               </TouchableWrapper>
-
               <TouchableWrapper
                 onPress={() => isPushEnabled && openTimeModal('dinner')}
                 disabled={!isPushEnabled}>
