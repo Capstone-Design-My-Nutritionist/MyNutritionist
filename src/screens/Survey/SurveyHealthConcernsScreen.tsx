@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -8,12 +8,13 @@ import SurveyTitle from '../../components/Common/SurveyTitle';
 import ProgressBar from '../../components/ProgressBar';
 import MultiSelectButton from '../../components/SelectButton/MultiSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
-import {submitSurveyAnswer} from '../../utils/surveyUtils';
+import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyFamilyHistoryScreen: undefined;
-  SurveyHealthConcernsScreen: undefined;
-  SurveyHealthGoalsScreen: undefined;
+  SurveyHealthConcernsScreen: {from?: string};
+  SurveyHealthGoalsScreen: {from?: string};
+  ProfileStack: {screen: 'ProfileScreen'};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -30,7 +31,6 @@ const healthConcerns = [
   '피부 문제',
 ];
 
-// 한글 → API 전송용 enum 값으로 변환
 const mapToApiValue = (korean: string): string => {
   switch (korean) {
     case '피로감':
@@ -51,7 +51,10 @@ const mapToApiValue = (korean: string): string => {
 };
 
 const SurveyHealthConcernsScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedConcerns, setSelectedConcerns] = useState<string[]>([]);
 
   const toggleConcern = (concern: string) => {
@@ -65,8 +68,17 @@ const SurveyHealthConcernsScreen = () => {
   const handleNext = async () => {
     const apiValues = selectedConcerns.map(mapToApiValue).filter(Boolean);
     try {
-      await submitSurveyAnswer('concerns', {concerns: apiValues});
-      navigation.navigate('SurveyHealthGoalsScreen');
+      const surveyId = await getOrCreateSurvey();
+      await submitSurveyAnswer('concerns', {concerns: apiValues}, surveyId);
+
+      if (from === 'partial-goal') {
+        navigation.navigate(
+          'SurveyHealthGoalsScreen',
+          from ? {from} : undefined,
+        );
+      } else {
+        navigation.navigate('SurveyHealthGoalsScreen');
+      }
     } catch (error) {
       console.error('❌ 건강 고민 저장 실패:', error);
     }
@@ -75,14 +87,11 @@ const SurveyHealthConcernsScreen = () => {
   return (
     <Container>
       <SurveyHeader title="건강고민 & 목표" skipTarget="NextSurveyScreen" />
-
       <ProgressBarContainer>
         <ProgressBar progress={13 / 24} />
       </ProgressBarContainer>
-
       <SurveyTitle text="현재 가장 신경쓰이는 건강고민이 무엇인가요?" />
       <SubText>(다중선택 가능)</SubText>
-
       <ButtonGrid>
         {healthConcerns.map(concern => (
           <ButtonSpacing key={concern}>
@@ -94,7 +103,6 @@ const SurveyHealthConcernsScreen = () => {
           </ButtonSpacing>
         ))}
       </ButtonGrid>
-
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}

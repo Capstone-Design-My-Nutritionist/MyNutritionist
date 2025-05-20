@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -12,8 +12,9 @@ import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyHealthConcernsScreen: undefined;
-  SurveyHealthGoalsScreen: undefined;
-  SurveySleepTimeScreen: undefined;
+  SurveyHealthGoalsScreen: {from?: string};
+  SurveySleepTimeScreen: {from?: string};
+  ProfileScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -30,7 +31,6 @@ const healthGoals = [
   '면역력 강화',
 ];
 
-// 한글 → API ENUM 변환
 const mapGoalToApiValue = (goal: string): string => {
   switch (goal) {
     case '체중 조절':
@@ -51,7 +51,10 @@ const mapGoalToApiValue = (goal: string): string => {
 };
 
 const SurveyHealthGoalsScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
   const toggleGoal = (goal: string) => {
@@ -64,7 +67,12 @@ const SurveyHealthGoalsScreen = () => {
     const apiValues = selectedGoals.map(mapGoalToApiValue).filter(Boolean);
     try {
       await submitSurveyAnswer('goals', {goals: apiValues});
-      navigation.navigate('SurveySleepTimeScreen');
+
+      if (from === 'partial-goal') {
+        navigation.navigate('ProfileStack', {screen: 'ProfileScreen'});
+      } else {
+        navigation.navigate('SurveySleepTimeScreen');
+      }
     } catch (error) {
       console.error('❌ 건강 목표 저장 실패:', error);
     }
@@ -73,14 +81,11 @@ const SurveyHealthGoalsScreen = () => {
   return (
     <Container>
       <SurveyHeader title="건강고민 & 목표" skipTarget="NextSurveyScreen" />
-
       <ProgressBarContainer>
         <ProgressBar progress={14 / 24} />
       </ProgressBarContainer>
-
       <SurveyTitle text="개선하고 싶은 건강목표는 무엇인가요?" />
       <SubText>(다중선택 가능)</SubText>
-
       <ButtonGrid>
         {healthGoals.map(goal => (
           <ButtonSpacing key={goal}>
@@ -92,7 +97,6 @@ const SurveyHealthGoalsScreen = () => {
           </ButtonSpacing>
         ))}
       </ButtonGrid>
-
       <SurveyButtonGroup
         onPrevious={() => navigation.goBack()}
         onNext={handleNext}
@@ -104,7 +108,6 @@ const SurveyHealthGoalsScreen = () => {
 
 export default SurveyHealthGoalsScreen;
 
-// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;
