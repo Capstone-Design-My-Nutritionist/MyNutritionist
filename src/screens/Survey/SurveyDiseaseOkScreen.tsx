@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import ProgressBar from '../../components/ProgressBar';
@@ -8,13 +8,13 @@ import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
 import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
-
-import {submitSurveyAnswer} from '../../utils/surveyUtils'; // ✅ 추가
+import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils'; // ✅ 추가
 
 type RootStackParamList = {
-  SurveyDiseaseOkScreen: undefined;
+  SurveyDiseaseOkScreen: {from?: string};
   SurveyDiseaseScreen: undefined;
   SurveyFamilyHistoryOkScreen: undefined;
+  ProfileScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -23,7 +23,10 @@ type NavigationProps = StackNavigationProp<
 >;
 
 const SurveyDiseaseOkScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
@@ -32,20 +35,26 @@ const SurveyDiseaseOkScreen = () => {
     const hasDisease = selectedOption === '예';
 
     try {
+      // ✅ surveyId 가져오기
+      const surveyId = await getOrCreateSurvey();
+
       // 1. 질환 여부 저장
-      await submitSurveyAnswer('diagnosed-disease-status', {
-        hasDiagnosedDisease: hasDisease,
-      });
+      await submitSurveyAnswer(
+        'diagnosed-disease-status',
+        {
+          hasDiagnosedDisease: hasDisease,
+        },
+        surveyId,
+      ); // ✅ surveyId 추가
 
       if (hasDisease) {
-        // 2. '예'인 경우 → 상세 질환 입력 화면
-        navigation.navigate('SurveyDiseaseScreen');
+        navigation.navigate('SurveyDiseaseScreen', from ? {from} : undefined);
       } else {
-        // 3. '아니오'인 경우 → 빈 배열 저장 후 다음 화면
-        await submitSurveyAnswer('diseases', {
-          diseases: [],
-        });
-        navigation.navigate('SurveyFamilyHistoryOkScreen'); // 다음 화면으로 변경 가능
+        await submitSurveyAnswer('diseases', {diseases: []}, surveyId);
+        navigation.navigate(
+          'SurveyFamilyHistoryOkScreen',
+          from ? {from} : undefined,
+        );
       }
     } catch (error) {
       console.error('❌ 질환 여부 저장 실패:', error);

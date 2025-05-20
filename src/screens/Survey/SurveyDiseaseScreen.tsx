@@ -1,7 +1,6 @@
-// ✅ SurveyDiseaseScreen.tsx 연동 완료 버전
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -14,8 +13,11 @@ import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyDiseaseOkScreen: undefined;
-  SurveyDiseaseScreen: undefined;
-  SurveyFamilyHistoryOkScreen: undefined;
+  SurveyDiseaseScreen: {from?: string} | undefined;
+  SurveyFamilyHistoryOkScreen: {from?: string}; // ✅ from 추가
+  ProfileStack: {
+    screen: 'ProfileScreen';
+  };
 };
 
 type NavigationProps = StackNavigationProp<
@@ -36,7 +38,10 @@ const diseaseOptions: {[k: string]: string} = {
 };
 
 const SurveyDiseaseScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
 
   const toggleDisease = (item: string) => {
@@ -46,17 +51,20 @@ const SurveyDiseaseScreen = () => {
   };
 
   const handleNext = async () => {
-    if (selectedDiseases.includes('해당 없음')) {
-      await submitSurveyAnswer('diseases', {diseases: []});
-    } else {
-      const diseaseCodes = selectedDiseases
-        .map(label => diseaseOptions[label])
-        .filter(code => !!code); // 필터링 안전 장치
+    try {
+      if (selectedDiseases.includes('해당 없음')) {
+        await submitSurveyAnswer('diseases', {diseases: []});
+      } else {
+        const diseaseCodes = selectedDiseases
+          .map(label => diseaseOptions[label])
+          .filter(code => !!code);
+        await submitSurveyAnswer('diseases', {diseases: diseaseCodes});
+      }
 
-      await submitSurveyAnswer('diseases', {diseases: diseaseCodes});
+      navigation.navigate('SurveyFamilyHistoryOkScreen', {from});
+    } catch (error) {
+      console.error('❌ 질환 저장 실패:', error);
     }
-
-    navigation.navigate('SurveyFamilyHistoryOkScreen');
   };
 
   return (

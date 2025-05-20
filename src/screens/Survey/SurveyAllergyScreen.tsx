@@ -1,9 +1,8 @@
-// 📦 알레르기 선택 저장 + 설문 완료
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // 상단에 추가
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
 import SurveyTitle from '../../components/Common/SurveyTitle';
@@ -14,9 +13,8 @@ import {
   submitSurveyAnswer,
   saveSurveyCompletionTime,
 } from '../../utils/surveyUtils';
-import {completeSurvey} from '../../api/api'; // 파일 경로에 따라 조정
+import {completeSurvey} from '../../api/api';
 
-// ✅ 알레르기 맵핑
 const allergyMap: Record<string, string> = {
   견과류: 'NUTS',
   유제품: 'DAIRY',
@@ -25,10 +23,10 @@ const allergyMap: Record<string, string> = {
   '해당 없음': 'NONE',
 };
 
-// ✅ Stack 타입
 type RootStackParamList = {
   SurveyAllergyOkScreen: undefined;
-  SurveyAllergyScreen: undefined;
+  SurveyAllergyScreen: {from?: string};
+  SurveySmokingScreen: undefined;
   ProfileStack: undefined;
 };
 
@@ -42,6 +40,9 @@ const allergyOptionsBottom = ['글루텐', '해당 없음'];
 
 const SurveyAllergyScreen = () => {
   const navigation = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
@@ -52,14 +53,19 @@ const SurveyAllergyScreen = () => {
         allergies: [allergyMap[selectedOption]],
       });
 
-      await completeSurvey();
-      await saveSurveyCompletionTime();
-
-      console.log('🎉 설문 완료!');
-      await AsyncStorage.setItem('hasCompletedSurvey', 'true');
-      navigation.replace('ProfileStack'); // ✅ 설문 완료 후 마이페이지로 이동
+      if (from === 'partial-health') {
+        // 건강정보 설문만 다시 하는 경우
+        await completeSurvey();
+        await saveSurveyCompletionTime();
+        console.log('🎉 건강정보 설문 완료!');
+        await AsyncStorage.setItem('hasCompletedSurvey', 'true');
+        navigation.replace('ProfileStack');
+      } else {
+        // 전체 설문 흐름
+        navigation.navigate('SurveySmokingScreen');
+      }
     } catch (error) {
-      console.error('❌ 설문 완료 중 오류:', error);
+      console.error('❌ 알레르기 저장/설문 완료 중 오류:', error);
     }
   };
 
@@ -109,7 +115,6 @@ const SurveyAllergyScreen = () => {
 
 export default SurveyAllergyScreen;
 
-// ---------------- 스타일 정의 ----------------
 const Container = styled.View`
   flex: 1;
   background-color: white;

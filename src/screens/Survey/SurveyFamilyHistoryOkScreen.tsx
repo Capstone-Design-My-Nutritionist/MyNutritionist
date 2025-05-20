@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import ProgressBar from '../../components/ProgressBar';
@@ -12,9 +12,10 @@ import {submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveyDiseaseScreen: undefined;
-  SurveyFamilyHistoryOkScreen: undefined;
-  SurveyFamilyHistoryScreen: undefined;
-  SurveyHealthConcernsScreen: undefined; // ✅ 다음으로 이동할 화면
+  SurveyFamilyHistoryOkScreen: {from?: string};
+  SurveyFamilyHistoryScreen: {from?: string};
+  SurveyHealthConcernsScreen: undefined;
+  ProfileScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -23,7 +24,10 @@ type NavigationProps = StackNavigationProp<
 >;
 
 const SurveyFamilyHistoryOkScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
@@ -32,20 +36,28 @@ const SurveyFamilyHistoryOkScreen = () => {
     const hasFamilyHistory = selectedOption === '예';
 
     try {
-      // 1. 가족력 상태 저장
+      // 1. 저장
       await submitSurveyAnswer('family-history-status', {
         hasFamilyHistory,
       });
 
       if (hasFamilyHistory) {
-        // 2. 예 → 가족력 상세 입력 화면으로 이동
-        navigation.navigate('SurveyFamilyHistoryScreen');
+        // 2. 상세 입력으로
+        navigation.navigate(
+          'SurveyFamilyHistoryScreen',
+          from ? {from} : undefined,
+        );
       } else {
-        // 3. 아니오 → 빈 배열 저장하고 다음 단계로 바로 이동
+        // 3. 아니오 → 빈 배열 저장 후 다음 화면
         await submitSurveyAnswer('family-histories', {
           familyDiseases: [],
         });
-        navigation.navigate('SurveyHealthConcernsScreen');
+
+        if (from === 'partial-health') {
+          navigation.navigate('SurveyAllergyOkScreen', {from});
+        } else {
+          navigation.navigate('SurveyHealthConcernsScreen');
+        }
       }
     } catch (error) {
       console.error('❌ 가족력 저장 실패:', error);
@@ -91,7 +103,6 @@ const SurveyFamilyHistoryOkScreen = () => {
 
 export default SurveyFamilyHistoryOkScreen;
 
-// ---------------- 스타일 정의 ----------------
 const Container = styled.View`
   flex: 1;
   background-color: white;
