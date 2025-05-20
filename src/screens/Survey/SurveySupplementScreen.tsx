@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -13,8 +13,9 @@ import {getOrCreateSurvey, submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
   SurveySupplementOkScreen: undefined;
-  SurveySupplementScreen: undefined;
+  SurveySupplementScreen: {from?: string};
   SurveyDiseaseOkScreen: undefined;
+  ProfileStack: {screen: 'ProfileScreen'};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -47,7 +48,10 @@ const supplementMap: {[key: string]: string} = {
 };
 
 const SurveySupplementScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedSupplements, setSelectedSupplements] = useState<string[]>([]);
 
   const toggleSupplement = (item: string) => {
@@ -71,7 +75,12 @@ const SurveySupplementScreen = () => {
         surveyId,
       );
       console.log('✅ supplements 저장 완료');
-      navigation.navigate('SurveyDiseaseOkScreen');
+
+      if (from === 'partial-medicine') {
+        navigation.navigate('ProfileStack', {screen: 'ProfileScreen'});
+      } else {
+        navigation.navigate('SurveyDiseaseOkScreen');
+      }
     } catch (error) {
       console.error('❌ 설문 저장 실패:', error);
     }
@@ -114,7 +123,6 @@ const SurveySupplementScreen = () => {
 
 export default SurveySupplementScreen;
 
-// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

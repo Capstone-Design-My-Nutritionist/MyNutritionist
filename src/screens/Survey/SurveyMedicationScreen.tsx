@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -12,9 +12,10 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 import {getOrCreateSurvey, submitSurveyAnswer} from '../../utils/surveyUtils';
 
 type RootStackParamList = {
-  SurveyMedicationOkScreen: undefined;
-  SurveyMedicationScreen: undefined;
-  SurveySupplementOkScreen: undefined;
+  SurveyMedicationOkScreen: {from?: string};
+  SurveyMedicationScreen: {from?: string};
+  SurveySupplementOkScreen: {from?: string};
+  ProfileScreen: undefined;
 };
 
 type NavigationProps = StackNavigationProp<
@@ -34,7 +35,6 @@ const medicationOptions = [
   '진통제',
 ];
 
-// 백엔드에 보내야 하는 코드 매핑
 const medicationMap: {[key: string]: string} = {
   혈압약: 'BLOOD_PRESSURE',
   혈액응고제: 'ANTICOAGULANT',
@@ -48,7 +48,10 @@ const medicationMap: {[key: string]: string} = {
 };
 
 const SurveyMedicationScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedMedications, setSelectedMedications] = useState<string[]>([]);
 
   const toggleMedication = (item: string) => {
@@ -72,7 +75,12 @@ const SurveyMedicationScreen = () => {
         surveyId,
       );
       console.log('✅ medications 저장 완료');
-      navigation.navigate('SurveySupplementOkScreen');
+
+      if (from === 'partial-medicine') {
+        navigation.navigate('SurveySupplementOkScreen', {from});
+      } else {
+        navigation.navigate('SurveySupplementOkScreen');
+      }
     } catch (error) {
       console.error('❌ 설문 저장 실패:', error);
     }
@@ -82,7 +90,7 @@ const SurveyMedicationScreen = () => {
     <Container>
       <SurveyHeader
         title="복용약 & 건강기능식품 정보"
-        skipTarget="NextSurveyScreen"
+        skipTarget="SurveySupplementOkScreen"
       />
       <ProgressBarContainer>
         <ProgressBar progress={6 / 24} />
@@ -115,7 +123,6 @@ const SurveyMedicationScreen = () => {
 
 export default SurveyMedicationScreen;
 
-// 스타일 정의
 const Container = styled.View`
   flex: 1;
   background-color: white;

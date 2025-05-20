@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import SurveyHeader from '../../components/Common/SurveyHeader';
@@ -9,13 +9,14 @@ import ProgressBar from '../../components/ProgressBar';
 import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
 import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 
-import {submitSurveyAnswer} from '../../utils/surveyUtils';
+import {submitSurveyAnswer, getOrCreateSurvey} from '../../utils/surveyUtils';
 
 // ✅ 네비게이션 타입 정의
 type RootStackParamList = {
-  SurveySupplementOkScreen: undefined;
-  SurveySupplementScreen: undefined;
-  SurveyDiseaseOkScreen: undefined;
+  SurveySupplementOkScreen: {from?: string};
+  SurveySupplementScreen: {from?: string};
+  SurveyDiseaseOkScreen: {from?: string};
+  ProfileStack: {screen: 'ProfileScreen'};
 };
 
 type NavigationProps = StackNavigationProp<
@@ -24,7 +25,10 @@ type NavigationProps = StackNavigationProp<
 >;
 
 const SurveySupplementOkScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const from = (route.params as {from?: string})?.from;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleNext = async () => {
@@ -33,20 +37,30 @@ const SurveySupplementOkScreen = () => {
     const takingSupplements = selectedOption === '예';
 
     try {
+      const surveyId = await getOrCreateSurvey();
+
       // 1. 복용 여부 저장
-      await submitSurveyAnswer('supplement-status', {
-        takingSupplements: takingSupplements,
-      });
+      await submitSurveyAnswer(
+        'supplement-status',
+        {takingSupplements},
+        surveyId,
+      );
 
       if (takingSupplements) {
         // 2. '예'인 경우 → 복용 목록 입력 화면으로 이동
-        navigation.navigate('SurveySupplementScreen');
+        navigation.navigate(
+          'SurveySupplementScreen',
+          from ? {from} : undefined,
+        );
       } else {
-        // 3. '아니오'인 경우 → 빈 배열 저장 + 다음 화면 이동
-        await submitSurveyAnswer('supplements', {
-          supplements: [],
-        });
-        navigation.navigate('SurveyDiseaseOkScreen');
+        // 3. '아니오'인 경우 → 빈 배열 저장 후 다음 단계로 이동
+        await submitSurveyAnswer('supplements', {supplements: []}, surveyId);
+
+        if (from === 'partial-medicine') {
+          navigation.navigate('ProfileStack', {screen: 'ProfileScreen'});
+        } else {
+          navigation.navigate('SurveyDiseaseOkScreen');
+        }
       }
     } catch (error) {
       console.error('❌ 영양제 정보 저장 실패:', error);
@@ -89,7 +103,6 @@ const SurveySupplementOkScreen = () => {
 
 export default SurveySupplementOkScreen;
 
-// ---------------- 스타일 정의 ----------------
 const Container = styled.View`
   flex: 1;
   background-color: white;
