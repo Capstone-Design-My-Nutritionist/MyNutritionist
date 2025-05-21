@@ -132,7 +132,7 @@ const Container = styled.View`
 const ProgressBarContainer = styled.View`
   width: 100%;
   margin-top: 10px;
-  margin-bottom: 65px;
+  margin-bottom: 40px;
 `;
 
 const SubText = styled.Text`

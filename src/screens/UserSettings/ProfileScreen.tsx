@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -18,6 +18,7 @@ const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const [isPushEnabled, setIsPushEnabled] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [todayDate, setTodayDate] = useState('');
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTimeType, setSelectedTimeType] = useState<
@@ -27,6 +28,14 @@ const ProfileScreen = () => {
   const [morningTime, setMorningTime] = useState({hour: '08', minute: '00'});
   const [lunchTime, setLunchTime] = useState({hour: '12', minute: '00'});
   const [dinnerTime, setDinnerTime] = useState({hour: '18', minute: '00'});
+
+  useEffect(() => {
+    const now = new Date();
+    const formatted = `${now.getFullYear()}.${String(
+      now.getMonth() + 1,
+    ).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+    setTodayDate(formatted);
+  }, []);
 
   const openTimeModal = (type: 'morning' | 'lunch' | 'dinner') => {
     setSelectedTimeType(type);
@@ -208,7 +217,7 @@ const ProfileScreen = () => {
                   <TextRow>
                     <TextLabel>{item}</TextLabel>
                     <RowRight>
-                      <RecentDate>최근 진행 2025.01.01</RecentDate>
+                      <RecentDate>최근 진행 {todayDate}</RecentDate>
                       <RightArrowIcon />
                     </RowRight>
                   </TextRow>

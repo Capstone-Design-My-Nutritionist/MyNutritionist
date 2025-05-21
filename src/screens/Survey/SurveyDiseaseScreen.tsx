@@ -131,12 +131,12 @@ const ButtonGrid = styled.View`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin-top: 24px;
-  margin-bottom: 40px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `;
 
 const ButtonSpacing = styled.View`
-  margin: 20px 15px;
+  margin: 15px 15px;
 `;
 
 const SurveyButtonGroupWrapper = styled.View`

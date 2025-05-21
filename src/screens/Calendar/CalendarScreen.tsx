@@ -28,7 +28,9 @@ import {fetchNutritionSummary} from '../../api/api';
 const CalendarScreen = () => {
   const navigation = useNavigation();
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [calendarDates, setCalendarDates] = useState<Array<Array<dayjs.Dayjs | null>>>([]);
+  const [calendarDates, setCalendarDates] = useState<
+    Array<Array<dayjs.Dayjs | null>>
+  >([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [displayYearMonth, setDisplayYearMonth] = useState({
     year: selectedDate.format('YYYY'),
@@ -52,7 +54,7 @@ const CalendarScreen = () => {
     calories: 2000,
     carbs: 250,
     protein: 80,
-    fat: 60
+    fat: 60,
   };
 
   // 선택된 날짜의 데이터
@@ -66,11 +68,11 @@ const CalendarScreen = () => {
   const getCalendarData = async (date: string) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // 날짜 포맷 변환 (YYYY.MM.DD -> YYYY-MM-DD)
       const formattedDate = date.replace(/\./g, '-');
-      
+
       // 1. 영양소 요약 데이터 가져오기
       const nutritionResponse = await fetchNutritionSummary(formattedDate);
       if (nutritionResponse && nutritionResponse.data) {
@@ -78,80 +80,116 @@ const CalendarScreen = () => {
         const apiData = nutritionResponse.data;
         const formattedData = {
           ...apiData,
-          consumedCalories: apiData.energy !== undefined ? (apiData.energy >= 0 ? apiData.energy : 0) : (apiData.consumedCalories >= 0 ? apiData.consumedCalories : 0)
+          consumedCalories:
+            apiData.energy !== undefined
+              ? apiData.energy >= 0
+                ? apiData.energy
+                : 0
+              : apiData.consumedCalories >= 0
+              ? apiData.consumedCalories
+              : 0,
         };
         setNutritionSummary(formattedData);
-        console.log('📊 캘린더 화면 - 영양소 요약 데이터 가져오기 성공:', formattedData);
+        console.log(
+          '📊 캘린더 화면 - 영양소 요약 데이터 가져오기 성공:',
+          formattedData,
+        );
       }
-      
+
       // 2. 식사 기록 데이터 가져오기
-      const { fetchMealRecords } = await import('../../api/api');
+      const {fetchMealRecords} = await import('../../api/api');
       try {
         const mealsResponse = await fetchMealRecords(formattedDate);
-        
+
         // 전체 meal-records 데이터 상세 출력
         console.log('===== MEAL RECORDS API RESPONSE START =====');
         console.log('Date:', formattedDate);
         console.log('Raw API Response:', mealsResponse);
-        console.log('Full meal-records data (formatted):', JSON.stringify(mealsResponse, null, 2));
+        console.log(
+          'Full meal-records data (formatted):',
+          JSON.stringify(mealsResponse, null, 2),
+        );
         console.log('===== MEAL RECORDS API RESPONSE END =====');
-        
+
         console.log('📊 캘린더 화면 - 식사 기록 API 응답:', mealsResponse);
-        
+
         if (mealsResponse) {
           // HomeScreen과 동일한 방식으로 데이터 처리
           if (mealsResponse.meals && Array.isArray(mealsResponse.meals)) {
             // API 응답 데이터를 FoodCard에 맞는 형식으로 변환
-            const formattedMeals = mealsResponse.meals.flatMap((mealGroup: any, index: number) => {
-              // mealGroup이 유효한지 확인
-              if (!mealGroup || !mealGroup.foods || !Array.isArray(mealGroup.foods)) {
-                console.warn('유효하지 않은 mealGroup:', mealGroup);
-                return [];
-              }
-              
-              // mealType이 유효한지 확인
-              const koreanMealType = mealGroup.mealType === 'BREAKFAST' ? '아침' : 
-                                    mealGroup.mealType === 'LUNCH' ? '점심' : 
-                                    mealGroup.mealType === 'DINNER' ? '저녁' : '간식';
-              
-              return mealGroup.foods.map((food: any, foodIndex: number) => {
-                // food가 유효한지 확인
-                if (!food || !food.nutrition) {
-                  console.warn('유효하지 않은 food 데이터:', food);
-                  return null;
+            const formattedMeals = mealsResponse.meals.flatMap(
+              (mealGroup: any, index: number) => {
+                // mealGroup이 유효한지 확인
+                if (
+                  !mealGroup ||
+                  !mealGroup.foods ||
+                  !Array.isArray(mealGroup.foods)
+                ) {
+                  console.warn('유효하지 않은 mealGroup:', mealGroup);
+                  return [];
                 }
-                
-                // 음수인 경우 0으로 처리하는 함수
-                const formatNutrientValue = (value: any): number => {
-                  const num = parseFloat(value || 0);
-                  return num < 0 ? 0 : parseFloat(num.toFixed(1));
-                };
-                
-                return {
-                  id: `${index}-${foodIndex}`,
-                  imageUrl: food.imageUrl || 'https://via.placeholder.com/150', // 이미지가 없는 경우 기본 이미지 사용
-                  mealType: koreanMealType,
-                  totalCalories: formatNutrientValue(food.nutrition.energy),
-                  carbs: formatNutrientValue(food.nutrition.carbohydrate),
-                  protein: formatNutrientValue(food.nutrition.protein),
-                  fat: formatNutrientValue(food.nutrition.fat),
-                  foodName: food.fullName || food.name || '알 수 없는 음식',
-                };
-              }).filter(Boolean); // null 값 제거
-            });
-            
+
+                // mealType이 유효한지 확인
+                const koreanMealType =
+                  mealGroup.mealType === 'BREAKFAST'
+                    ? '아침'
+                    : mealGroup.mealType === 'LUNCH'
+                    ? '점심'
+                    : mealGroup.mealType === 'DINNER'
+                    ? '저녁'
+                    : '간식';
+
+                return mealGroup.foods
+                  .map((food: any, foodIndex: number) => {
+                    // food가 유효한지 확인
+                    if (!food || !food.nutrition) {
+                      console.warn('유효하지 않은 food 데이터:', food);
+                      return null;
+                    }
+
+                    // 음수인 경우 0으로 처리하는 함수
+                    const formatNutrientValue = (value: any): number => {
+                      const num = parseFloat(value || 0);
+                      return num < 0 ? 0 : parseFloat(num.toFixed(1));
+                    };
+
+                    return {
+                      id: `${index}-${foodIndex}`,
+                      imageUrl:
+                        food.imageUrl || 'https://via.placeholder.com/150', // 이미지가 없는 경우 기본 이미지 사용
+                      mealType: koreanMealType,
+                      totalCalories: formatNutrientValue(food.nutrition.energy),
+                      carbs: formatNutrientValue(food.nutrition.carbohydrate),
+                      protein: formatNutrientValue(food.nutrition.protein),
+                      fat: formatNutrientValue(food.nutrition.fat),
+                      foodName: food.fullName || food.name || '알 수 없는 음식',
+                    };
+                  })
+                  .filter(Boolean); // null 값 제거
+              },
+            );
+
             console.log('변환된 데이터:', formattedMeals.length, '개의 식사');
             setMealRecords(formattedMeals);
           } else if (Array.isArray(mealsResponse)) {
             // 배열 형태로 온 경우 처리
             setMealRecords(mealsResponse);
-            console.log('📊 캘린더 화면 - 식사 기록 가져오기 성공 (배열):', mealsResponse);
+            console.log(
+              '📊 캘린더 화면 - 식사 기록 가져오기 성공 (배열):',
+              mealsResponse,
+            );
           } else if (mealsResponse.data && Array.isArray(mealsResponse.data)) {
             // data 객체 안에 배열이 있는 경우 처리
             setMealRecords(mealsResponse.data);
-            console.log('📊 캘린더 화면 - 식사 기록 가져오기 성공 (data 객체):', mealsResponse.data);
+            console.log(
+              '📊 캘린더 화면 - 식사 기록 가져오기 성공 (data 객체):',
+              mealsResponse.data,
+            );
           } else {
-            console.warn('📊 식사 기록이 예상하지 않은 형식입니다:', mealsResponse);
+            console.warn(
+              '📊 식사 기록이 예상하지 않은 형식입니다:',
+              mealsResponse,
+            );
             setMealRecords([]);
           }
         } else {
@@ -173,7 +211,7 @@ const CalendarScreen = () => {
           consumedCalories: dummyData.consumedCalories,
           carbohydrate: dummyData.nutrients.carbs.consumed,
           protein: dummyData.nutrients.protein.consumed,
-          fat: dummyData.nutrients.fat.consumed
+          fat: dummyData.nutrients.fat.consumed,
         });
       }
       setMealRecords(dummyCalendarMeals[selectedDateStr] || []);
@@ -181,13 +219,13 @@ const CalendarScreen = () => {
       setIsLoading(false);
     }
   };
-  
+
   // 화면 진입 시 오늘 날짜의 데이터 가져오기
   useEffect(() => {
     const today = dayjs().format('YYYY-MM-DD');
     getCalendarData(today);
   }, []);
-  
+
   // 날짜 선택 시 데이터 가져오기
   useEffect(() => {
     const formattedDate = selectedDate.format('YYYY-MM-DD');
@@ -255,7 +293,11 @@ const CalendarScreen = () => {
 
   // 식사 상세 화면으로 이동
   const navigateToMealDetails = (mealType: string) => {
-    console.log(`식사 상세 화면으로 이동: 날짜=${selectedDate.format('YYYY.MM.DD')}, 식사 유형=${mealType}`);
+    console.log(
+      `식사 상세 화면으로 이동: 날짜=${selectedDate.format(
+        'YYYY.MM.DD',
+      )}, 식사 유형=${mealType}`,
+    );
     // @ts-ignore: 타입 정의 임시 처리
     navigation.navigate('MealDetails', {
       date: selectedDate.format('YYYY.MM.DD'),
@@ -297,7 +339,8 @@ const CalendarScreen = () => {
                   }
 
                   const isSelected =
-                    date.format('YYYY-MM-DD') === selectedDate.format('YYYY-MM-DD');
+                    date.format('YYYY-MM-DD') ===
+                    selectedDate.format('YYYY-MM-DD');
                   const isPast = date.isBefore(dayjs(), 'day');
                   const isFuture = date.isAfter(dayjs(), 'day');
 
@@ -340,13 +383,26 @@ const CalendarScreen = () => {
 
               <TotalIntakeText>총 섭취량</TotalIntakeText>
               <CalorieInfoContainer>
-                <CalorieText>{(nutritionSummary.consumedCalories >= 0 ? nutritionSummary.consumedCalories : 0).toFixed(1)}</CalorieText>
+                <CalorieText>
+                  {(nutritionSummary.consumedCalories >= 0
+                    ? nutritionSummary.consumedCalories
+                    : 0
+                  ).toFixed(1)}
+                </CalorieText>
                 <CalorieUnit>/ {goalNutrition.calories}kcal</CalorieUnit>
               </CalorieInfoContainer>
 
               <ProgressBarContainer>
                 <ProgressBarBackground>
-                  <ProgressBarFill width={((nutritionSummary.consumedCalories >= 0 ? nutritionSummary.consumedCalories : 0) / goalNutrition.calories) * 100} />
+                  <ProgressBarFill
+                    width={
+                      ((nutritionSummary.consumedCalories >= 0
+                        ? nutritionSummary.consumedCalories
+                        : 0) /
+                        goalNutrition.calories) *
+                      100
+                    }
+                  />
                 </ProgressBarBackground>
               </ProgressBarContainer>
 
@@ -354,7 +410,12 @@ const CalendarScreen = () => {
                 <ProgressBar
                   id={1}
                   label="탄수화물"
-                  consumed={parseFloat((nutritionSummary.carbohydrate >= 0 ? nutritionSummary.carbohydrate : 0).toFixed(1))}
+                  consumed={parseFloat(
+                    (nutritionSummary.carbohydrate >= 0
+                      ? nutritionSummary.carbohydrate
+                      : 0
+                    ).toFixed(1),
+                  )}
                   goal={goalNutrition.carbs}
                   progressColor="#FD384C"
                   unit="g"
@@ -362,7 +423,12 @@ const CalendarScreen = () => {
                 <ProgressBar
                   id={2}
                   label="단백질"
-                  consumed={parseFloat((nutritionSummary.protein >= 0 ? nutritionSummary.protein : 0).toFixed(1))}
+                  consumed={parseFloat(
+                    (nutritionSummary.protein >= 0
+                      ? nutritionSummary.protein
+                      : 0
+                    ).toFixed(1),
+                  )}
                   goal={goalNutrition.protein}
                   progressColor="#D95B72"
                   unit="g"
@@ -370,7 +436,12 @@ const CalendarScreen = () => {
                 <ProgressBar
                   id={3}
                   label="지방"
-                  consumed={parseFloat((nutritionSummary.fat >= 0 ? nutritionSummary.fat : 0).toFixed(1))}
+                  consumed={parseFloat(
+                    (nutritionSummary.fat >= 0
+                      ? nutritionSummary.fat
+                      : 0
+                    ).toFixed(1),
+                  )}
                   goal={goalNutrition.fat}
                   progressColor="#FD9E38"
                   unit="g"
@@ -386,7 +457,9 @@ const CalendarScreen = () => {
 
           {/* 식단 기록 영역 */}
           <SectionContainer>
-            <SectionTitle>{selectedDate.format('YYYY.MM.DD')} 식단 기록</SectionTitle>
+            <SectionTitle>
+              {selectedDate.format('YYYY.MM.DD')} 식단 기록
+            </SectionTitle>
 
             {mealRecords && mealRecords.length > 0 ? (
               <FoodCardsContainer>
@@ -395,7 +468,9 @@ const CalendarScreen = () => {
                     <FoodCardWrapper key={meal.id || `meal-${index}`}>
                       <FoodCard
                         id={index}
-                        imageUrl={meal.imageUrl || 'https://via.placeholder.com/150'}
+                        imageUrl={
+                          meal.imageUrl || 'https://via.placeholder.com/150'
+                        }
                         mealType={meal.mealType}
                         totalCalories={meal.totalCalories}
                         carbs={meal.carbs}
@@ -438,11 +513,11 @@ export default CalendarScreen;
 // 스타일 정의
 const Container = styled.View`
   flex: 1;
-  background-color: #FFFBFB;
+  background-color: #fffbfb;
 `;
 
 const HeaderContainer = styled.View`
-  background-color: #E44F68;
+  background-color: #e44f68;
   padding: 20px;
   padding-top: 60px;
 `;
@@ -457,13 +532,13 @@ const HeaderContent = styled.View`
 const HeaderTitle = styled.Text`
   font-family: 'Pretendard-Bold';
   font-size: 20px;
-  color: #FFFFFF;
+  color: #ffffff;
 `;
 
 const YearMonthButton = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 8px 12px;
   border-radius: 20px;
 `;
@@ -491,7 +566,7 @@ const WeekdayRow = styled.View`
 const WeekdayText = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 14px;
-  color: #FFFFFF;
+  color: #ffffff;
   width: 30px;
   text-align: center;
 `;
@@ -530,7 +605,8 @@ const DateCircle = styled.View<DateCircleProps>`
   border-radius: 14px;
   align-items: center;
   justify-content: center;
-  background-color: ${(props: DateCircleProps) => (props.isSelected ? '#FFFFFF' : 'transparent')};
+  background-color: ${(props: DateCircleProps) =>
+    props.isSelected ? '#FFFFFF' : 'transparent'};
 `;
 
 interface DateTextProps {
@@ -552,14 +628,15 @@ const DateText = styled.Text<DateTextProps>`
 
 const ContentContainer = styled.View`
   padding: 20px;
+  padding-bottom: 100px;
 `;
 
 const SummaryContainer = styled.View`
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   margin: -40px 0 20px;
   border-radius: 16px;
   padding: 20px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const SummaryHeader = styled.View`
@@ -572,7 +649,7 @@ const SummaryHeader = styled.View`
 const DateInfoText = styled.Text`
   font-family: 'Pretendard-SemiBold';
   font-size: 12px;
-  color: #8E8E8E;
+  color: #8e8e8e;
 `;
 
 const TotalIntakeText = styled.Text`
@@ -591,13 +668,13 @@ const CalorieInfoContainer = styled.View`
 const CalorieText = styled.Text`
   font-family: 'Pretendard-Bold';
   font-size: 24px;
-  color: #E44F68;
+  color: #e44f68;
 `;
 
 const CalorieUnit = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 14px;
-  color: #8E8E8E;
+  color: #8e8e8e;
   margin-left: 4px;
 `;
 
@@ -607,7 +684,7 @@ const ProgressBarContainer = styled.View`
 
 const ProgressBarBackground = styled.View`
   height: 10px;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   border-radius: 5px;
   overflow: hidden;
 `;
@@ -619,7 +696,7 @@ interface ProgressBarFillProps {
 const ProgressBarFill = styled.View<ProgressBarFillProps>`
   height: 100%;
   width: ${(props: ProgressBarFillProps) => Math.min(props.width, 100)}%;
-  background-color: #E44F68;
+  background-color: #e44f68;
   border-radius: 5px;
 `;
 
@@ -636,7 +713,7 @@ const SectionContainer = styled.View`
 const SectionTitle = styled.Text`
   font-family: 'Pretendard-Bold';
   font-size: 18px;
-  color: #731A22;
+  color: #731a22;
   margin-bottom: 16px;
 `;
 
@@ -652,30 +729,30 @@ const FoodCardWrapper = styled.View`
 const NoDataMessage = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 16px;
-  color: #8E8E8E;
+  color: #8e8e8e;
   text-align: center;
   margin: 20px 0;
 `;
 
 const NoFoodContainer = styled.View`
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 16px;
   padding: 40px 20px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const NoFoodMessage = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 16px;
-  color: #8E8E8E;
+  color: #8e8e8e;
   text-align: center;
 `;
 
 const SectionDivider = styled.View`
   height: 8px;
-  background-color: #E1E3E7;
+  background-color: #e1e3e7;
   margin-vertical: 8px;
 `;
 
@@ -689,7 +766,7 @@ const LoadingContainer = styled.View`
 const LoadingText = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 16px;
-  color: #8E8E8E;
+  color: #8e8e8e;
   margin-top: 10px;
 `;
 
@@ -703,6 +780,6 @@ const ErrorContainer = styled.View`
 const ErrorText = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 16px;
-  color: #FD384C;
+  color: #fd384c;
   text-align: center;
 `;

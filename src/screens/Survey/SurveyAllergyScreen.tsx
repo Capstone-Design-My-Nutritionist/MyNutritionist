@@ -60,7 +60,7 @@ const SurveyAllergyScreen = () => {
         await completeSurvey(surveyId);
         await saveSurveyCompletionTime();
         console.log('🎉 건강정보 설문 완료!');
-        await AsyncStorage.setItem('hasCompletedSurvey', 'true');
+        await AsyncStorage.setItem('hasCompletedSurvey', JSON.stringify(true));
         navigation.replace('ProfileStack');
       } else {
         // 전체 설문 흐름

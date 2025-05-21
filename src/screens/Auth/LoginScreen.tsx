@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Alert} from 'react-native';
+import {Alert, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../App';
@@ -38,7 +38,7 @@ const LoginScreen = () => {
       if (token) {
         await AsyncStorage.setItem('accessToken', token);
         console.log('🔐 토큰 저장 완료:', token);
-        
+
         // 사용자 정보 저장 (응답에서 가져올 수 있는 정보)
         if (response.data && response.data.nickname) {
           await AsyncStorage.setItem('userNickname', response.data.nickname);
@@ -49,9 +49,8 @@ const LoginScreen = () => {
           await AsyncStorage.setItem('userNickname', username);
           console.log('👤 닉네임 저장 완료 (이메일에서 추출):', username);
         }
-        
+
         setErrorMsg('');
-        Alert.alert('로그인 성공', '메인 화면으로 이동합니다.');
         navigation.replace('Main');
       } else {
         console.warn('❗ 응답 헤더에 토큰 없음:', response.headers);
@@ -74,7 +73,10 @@ const LoginScreen = () => {
   return (
     <Container>
       <LogoWrapper>
-        <LogoText>LOGO</LogoText>
+        <Image
+          source={require('../../assets/logo/Fooding_Logo.png')}
+          style={{width: 200, height: 200, resizeMode: 'contain'}}
+        />
       </LogoWrapper>
 
       <InputLabel>이메일</InputLabel>
@@ -121,8 +123,6 @@ const Container = styled.View`
 `;
 
 const LogoWrapper = styled.View`
-  border: 2px solid #000;
-  border-radius: 20px;
   padding: 36px 0;
   align-items: center;
 `;

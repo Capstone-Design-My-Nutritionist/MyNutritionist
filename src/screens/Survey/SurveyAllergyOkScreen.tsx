@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ProgressBar from '../../components/ProgressBar';
 import MonoSelectButton from '../../components/SelectButton/MonoSelectButton';
@@ -51,6 +52,10 @@ const SurveyAllergyOkScreen = () => {
         if (from === 'partial-health') {
           await completeSurvey(surveyId);
           await saveSurveyCompletionTime();
+          await AsyncStorage.setItem(
+            'hasCompletedSurvey',
+            JSON.stringify(true),
+          );
           navigation.navigate('ProfileStack');
         } else {
           navigation.navigate('SurveyAllergyScreen');

@@ -575,13 +575,32 @@ const HomeScreen = () => {
   const currentRecommendation = tempRecommendations[currentRecommendationIndex];
 
   useEffect(() => {
-    const checkSurveyStatus = async () => {
-      const hasCompleted = await AsyncStorage.getItem('hasCompletedSurvey');
+    const debugResetSurvey = async () => {
+      await AsyncStorage.removeItem('hasCompletedSurvey');
+      console.log('✅ 설문 상태 초기화됨 (실기기)');
+    };
+
+    debugResetSurvey();
+  }, []);
+
+  useEffect(() => {
+    const initSurveyCheck = async () => {
+      await AsyncStorage.removeItem('hasCompletedSurvey');
+      console.log('🧹 설문 상태 초기화 완료');
+
+      const storedValue = await AsyncStorage.getItem('hasCompletedSurvey');
+      const hasCompleted = JSON.parse(storedValue || 'false');
+      console.log('✅ hasCompletedSurvey (boolean):', hasCompleted);
+      console.log('📦 실기기 저장된 값:', storedValue);
+
       if (!hasCompleted) {
         setShowSurveyModal(true);
+      } else {
+        setShowSurveyModal(false);
       }
     };
-    checkSurveyStatus();
+
+    initSurveyCheck();
   }, []);
 
   return (
