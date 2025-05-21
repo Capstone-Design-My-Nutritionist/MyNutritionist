@@ -81,13 +81,16 @@ const FoodCard: React.FC<FoodCardProps> = ({
             <ProgressBar>
               <Progress
                 color="#FD384C"
-                width={(carbs / totalNutrients) * 100}
+                width={totalNutrients > 0 ? (carbs / totalNutrients) * 100 : 0}
               />
               <Progress
                 color="#D95B72"
-                width={(protein / totalNutrients) * 100}
+                width={totalNutrients > 0 ? (protein / totalNutrients) * 100 : 0}
               />
-              <Progress color="#FD9E38" width={(fat / totalNutrients) * 100} />
+              <Progress 
+                color="#FD9E38" 
+                width={totalNutrients > 0 ? (fat / totalNutrients) * 100 : 0} 
+              />
             </ProgressBar>
           </TextBox>
         </InfoContainer>
