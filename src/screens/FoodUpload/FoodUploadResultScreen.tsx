@@ -5,6 +5,8 @@ import {useRoute, useNavigation, CommonActions} from '@react-navigation/native';
 import {FoodUploadResultScreenRouteProp, FoodUploadNavigationProp} from '../../navigation/types';
 import axios from 'axios';
 import {API_URL} from '../../utils/env';
+import {postMealData} from '../../api/api';
+import {MEAL_TYPE_ENUM, convertToEnumMealType} from '../../utils/mealTypeUtils';
 import CommonHeader from '../../components/Common/CommonHeader';
 import MultiNutrientProgressBar from '../../components/Progress/MultiProgressBar';
 import FoodNutrientCard from '../../components/Common/FoodNutrientCard';
@@ -40,12 +42,12 @@ const NUTRIENT_NAMES = {
   totalSugars: '당류'
 };
 
-// 식사 타입 매핑
+// 식사 타입 매핑 - 백엔드 Enum 값으로 직접 매핑
 const MEAL_TYPE_MAPPING: Record<string, string> = {
-  '아침': 'breakfast',
-  '점심': 'lunch',
-  '저녁': 'dinner',
-  '간식': 'snack'
+  '아침': MEAL_TYPE_ENUM.BREAKFAST,
+  '점심': MEAL_TYPE_ENUM.LUNCH,
+  '저녁': MEAL_TYPE_ENUM.DINNER,
+  '간식': MEAL_TYPE_ENUM.SNACK
 };
 
 // 음식 타입 정의
@@ -107,6 +109,11 @@ const FoodUploadResultScreen = () => {
       : []
   );
   
+  // 음식 이름 문자열 관리 - '|' 구분자로 연결
+  const [selectedFoodNames, setSelectedFoodNames] = useState<string>(
+    result.foods.length > 0 ? result.foods[0].name : ''
+  );
+  
   // 선택되지 않은 음식 목록 관리
   const [unselectedFoods, setUnselectedFoods] = useState<FoodItem[]>(
     result.foods.length > 1 ? result.foods.slice(1) : []
@@ -143,16 +150,31 @@ const FoodUploadResultScreen = () => {
         Object.entries(item.calculatedNutrition).forEach(([key, value]) => {
           // value가 유효한 숫자인지 확인
           const numValue = Number(value);
-          if (!isNaN(numValue) && numValue > 0) { // 음수 값은 무시
+          
+          // -1은 실제 계산에서는 무시하고, 0보다 큰 값만 합산
+          if (!isNaN(numValue) && numValue !== -1 && numValue > 0) {
             if (newTotalNutrition[key]) {
               newTotalNutrition[key] += numValue;
             } else {
               newTotalNutrition[key] = numValue;
             }
+          } else if (!isNaN(numValue) && numValue === -1) {
+            // -1인 값은 그대로 유지 (데이터 보존)
+            if (!newTotalNutrition[key]) {
+              newTotalNutrition[key] = -1;
+            }
           }
         });
       } catch (error) {
         console.error(`selectedFoods[${index}] 처리 중 오류:`, error);
+      }
+    });
+    
+    // 총 값을 소수점 두 자리까지 정확하게 처리
+    Object.keys(newTotalNutrition).forEach(key => {
+      if (newTotalNutrition[key] !== -1) {
+        // -1이 아닌 값만 소수점 두 자리까지 정확하게 처리
+        newTotalNutrition[key] = parseFloat(newTotalNutrition[key].toFixed(2));
       }
     });
     
@@ -164,17 +186,20 @@ const FoodUploadResultScreen = () => {
     const items = [];
     
     for (const [key, value] of Object.entries(nutrition)) {
-      // 음수나 -1은 표시하지 않음
+      // -1인 값은 화면 표시 시에만 0으로 변환 (데이터 자체는 변경하지 않음)
       // 칼로리, 탄수화물, 단백질, 지방은 위에 이미 표시되어 있으므로 제외
-      if (value > 0 && !['energy', 'carbohydrate', 'protein', 'fat'].includes(key)) {
+      const displayValue = value === -1 ? 0 : value;
+      
+      // 0보다 큰 값만 표시
+      if (displayValue > 0 && !['energy', 'carbohydrate', 'protein', 'fat'].includes(key)) {
         const label = NUTRIENT_NAMES[key as keyof typeof NUTRIENT_NAMES] || key;
         let formattedValue = '';
         
         // 단위 설정 (소수점 두자리까지 표시)
         if (['sodium', 'calcium', 'phosphorus', 'iron', 'zinc', 'magnesium', 'potassium', 'vitaminA', 'vitaminB1', 'vitaminB2', 'vitaminB6', 'vitaminB12', 'vitaminC', 'vitaminD', 'vitaminE', 'vitaminK', 'cholesterol'].includes(key)) {
-          formattedValue = `${value.toFixed(2)} mg`;
+          formattedValue = `${displayValue.toFixed(2)} mg`;
         } else {
-          formattedValue = `${value.toFixed(2)} g`;
+          formattedValue = `${displayValue.toFixed(2)} g`;
         }
         
         items.push({
@@ -220,6 +245,14 @@ const FoodUploadResultScreen = () => {
       }
     ]);
     
+    // 음식 이름 문자열 업데이트 - '|' 구분자로 연결
+    setSelectedFoodNames(prev => {
+      // 처음 추가되는 음식이면 구분자 없이 이름만 추가
+      if (!prev || prev.trim() === '') return food.name;
+      // 이미 음식이 있으면 '|' 구분자로 연결
+      return `${prev}|${food.name}`;
+    });
+    
     // 선택되지 않은 음식 목록에서 제거
     setUnselectedFoods(prev => prev.filter(item => item.name !== food.name));
   };
@@ -256,8 +289,23 @@ const FoodUploadResultScreen = () => {
       const newSelectedFoods = selectedFoods.filter((_, i) => i !== index);
       console.log('삭제 후 음식 개수:', newSelectedFoods.length);
       
-      // 삭제된 음식을 unselectedFoods에 다시 추가
+      // 음식 이름 문자열에서 해당 음식 제거
       if (foodToRemove && foodToRemove.food) {
+        const foodNameToRemove = foodToRemove.food.name;
+        setSelectedFoodNames(prev => {
+          // 이름 문자열을 배열로 분리
+          const namesArray = prev.split('|');
+          // 해당 음식 이름 제거
+          const filteredArray = namesArray.filter(name => name !== foodNameToRemove);
+          
+          // 다시 문자열로 합치기 - 단, 하나만 남은 경우 '|' 구분자 없이 이름만 반환
+          if (filteredArray.length === 1) {
+            return filteredArray[0];
+          }
+          return filteredArray.join('|');
+        });
+        
+        // 삭제된 음식을 unselectedFoods에 다시 추가
         setUnselectedFoods(prev => [...prev, foodToRemove.food]);
       }
       
@@ -275,20 +323,36 @@ const FoodUploadResultScreen = () => {
     try {
       setLoading(true);
       
-      // 서버에 전송할 데이터 구성
-      const submitData = {
-        imagePath: imageUri,
-        mealType: MEAL_TYPE_MAPPING[mealType as keyof typeof MEAL_TYPE_MAPPING] || 'breakfast',
-        foods: selectedFoods.map((item: SelectedFood) => ({
-          foodName: item.food.name,
-          amount: parseFloat(item.amount) || 1,
-          unit: item.unit,
-          nutrition: item.calculatedNutrition
-        }))
+      // 식사 유형 변환 (한글 -> 백엔드 Enum 값)
+      const serverMealType = MEAL_TYPE_MAPPING[mealType as keyof typeof MEAL_TYPE_MAPPING] || MEAL_TYPE_ENUM.BREAKFAST;
+      
+      console.log('제출할 식사 유형:', mealType, '->', serverMealType);
+      console.log('제출할 음식 이름 문자열:', selectedFoodNames);
+      console.log('제출할 총 영양소:', totalNutrition);
+      
+      // 1. 여러 음식을 하나로 합쳐서 전송하도록 수정
+      // 총 섭취량 계산 (모든 음식의 eatAmount 합)
+      const totalEatAmount = selectedFoods.reduce((total, item) => {
+        return total + (parseFloat(item.amount) || 1);
+      }, 0);
+      
+      // 2. 하나의 통합된 음식 데이터 생성
+      const combinedFoodData = {
+        name: selectedFoodNames.split('|')[0], // 첫 번째 음식 이름을 대표 이름으로 사용
+        fullName: selectedFoodNames, // 전체 이름은 combinedFoodNames와 동일하게 설정
+        eatAmount: parseFloat(totalEatAmount.toFixed(2)), // 총 섭취량 (소수점 두 자리까지)
+        nutrition: totalNutrition, // 합산된 영양소 정보 사용
+        combinedFoodNames: selectedFoodNames // 모든 음식 이름을 '|'로 구분하여 저장
       };
       
-      // API 호출
-      await axios.post(`${API_URL}/api/foods/upload`, submitData);
+      // 3. 단일 음식 데이터를 배열에 담아 전송
+      const foodsData = [combinedFoodData];
+      
+      console.log('제출할 통합 음식 데이터:', foodsData);
+      
+      // API 호출 - 새로운 postMealData 함수 사용
+      const response = await postMealData(serverMealType, imageUri, foodsData);
+      console.log('🍽️ 음식 데이터 제출 성공:', response);
       
       // 성공 메시지 표시
       if (Platform.OS === 'android') {

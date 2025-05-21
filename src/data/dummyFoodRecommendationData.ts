@@ -1,3 +1,4 @@
+// 단일 음식 더미 데이터 (기존 데이터)
 export const dummyFood = {
   name: '닭가슴살 샐러드',
   imageUrl: 'https://static.wtable.co.kr/image/production/service/recipe/2184/2bff748d-c37e-4378-9f4e-80768739949a.jpg',
@@ -16,7 +17,333 @@ export const dummyFood = {
     비타민C: '15mg',
     비타민D: '1.5µg',
     비타민E: '2.5mg',
-    트랜스지방: '0g', // => 렌더링 X
-    포화지방: '', // => 렌더링 X
+    트랜스지방: '0g',
+    포화지방: '',
   }
 };
+
+// 영양소 기준 음식 추천 데이터 (15개 요리)
+export const dummyFoodRecommendationData = [
+  {
+    id: 1,
+    name: '연어 샐러드',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKjBF-BJKOL3qf9Irqhyv96c2j5engR1kz_w&s',
+    kcal: 367,
+    carbs: 15.5,
+    protein: 39.2,
+    fat: 22.1,
+    nutrients: {
+      콜레스테롤: '95mg',
+      식이섬유: '3.2g',
+      칼슘: '85mg',
+      나트륨: '310mg',
+      당류: '2.1g',
+      비타민A: '449µg',
+      비타민B: '12.3mg',
+      비타민C: '23.9mg',
+      비타민D: '16.2µg',
+      비타민E: '4.0mg',
+      오메가3: '2.2g',
+      포화지방: '4.2g'
+    }
+  },
+  {
+    id: 2,
+    name: '시금치 샐러드',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvcZgJZvRUqLVYjPyhiWluvaFofj4XDBGDfA&s',
+    kcal: 278,
+    carbs: 36.8,
+    protein: 12.9,
+    fat: 8.3,
+    nutrients: {
+      콜레스테롤: '0mg',
+      식이섬유: '7.2g',
+      칼슘: '199mg',
+      나트륨: '179mg',
+      당류: '2.4g',
+      비타민A: '569µg',
+      비타민B: '0.5mg',
+      비타민C: '38.1mg',
+      비타민D: '0µg',
+      비타민E: '3.0mg',
+      철분: '4.7mg',
+      포화지방: '1.2g'
+    }
+  },
+  {
+    id: 3,
+    name: '닭가슴살',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKNph8FTLQCcDN7AdwGAawrGGFGrYr7MkGjw&s',
+    kcal: 286,
+    carbs: 30.1,
+    protein: 31.6,
+    fat: 3.1,
+    nutrients: {
+      콜레스테롤: '75mg',
+      식이섬유: '4.0g',
+      칼슘: '40mg',
+      나트륨: '255mg',
+      당류: '6.2g',
+      비타민A: '709µg',
+      비타민B: '0.6mg',
+      비타민C: '12.4mg',
+      비타민D: '0.2µg',
+      비타민E: '1.3mg',
+      칼륨: '537mg',
+      포화지방: '0.8g'
+    }
+  },
+  {
+    id: 4,
+    name: '아보카도 토스트',
+    imageUrl: 'https://bakesbybrownsugar.com/wp-content/uploads/2023/07/Avocado-Toast-with-Tomato-52.jpg',
+    kcal: 320,
+    carbs: 28.5,
+    protein: 12.0,
+    fat: 18.7,
+    nutrients: {
+      콜레스테롤: '185mg',
+      식이섬유: '8.7g',
+      칼슘: '72mg',
+      나트륨: '307mg',
+      당류: '2.7g',
+      비타민A: '107µg',
+      비타민B: '0.5mg',
+      비타민C: '15mg',
+      비타민D: '1.1µg',
+      비타민E: '4.1mg',
+      비타민K: '21µg',
+      포화지방: '3.5g'
+    }
+  },
+  {
+    id: 5,
+    name: '그릭 요거트',
+    imageUrl: 'https://blog.kakaocdn.net/dn/FoXrR/btspeJHZLJx/yowqopKZIaYECHTwoZTkR1/img.jpg',
+    kcal: 249,
+    carbs: 32.2,
+    protein: 14.7,
+    fat: 7.9,
+    nutrients: {
+      콜레스테롤: '24mg',
+      식이섬유: '4.5g',
+      칼슘: '276mg',
+      나트륨: '105mg',
+      당류: '18.2g',
+      비타민A: '68µg',
+      비타민B: '0.4mg',
+      비타민C: '12mg',
+      비타민D: '3.2µg',
+      비타민E: '0.8mg',
+      칼륨: '349mg',
+      포화지방: '4.6g'
+    }
+  },
+  {
+    id: 6,
+    name: '당근 볶음밥',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwCxr1iDZWA0VMmo3oGAe8ctkxASgM33Hy4Q&s',
+    kcal: 241,
+    carbs: 29.6,
+    protein: 5.9,
+    fat: 12.2,
+    nutrients: {
+      콜레스테롤: '15mg',
+      식이섬유: '4.8g',
+      칼슘: '83mg',
+      나트륨: '469mg',
+      당류: '8.7g',
+      비타민A: '1235µg',
+      비타민B: '0.3mg',
+      비타민C: '15.9mg',
+      비타민D: '0µg',
+      비타민E: '2.7mg',
+      칼륨: '520mg',
+      포화지방: '1.8g'
+    }
+  },
+  {
+    id: 7,
+    name: '에그 스크램블',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuA8Cg1_M4cBtgJ7ruLdSPoAM0jsR-OQS1wA&s',
+    kcal: 355,
+    carbs: 11.1,
+    protein: 22.6,
+    fat: 25.6,
+    nutrients: {
+      콜레스테롤: '473mg',
+      식이섬유: '5.2g',
+      칼슘: '156mg',
+      나트륨: '324mg',
+      당류: '3.4g',
+      비타민A: '360µg',
+      비타민B: '0.8mg',
+      비타민C: '25mg',
+      비타민D: '3.0µg',
+      비타민E: '4.0mg',
+      철분: '3.8mg',
+      포화지방: '6.1g'
+    }
+  },
+  {
+    id: 8,
+    name: '연어 파스타',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqtUvZRCTXQP3rcEpWusf_jaoYzAwCGNKSCg&s',
+    kcal: 554,
+    carbs: 53.7,
+    protein: 25.2,
+    fat: 25.2,
+    nutrients: {
+      콜레스테롤: '45mg',
+      식이섬유: '4.7g',
+      칼슘: '128mg',
+      나트륨: '302mg',
+      당류: '3.6g',
+      비타민A: '101µg',
+      비타민B: '0.8mg',
+      비타민C: '8.3mg',
+      비타민D: '5.2µg',
+      비타민E: '10.8mg',
+      오메가3: '5.1g',
+      포화지방: '3.1g'
+    }
+  },
+  {
+    id: 9,
+    name: '치킨 샐러드',
+    imageUrl: 'https://live.staticflickr.com/7393/14111290775_5d35c522d3_b.jpg',
+    kcal: 347,
+    carbs: 21.8,
+    protein: 30.9,
+    fat: 15.1,
+    nutrients: {
+      콜레스테롤: '85mg',
+      식이섬유: '5.4g',
+      칼슘: '80mg',
+      나트륨: '320mg',
+      당류: '12.4g',
+      비타민A: '114µg',
+      비타민B: '0.6mg',
+      비타민C: '83.2mg',
+      비타민D: '0.2µg',
+      비타민E: '3.2mg',
+      칼륨: '481mg',
+      포화지방: '2.8g'
+    }
+  },
+  {
+    id: 10,
+    name: '토마토 파스타',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzHBDPgABpumES20ULXu3yWEgdXc7yxte1Xw&s',
+    kcal: 385,
+    carbs: 65.3,
+    protein: 12.5,
+    fat: 8.2,
+    nutrients: {
+      콜레스테롤: '5mg',
+      식이섬유: '4.8g',
+      칼슘: '65mg',
+      나트륨: '580mg',
+      당류: '8.7g',
+      비타민A: '158µg',
+      비타민B: '0.4mg',
+      비타민C: '32.5mg',
+      비타민D: '0µg',
+      비타민E: '2.1mg',
+      칼륨: '534mg',
+      포화지방: '1.2g'
+    }
+  },
+  {
+    id: 11,
+    name: '부리또',
+    imageUrl: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg',
+    kcal: 420,
+    carbs: 68.4,
+    protein: 15.3,
+    fat: 10.8,
+    nutrients: {
+      콜레스테롤: '0mg',
+      식이섬유: '12.5g',
+      칼슘: '120mg',
+      나트륨: '620mg',
+      당류: '5.2g',
+      비타민A: '325µg',
+      비타민B: '0.5mg',
+      비타민C: '45.8mg',
+      비타민D: '0µg',
+      비타민E: '3.2mg',
+      칼륨: '685mg',
+      포화지방: '1.5g'
+    }
+  },
+  {
+    id: 12,
+    name: '타코',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLNELQ38TgZD-qvPYnAWhbKdl3fXTti56_-Q&s',
+    kcal: 375,
+    carbs: 35.2,
+    protein: 24.8,
+    fat: 16.5,
+    nutrients: {
+      콜레스테롤: '65mg',
+      식이섬유: '4.2g',
+      칼슘: '110mg',
+      나트륨: '520mg',
+      당류: '3.1g',
+      비타민A: '185µg',
+      비타민B: '0.6mg',
+      비타민C: '28.4mg',
+      비타민D: '4.5µg',
+      비타민E: '2.8mg',
+      오메가3: '3.2g',
+      포화지방: '2.8g'
+    }
+  },
+  {
+    id: 13,
+    name: '비빔밥',
+    imageUrl: 'https://live.staticflickr.com/5072/5896614484_243b20a2b5_b.jpg',
+    kcal: 285,
+    carbs: 45.6,
+    protein: 8.2,
+    fat: 7.5,
+    nutrients: {
+      콜레스테롤: '0mg',
+      식이섬유: '5.8g',
+      칼슘: '45mg',
+      나트륨: '320mg',
+      당류: '2.8g',
+      비타민A: '245µg',
+      비타민B: '0.3mg',
+      비타민C: '32.5mg',
+      비타민D: '0µg',
+      비타민E: '1.5mg',
+      칼륨: '420mg',
+      포화지방: '1.2g'
+    }
+  },
+  {
+    id: 14,
+    name: '딸기 스무디',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxh53A7jOs4LUVvHwD6eS5BfPBSA6Lm6M51Q&s',
+    kcal: 310,
+    carbs: 65.2,
+    protein: 6.5,
+    fat: 5.8,
+    nutrients: {
+      콜레스테롤: '0mg',
+      식이섬유: '8.5g',
+      칼슘: '120mg',
+      나트륨: '25mg',
+      당류: '45.8g',
+      비타민A: '85µg',
+      비타민B: '0.4mg',
+      비타민C: '75.2mg',
+      비타민D: '0µg',
+      비타민E: '2.5mg',
+      칼륨: '520mg',
+      포화지방: '0.8g'
+    }
+  }
+];
