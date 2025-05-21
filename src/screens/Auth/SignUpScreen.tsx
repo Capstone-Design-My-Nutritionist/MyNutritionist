@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Alert} from 'react-native';
+import {Alert, Image} from 'react-native';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -104,7 +104,10 @@ const SignUpScreen = () => {
   return (
     <Container>
       <LogoBox>
-        <LogoText>LOGO</LogoText>
+        <Image
+          source={require('../../assets/logo/Fooding_Logo.png')}
+          style={{width: 200, height: 200, resizeMode: 'contain'}}
+        />
       </LogoBox>
 
       <Label>이름</Label>
@@ -196,8 +199,6 @@ const Container = styled.ScrollView`
 `;
 
 const LogoBox = styled.View`
-  border: 2px solid black;
-  border-radius: 20px;
   padding: 36px;
   align-items: center;
   margin-bottom: 36px;

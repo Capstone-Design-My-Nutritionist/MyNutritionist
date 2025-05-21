@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Alert} from 'react-native';
+import {Alert, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../App';
@@ -74,7 +74,10 @@ const LoginScreen = () => {
   return (
     <Container>
       <LogoWrapper>
-        <LogoText>LOGO</LogoText>
+        <Image
+          source={require('../../assets/logo/Fooding_Logo.png')}
+          style={{width: 200, height: 200, resizeMode: 'contain'}}
+        />
       </LogoWrapper>
 
       <InputLabel>이메일</InputLabel>
@@ -121,8 +124,6 @@ const Container = styled.View`
 `;
 
 const LogoWrapper = styled.View`
-  border: 2px solid #000;
-  border-radius: 20px;
   padding: 36px 0;
   align-items: center;
 `;
