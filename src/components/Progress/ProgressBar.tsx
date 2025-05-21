@@ -8,6 +8,7 @@ interface ProgressBarProps {
   goal: number; // 목표량
   progressColor?: string; // 프로그레스 바 색상
   unit?: string; // 단위
+  displayValue?: string; // 표시할 값 (소수점 첫째자리까지 표시)
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
@@ -16,6 +17,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   goal,
   progressColor = '#FD384C', // 기본 색상 (빨간색)
   unit,
+  displayValue,
 }) => {
   const progressPercentage = Math.min((consumed / goal) * 100, 100); // 100% 초과 방지
 
@@ -26,7 +28,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         <Progress width={progressPercentage} color={progressColor} />
       </BarContainer>
       <CarbAmountContainer>
-        <CarbAmountText color={progressColor}>{consumed}g</CarbAmountText>
+        <CarbAmountText color={progressColor}>{displayValue || consumed}{unit}</CarbAmountText>
         <CarbAmountText color="#111111">
           / {goal}
           {unit}

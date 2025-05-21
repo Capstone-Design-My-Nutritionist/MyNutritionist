@@ -20,6 +20,7 @@ export const tempMeals = [
     carbs: 1.4,
     protein: 45.1,
     fat: 83.4,
+    foodName: '삼겹살',
   },
   {
     id: 2,
@@ -29,6 +30,7 @@ export const tempMeals = [
     carbs: 1.4,
     protein: 45.1,
     fat: 63.4,
+    foodName: '김치찌개',
   },
   {
     id: 3,
@@ -38,6 +40,7 @@ export const tempMeals = [
     carbs: 1.4,
     protein: 45.1,
     fat: 63.4,
+    foodName: '불고기',
   },
 ];
 

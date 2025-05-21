@@ -1,84 +1,406 @@
-import React from 'react';
-import { ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, ActivityIndicator, Alert } from 'react-native';
 import styled from 'styled-components/native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NutrientItem from '../../components/Nutrient/NutrientItem';
-import { getMealRecordById, getMealRecordByDateAndType, dummyMealRecord } from '../../data/dummyMealRecordData';
+import { fetchMealByType } from '../../api/api';
+import { dummyMealRecord } from '../../data/dummyMealRecordData';
+import { convertToEnumMealType, convertToKoreanMealType } from '../../utils/mealTypeUtils';
 
 // 타입 정의
 type RouteParams = {
-  mealId?: number;
+  mealId?: number | string;
   date?: string;
   mealType?: string;
+  foodName?: string; // 선택한 음식 이름 (여러 음식이 있을 경우 필터링용)
+};
+
+// 음식 데이터 타입 정의
+type FoodData = {
+  name: string;
+  fullName?: string;
+  eatAmount: number;
+  nutrition: {
+    energy: number;
+    carbohydrate: number;
+    protein: number;
+    fat: number;
+    saturatedFattyAcid?: number;
+    transFattyAcid?: number;
+    cholesterol?: number;
+    totalSugars?: number;
+    totalDietaryFiber?: number;
+    sodium?: number;
+    calcium?: number;
+    vitaminA?: number;
+    vitaminC?: number;
+    vitaminD?: number;
+    vitaminE?: number;
+    vitaminB6?: number;
+    [key: string]: number | undefined;
+  };
+  imageUrl?: string;
+};
+
+// 식사 데이터 타입 정의
+type MealData = {
+  mealType: string;
+  foods: FoodData[];
+};
+
+// 화면에 표시할 데이터 타입
+type DisplayMealData = {
+  date: string;
+  mealType: string;
+  imageUrl: string;
+  foodName: string;
+  totalCalories: number;
+  carbs: number;
+  protein: number;
+  fat: number;
+  servingSize: string;
+  nutrients: Record<string, string>;
+  additionalFoods: Array<{
+    name: string;
+    servingSize: string;
+    actualServing: string;
+    calories: number;
+    nutrients: Record<string, string>;
+  }>;
 };
 
 const MealRecordsScreen = () => {
   const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
   const navigation = useNavigation();
   
+  // 상태 관리
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [mealData, setMealData] = useState<DisplayMealData | null>(null);
+  
   // 라우트 파라미터에서 필요한 정보 추출
-  const { mealId, date, mealType } = route.params || {};
+  const { date = '', mealType = '', foodName } = route.params || {};
   
-  // 식사 기록 데이터 가져오기 (ID 또는 날짜와 식사 타입으로)
-  let mealRecord;
-  if (mealId) {
-    mealRecord = getMealRecordById(mealId);
-  } else if (date && mealType) {
-    mealRecord = getMealRecordByDateAndType(date, mealType);
-  }
-  
-  // 데이터가 없을 경우 기본 더미 데이터 사용 (테스트용)
-  const mealData = mealRecord ? {
-    date: mealRecord.date,
-    mealType: mealRecord.mealType,
-    imageUrl: mealRecord.mainFood.imageUrl,
-    foodName: mealRecord.mainFood.name,
-    totalCalories: mealRecord.mainFood.kcal,
-    carbs: mealRecord.mainFood.carbs,
-    protein: mealRecord.mainFood.protein,
-    fat: mealRecord.mainFood.fat,
-    servingSize: mealRecord.mainFood.serving,
-    nutrients: mealRecord.mainFood.nutrients,
-    additionalFoods: mealRecord.additionalFoods.map(food => ({
-      name: food.name,
-      servingSize: food.serving,
-      actualServing: food.actualAmount,
-      calories: food.kcal,
-      nutrients: food.nutrients
-    }))
-  } : {
-    date: dummyMealRecord.date,
-    mealType: dummyMealRecord.mealType,
-    imageUrl: dummyMealRecord.mainFood.imageUrl,
-    foodName: dummyMealRecord.mainFood.name,
-    totalCalories: dummyMealRecord.mainFood.kcal,
-    carbs: dummyMealRecord.mainFood.carbs,
-    protein: dummyMealRecord.mainFood.protein,
-    fat: dummyMealRecord.mainFood.fat,
-    servingSize: dummyMealRecord.mainFood.serving,
-    nutrients: dummyMealRecord.mainFood.nutrients,
-    additionalFoods: dummyMealRecord.additionalFoods.map(food => ({
-      name: food.name,
-      servingSize: food.serving,
-      actualServing: food.actualAmount,
-      calories: food.kcal,
-      nutrients: food.nutrients
-    }))
+  // 영양소 데이터를 포맷팅하는 함수
+  const formatNutrientData = (nutrition: Record<string, number | undefined>): Record<string, string> => {
+    const nutrientMap: Record<string, string> = {
+      energy: '열량',
+      carbohydrate: '탄수화물',
+      protein: '단백질',
+      fat: '지방',
+      saturatedFattyAcid: '포화지방',
+      transFattyAcid: '트랜스지방',
+      cholesterol: '콜레스테롤',
+      totalSugars: '당류',
+      totalDietaryFiber: '식이섬유',
+      sodium: '나트륨',
+      calcium: '칼슘',
+      vitaminA: '비타민A',
+      vitaminC: '비타민C',
+      vitaminD: '비타민D',
+      vitaminE: '비타민E',
+      vitaminB6: '비타민B6'
+    };
+    
+    const formattedNutrients: Record<string, string> = {};
+    
+    Object.entries(nutrition).forEach(([key, value]) => {
+      // -1인 값은 화면 표시 시에만 0으로 변환 (데이터 자체는 변경하지 않음)
+      const displayValue = value === -1 ? 0 : value;
+      
+      // 탄수화물, 단백질, 지방은 이미 위에 표시되어 있으므로 제외
+      if (displayValue !== undefined && displayValue !== 0 && nutrientMap[key] && 
+          !['carbohydrate', 'protein', 'fat', 'energy'].includes(key)) {
+        // 단위 설정
+        let unit = 'g';
+        if (key === 'energy') unit = 'kcal';
+        else if (key.startsWith('vitamin')) unit = 'mg';
+        else if (key === 'cholesterol' || key === 'sodium' || key === 'calcium') unit = 'mg';
+        
+        // 소수점 두 자리까지 표시
+        formattedNutrients[nutrientMap[key]] = `${displayValue?.toFixed(2)}${unit}`;
+      }
+    });
+    
+    return formattedNutrients;
   };
+  
+  // API에서 가져온 데이터를 화면에 표시할 형식으로 변환
+  const processApiData = (apiData: MealData, selectedDate: string): DisplayMealData => {
+    // 음식 이름 기준으로 중복 제거 (같은 이름의 음식은 하나로 합치기)
+    const uniqueFoods: Record<string, FoodData> = {};
+    
+    // apiData.foods가 없는 경우를 대비해 안전하게 처리
+    const foods = apiData?.foods || [];
+    
+    // 음식 이름으로 중복 제거 - 각 음식은 한 번만 처리
+    foods.forEach(food => {
+      if (!uniqueFoods[food.name]) {
+        // 음식 이름이 중복되지 않은 경우에만 추가 (중복된 경우 무시)
+        uniqueFoods[food.name] = { ...food };
+        
+        // 영양소 값이 -1인 경우 0으로 표시하되 원본 값은 유지
+        if (food.nutrition) {
+          // 소수점 두 자리까지 표시하도록 모든 영양소 값 포맷팅
+          Object.keys(food.nutrition).forEach(key => {
+            if (food.nutrition[key] !== undefined && food.nutrition[key] !== -1) {
+              food.nutrition[key] = parseFloat(food.nutrition[key].toFixed(2));
+            }
+          });
+        } else {
+          // nutrition이 없는 경우 기본값 설정
+          food.nutrition = {
+            energy: 0,
+            carbohydrate: 0,
+            protein: 0,
+            fat: 0
+          };
+        }
+      }
+      // 중복된 음식은 무시 - 영양소 합산 안함
+    });
+    
+    // 중복이 제거된 음식 리스트
+    const uniqueFoodsList = Object.values(uniqueFoods);
+    
+    // 데이터가 없는 경우 예외 처리
+    if (!uniqueFoodsList.length) {
+      // 더미 데이터 생성
+      const dummyFood: FoodData = {
+        name: '데이터 없음',
+        eatAmount: 0,
+        nutrition: {
+          energy: 0,
+          carbohydrate: 0,
+          protein: 0,
+          fat: 0
+        }
+      };
+      uniqueFoodsList.push(dummyFood);
+    }
+    
+    // 선택한 음식 이름이 있으면 해당 음식만 필터링, 없으면 첫 번째 음식 사용
+    let mainFood: FoodData;
+    let additionalFoods: FoodData[] = [];
+    
+    if (foodName && uniqueFoodsList.length > 1) {
+      const foundFood = uniqueFoodsList.find(food => food.name === foodName);
+      if (foundFood) {
+        mainFood = foundFood;
+        additionalFoods = uniqueFoodsList.filter(food => food.name !== foodName);
+      } else {
+        mainFood = uniqueFoodsList[0];
+        additionalFoods = uniqueFoodsList.slice(1);
+      }
+    } else {
+      mainFood = uniqueFoodsList[0];
+      additionalFoods = uniqueFoodsList.slice(1);
+    }
+    
+    // 기본 1인분으로 설정
+    const servingSize = '1인분';
+    
+    // 영양소 정보가 없는 경우를 대비해 안전하게 처리
+    const nutrition = mainFood.nutrition || {};
+    
+    // 소수점 두 자리까지 정확하게 표시 (안전하게 null 처리 및 -1 값을 0으로 표시)
+    const totalCalories = parseFloat(((nutrition.energy !== undefined && nutrition.energy >= 0) ? nutrition.energy : 0).toFixed(2));
+    const carbs = parseFloat(((nutrition.carbohydrate !== undefined && nutrition.carbohydrate >= 0) ? nutrition.carbohydrate : 0).toFixed(2));
+    const protein = parseFloat(((nutrition.protein !== undefined && nutrition.protein >= 0) ? nutrition.protein : 0).toFixed(2));
+    const fat = parseFloat(((nutrition.fat !== undefined && nutrition.fat >= 0) ? nutrition.fat : 0).toFixed(2));
+    
+    return {
+      date: selectedDate,
+      mealType: convertToKoreanMealType(apiData.mealType),
+      imageUrl: mainFood.imageUrl || 'https://via.placeholder.com/400x300?text=No+Image',
+      foodName: mainFood.name,
+      totalCalories,
+      carbs,
+      protein,
+      fat,
+      servingSize: servingSize,
+      nutrients: formatNutrientData(nutrition),
+      additionalFoods: additionalFoods.map(food => {
+        // 각 추가 음식에 대해서도 영양소 정보가 없는 경우를 대비해 안전하게 처리
+        const foodNutrition = food.nutrition || {};
+        return {
+          name: food.name,
+          servingSize: servingSize,
+          actualServing: `${parseFloat((food.eatAmount || 0).toFixed(2))}g`,
+          calories: parseFloat((foodNutrition.energy || 0).toFixed(2)),
+          nutrients: formatNutrientData(foodNutrition)
+        };
+      })
+    };
+  };
+  
+  // 식사 데이터 가져오기
+  const fetchMealData = async () => {
+    if (!date || !mealType) {
+      setError('날짜와 식사 유형 정보가 없습니다.');
+      return;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // 한글 식사 유형을 백엔드 Enum 값으로 변환
+      // 유효하지 않은 mealType 처리
+      if (!mealType) {
+        console.warn('유효하지 않은 mealType:', mealType);
+        setError('식사 유형 정보가 유효하지 않습니다.');
+        return;
+      }
+      
+      const backendMealType = convertToEnumMealType(mealType);
+      console.log('변환된 식사 유형:', mealType, '->', backendMealType);
+      
+      // API 호출
+      const formattedDate = date.replace(/\./g, '-'); // YYYY.MM.DD -> YYYY-MM-DD 형식으로 변환
+      console.log('API 호출 정보:', formattedDate, backendMealType);
+      
+      const apiData = await fetchMealByType(formattedDate, backendMealType);
+      console.log('API 응답 데이터:', JSON.stringify(apiData, null, 2));
+      
+      if (!apiData || !apiData.foods || apiData.foods.length === 0) {
+        // 데이터가 없는 경우 기본 더미 데이터 사용 (개발 중에만 사용)
+        console.warn('API에서 데이터를 가져오지 못했습니다. 더미 데이터를 사용합니다.');
+        setMealData({
+          date: date,
+          mealType: mealType,
+          imageUrl: dummyMealRecord.mainFood.imageUrl,
+          foodName: dummyMealRecord.mainFood.name,
+          totalCalories: dummyMealRecord.mainFood.kcal,
+          carbs: dummyMealRecord.mainFood.carbs,
+          protein: dummyMealRecord.mainFood.protein,
+          fat: dummyMealRecord.mainFood.fat,
+          servingSize: dummyMealRecord.mainFood.serving,
+          nutrients: dummyMealRecord.mainFood.nutrients,
+          additionalFoods: dummyMealRecord.additionalFoods.map(food => ({
+            name: food.name,
+            servingSize: food.serving,
+            actualServing: food.actualAmount,
+            calories: food.kcal,
+            nutrients: food.nutrients
+          }))
+        });
+      } else {
+        try {
+          // API 데이터를 화면에 표시할 형식으로 변환
+          const processedData = processApiData(apiData, date);
+          console.log('처리된 데이터:', processedData);
+          setMealData(processedData);
+        } catch (processError) {
+          console.error('데이터 처리 오류:', processError);
+          // 데이터 처리 오류 발생 시 더미 데이터 사용
+          setMealData({
+            date: date,
+            mealType: mealType,
+            imageUrl: dummyMealRecord.mainFood.imageUrl,
+            foodName: dummyMealRecord.mainFood.name,
+            totalCalories: dummyMealRecord.mainFood.kcal,
+            carbs: dummyMealRecord.mainFood.carbs,
+            protein: dummyMealRecord.mainFood.protein,
+            fat: dummyMealRecord.mainFood.fat,
+            servingSize: dummyMealRecord.mainFood.serving,
+            nutrients: dummyMealRecord.mainFood.nutrients,
+            additionalFoods: dummyMealRecord.additionalFoods.map(food => ({
+              name: food.name,
+              servingSize: food.serving,
+              actualServing: food.actualAmount,
+              calories: food.kcal,
+              nutrients: food.nutrients
+            }))
+          });
+        }
+      }
+    } catch (error) {
+      console.error('식사 데이터 조회 오류:', error);
+      setError('식사 데이터를 불러오는 중 오류가 발생했습니다.');
+      
+      // 오류 발생 시 더미 데이터 사용 (개발 중에만 사용)
+      setMealData({
+        date: date,
+        mealType: mealType,
+        imageUrl: dummyMealRecord.mainFood.imageUrl,
+        foodName: dummyMealRecord.mainFood.name,
+        totalCalories: dummyMealRecord.mainFood.kcal,
+        carbs: dummyMealRecord.mainFood.carbs,
+        protein: dummyMealRecord.mainFood.protein,
+        fat: dummyMealRecord.mainFood.fat,
+        servingSize: dummyMealRecord.mainFood.serving,
+        nutrients: dummyMealRecord.mainFood.nutrients,
+        additionalFoods: dummyMealRecord.additionalFoods.map(food => ({
+          name: food.name,
+          servingSize: food.serving,
+          actualServing: food.actualAmount,
+          calories: food.kcal,
+          nutrients: food.nutrients
+        }))
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // 컴포넌트 마운트 시 데이터 가져오기
+  useEffect(() => {
+    fetchMealData();
+  }, [date, mealType]);
   
   // 뒤로가기 핸들러
   const handleGoBack = () => {
     navigation.goBack();
   };
+  
+  // 로딩 중이거나 데이터가 없는 경우 처리
+  if (isLoading) {
+    return (
+      <Container>
+        <HeaderContainer>
+          <BackButton onPress={handleGoBack}>
+            <Icon name="arrow-back-ios" size={24} color="#731A22" />
+          </BackButton>
+          <HeaderTitle>식사 정보 불러오는 중...</HeaderTitle>
+        </HeaderContainer>
+        <HeaderDivider />
+        <LoadingContainer>
+          <ActivityIndicator size="large" color="#D95B72" />
+          <LoadingText>식사 정보를 불러오는 중입니다...</LoadingText>
+        </LoadingContainer>
+      </Container>
+    );
+  }
+  
+  if (error || !mealData) {
+    return (
+      <Container>
+        <HeaderContainer>
+          <BackButton onPress={handleGoBack}>
+            <Icon name="arrow-back-ios" size={24} color="#731A22" />
+          </BackButton>
+          <HeaderTitle>오류 발생</HeaderTitle>
+        </HeaderContainer>
+        <HeaderDivider />
+        <ErrorContainer>
+          <ErrorText>{error || '식사 정보를 불러올 수 없습니다.'}</ErrorText>
+          <RetryButton onPress={fetchMealData}>
+            <RetryButtonText>다시 시도</RetryButtonText>
+          </RetryButton>
+        </ErrorContainer>
+      </Container>
+    );
+  }
 
   // 영양소 총합 계산 (탄수화물 + 단백질 + 지방)
   const totalNutrients = mealData.carbs + mealData.protein + mealData.fat;
   
   // 각 영양소 비율 계산
-  const carbsRatio = (mealData.carbs / totalNutrients) * 100;
-  const proteinRatio = (mealData.protein / totalNutrients) * 100;
-  const fatRatio = (mealData.fat / totalNutrients) * 100;
+  const carbsRatio = totalNutrients > 0 ? (mealData.carbs / totalNutrients) * 100 : 0;
+  const proteinRatio = totalNutrients > 0 ? (mealData.protein / totalNutrients) * 100 : 0;
+  const fatRatio = totalNutrients > 0 ? (mealData.fat / totalNutrients) * 100 : 0;
 
   // 유효한 영양소만 필터링 (값이 0이거나 빈 문자열이 아닌 것만)
   const validNutrients = Object.entries(mealData.nutrients).filter(
@@ -104,7 +426,7 @@ const MealRecordsScreen = () => {
         <FoodInfoCard>
           <FoodInfoHeader>
             <FoodName>{mealData.foodName}</FoodName>
-            <MealTypeTag>{mealData.mealType}</MealTypeTag>
+            <MealTimeTag>{mealData.mealType}</MealTimeTag>
           </FoodInfoHeader>
           
           <ServingInfoRow>
@@ -198,6 +520,50 @@ const Container = styled.View`
   background-color: #FFF8F8;
 `;
 
+const LoadingContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+`;
+
+const LoadingText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 16px;
+  color: #8E8E8E;
+  margin-top: 16px;
+  text-align: center;
+`;
+
+const ErrorContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+`;
+
+const ErrorText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 16px;
+  color: #D95B72;
+  margin-bottom: 16px;
+  text-align: center;
+`;
+
+const RetryButton = styled.TouchableOpacity`
+  background-color: #D95B72;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin-top: 8px;
+`;
+
+const RetryButtonText = styled.Text`
+  font-family: 'Pretendard-Bold';
+  font-size: 14px;
+  color: white;
+  text-align: center;
+`;
+
 const HeaderContainer = styled.View`
   flex-direction: row;
   align-items: center;
@@ -256,7 +622,7 @@ const FoodName = styled.Text`
   color: #111111;
 `;
 
-const MealTypeTag = styled.Text`
+const MealTimeTag = styled.Text`
   font-family: 'Pretendard-Medium';
   font-size: 12px;
   color: #FFFFFF;
