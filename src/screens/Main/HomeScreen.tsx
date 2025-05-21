@@ -16,7 +16,38 @@ import { Shadow } from 'react-native-shadow-2';
 import ArrowLeft from '../../../assets/images/arrow-left.svg';
 import ArrowRight from '../../../assets/images/arrow-right.svg';
 import { tempUserData, tempMeals, tempRecommendations } from '../../data/dummyHomeData';
-import { dummyFood } from '../../data/dummyFoodRecommendationData';
+import { dummyFood, dummyFoodRecommendationData } from '../../data/dummyFoodRecommendationData';
+
+// 음식 추천 데이터 타입 정의
+type NutrientType = {
+  콜레스테롤?: string;
+  식이섬유?: string;
+  칼슘?: string;
+  나트륨?: string;
+  당류?: string;
+  비타민A?: string;
+  비타민B?: string;
+  비타민C?: string;
+  비타민D?: string;
+  비타민E?: string;
+  비타민K?: string;
+  철분?: string;
+  칼륨?: string;
+  포화지방?: string;
+  오메가3?: string;
+  [key: string]: string | undefined;
+};
+
+type FoodRecommendationType = {
+  id: number;
+  name: string;
+  imageUrl: string;
+  kcal: number;
+  carbs: number;
+  protein: number;
+  fat: number;
+  nutrients: NutrientType;
+};
 
 // 네비게이션 타입 정의
 type MainStackParamList = {
@@ -59,11 +90,21 @@ const HomeScreen = () => {
   } | null>(null);
   
   // 목표 영양소 값 (더미 데이터)
-  const goalNutrition = {
+  const goalNutrition: {[key: string]: number} = {
     calories: 2000,
     carbs: 250,
     protein: 80,
-    fat: 60
+    fat: 60,
+    비타민A: 900, // µg
+    비타민B: 1.3, // mg
+    비타민C: 90, // mg
+    비타민D: 15, // µg
+    비타민E: 15, // mg
+    칼슘: 1000, // mg
+    철분: 8, // mg
+    식이섬유: 25, // g
+    나트륨: 2300, // mg
+    칼륨: 3500 // mg
   };
   
   // 일주일 날짜 계산 (오늘 기준 전 3일, 후 3일)
@@ -155,6 +196,123 @@ const HomeScreen = () => {
     getNutritionSummary(formattedDate);
   };
 
+  // 영양소 부족 정도 계산 및 가장 부족한 영양소 찾기
+  const [deficientNutrient, setDeficientNutrient] = useState<string | null>(null);
+  const [recommendedFoods, setRecommendedFoods] = useState<FoodRecommendationType[]>([]);
+  
+  // 영양소 부족 분석 및 음식 추천
+  useEffect(() => {
+    if (!nutritionSummary || !meals || meals.length === 0) {
+      setDeficientNutrient(null);
+      setRecommendedFoods([]);
+      return;
+    }
+    
+    // 영양소 비율 계산
+    const nutrientRatios: {[key: string]: number} = {};
+    
+    // 기본 영양소 계산 (calories, carbs, protein, fat)
+    nutrientRatios['calories'] = (nutritionSummary.consumedCalories / goalNutrition.calories) * 100;
+    nutrientRatios['carbs'] = (nutritionSummary.carbohydrate / goalNutrition.carbs) * 100;
+    nutrientRatios['protein'] = (nutritionSummary.protein / goalNutrition.protein) * 100;
+    nutrientRatios['fat'] = (nutritionSummary.fat / goalNutrition.fat) * 100;
+    
+    // 추가 영양소 계산 (API에서 받아온 데이터가 있다면)
+    Object.keys(nutritionSummary).forEach(key => {
+      if (key !== 'consumedCalories' && key !== 'carbohydrate' && key !== 'protein' && key !== 'fat') {
+        if (goalNutrition[key]) {
+          nutrientRatios[key] = (nutritionSummary[key] / goalNutrition[key]) * 100;
+        }
+      }
+    });
+    
+    // 30% 이하인 영양소 필터링
+    const deficientNutrients = Object.entries(nutrientRatios)
+      .filter(([_, ratio]) => ratio <= 30)
+      .sort((a, b) => a[1] - b[1]); // 가장 부족한 순으로 정렬
+    
+    if (deficientNutrients.length > 0) {
+      // 가장 부족한 영양소 선택
+      const mostDeficient = deficientNutrients[0][0];
+      setDeficientNutrient(mostDeficient);
+      
+      // 해당 영양소가 높은 음식 추천
+      let recommendableFoods: FoodRecommendationType[] = [];
+      
+      // 영양소 이름 매핑 (API 키와 더미 데이터 키가 다를 수 있음)
+      const nutrientMapping: {[key: string]: string} = {
+        'calories': 'kcal',
+        'carbs': 'carbs',
+        'protein': 'protein',
+        'fat': 'fat',
+        '비타민A': '비타민A',
+        '비타민B': '비타민B',
+        '비타민C': '비타민C',
+        '비타민D': '비타민D',
+        '비타민E': '비타민E',
+        '칼슘': '칼슘',
+        '철분': '철분',
+        '식이섬유': '식이섬유',
+        '나트륨': '나트륨',
+        '칼륨': '칼륨'
+      };
+      
+      const mappedNutrient = nutrientMapping[mostDeficient] || mostDeficient;
+      
+      // 기본 영양소 (kcal, carbs, protein, fat)인 경우
+      if (['calories', 'carbs', 'protein', 'fat'].includes(mostDeficient)) {
+        // 더미 데이터를 FoodRecommendationType으로 형변환하여 사용
+        const typedFoodData = dummyFoodRecommendationData as FoodRecommendationType[];
+        
+        recommendableFoods = typedFoodData
+          .sort((a, b) => {
+            let valueA: number, valueB: number;
+            
+            if (mostDeficient === 'calories') {
+              valueA = a.kcal;
+              valueB = b.kcal;
+            } else if (mostDeficient === 'carbs') {
+              valueA = a.carbs;
+              valueB = b.carbs;
+            } else if (mostDeficient === 'protein') {
+              valueA = a.protein;
+              valueB = b.protein;
+            } else { // fat
+              valueA = a.fat;
+              valueB = b.fat;
+            }
+            
+            return valueB - valueA; // 내림차순 정렬
+          })
+          .slice(0, 4); // 상위 4개 음식 선택
+      } 
+      // 기타 영양소인 경우
+      else {
+        // 더미 데이터를 FoodRecommendationType으로 형변환하여 사용
+        const typedFoodData = dummyFoodRecommendationData as FoodRecommendationType[];
+        
+        recommendableFoods = typedFoodData
+          .filter(food => {
+            // 해당 영양소 값이 있는지 확인
+            const nutrientValue = food.nutrients[mappedNutrient];
+            return nutrientValue && nutrientValue !== '0' && nutrientValue !== '0g' && nutrientValue !== '0mg' && nutrientValue !== '0µg';
+          })
+          .sort((a, b) => {
+            // 단위 제거하고 숫자만 추출하여 비교
+            const valueA = parseFloat((a.nutrients[mappedNutrient] || '0').replace(/[^0-9.]/g, '') || '0');
+            const valueB = parseFloat((b.nutrients[mappedNutrient] || '0').replace(/[^0-9.]/g, '') || '0');
+            return valueB - valueA; // 내림차순 정렬
+          })
+          .slice(0, 4); // 상위 4개 음식 선택
+      }
+      
+      setRecommendedFoods(recommendableFoods);
+    } else {
+      setDeficientNutrient(null);
+      setRecommendedFoods([]);
+    }
+  }, [nutritionSummary, meals]);
+
   // 추천 메뉴 이전 버튼 핸들러
   const handlePrevRecommendation = () => {
     setCurrentRecommendationIndex(prev => 
@@ -195,8 +353,8 @@ const HomeScreen = () => {
   };
 
   // 음식 추천 상세 화면으로 이동
-  const navigateToFoodRecommendation = () => {
-    navigation.navigate('FoodRecommendation', dummyFood);
+  const navigateToFoodRecommendation = (food: any) => {
+    navigation.navigate('FoodRecommendation', food);
   };
   
   // 한글 식사 유형을 백엔드 Enum 값으로 변환하는 함수 - 유틸리티 함수 사용
@@ -372,14 +530,14 @@ const HomeScreen = () => {
             
             <TotalIntakeText>총 섭취량</TotalIntakeText>
             <CalorieInfoContainer>
-              <CalorieText>{((nutritionSummary?.consumedCalories !== undefined ? nutritionSummary?.consumedCalories : tempUserData.consumedCalories) || 0).toFixed(1)}</CalorieText>
+              <CalorieText>{((nutritionSummary?.consumedCalories !== undefined && nutritionSummary?.consumedCalories >= 0) ? nutritionSummary?.consumedCalories : (tempUserData.consumedCalories >= 0 ? tempUserData.consumedCalories : 0)).toFixed(1)}</CalorieText>
               <CalorieUnit>/ {goalNutrition.calories}kcal</CalorieUnit>
             </CalorieInfoContainer>
             
             <ProgressBarContainer>
               <ProgressBarBackground>
                 <ProgressBarFill 
-                  width={((nutritionSummary?.consumedCalories || tempUserData.consumedCalories) / goalNutrition.calories) * 100} 
+                  width={((nutritionSummary?.consumedCalories !== undefined && nutritionSummary?.consumedCalories >= 0 ? nutritionSummary?.consumedCalories : 0) || (tempUserData.consumedCalories >= 0 ? tempUserData.consumedCalories : 0)) / goalNutrition.calories * 100} 
                 />
               </ProgressBarBackground>
             </ProgressBarContainer>
@@ -388,7 +546,7 @@ const HomeScreen = () => {
               <ProgressBar 
                 id={1}
                 label="탄수화물" 
-                consumed={parseFloat(((nutritionSummary?.carbohydrate !== undefined ? nutritionSummary?.carbohydrate : tempUserData.nutrients.carbs.consumed) || 0).toFixed(1))} 
+                consumed={parseFloat(((nutritionSummary?.carbohydrate !== undefined && nutritionSummary?.carbohydrate >= 0) ? nutritionSummary?.carbohydrate : (tempUserData.nutrients.carbs.consumed >= 0 ? tempUserData.nutrients.carbs.consumed : 0)).toFixed(1))} 
                 goal={goalNutrition.carbs} 
                 progressColor="#FD384C"
                 unit="g"
@@ -396,7 +554,7 @@ const HomeScreen = () => {
               <ProgressBar 
                 id={2}
                 label="단백질" 
-                consumed={parseFloat(((nutritionSummary?.protein !== undefined ? nutritionSummary?.protein : tempUserData.nutrients.protein.consumed) || 0).toFixed(1))} 
+                consumed={parseFloat(((nutritionSummary?.protein !== undefined && nutritionSummary?.protein >= 0) ? nutritionSummary?.protein : (tempUserData.nutrients.protein.consumed >= 0 ? tempUserData.nutrients.protein.consumed : 0)).toFixed(1))} 
                 goal={goalNutrition.protein} 
                 progressColor="#D95B72"
                 unit="g"
@@ -404,7 +562,7 @@ const HomeScreen = () => {
               <ProgressBar 
                 id={3}
                 label="지방" 
-                consumed={parseFloat(((nutritionSummary?.fat !== undefined ? nutritionSummary?.fat : tempUserData.nutrients.fat.consumed) || 0).toFixed(1))} 
+                consumed={parseFloat(((nutritionSummary?.fat !== undefined && nutritionSummary?.fat >= 0) ? nutritionSummary?.fat : (tempUserData.nutrients.fat.consumed >= 0 ? tempUserData.nutrients.fat.consumed : 0)).toFixed(1))} 
                 goal={goalNutrition.fat} 
                 progressColor="#FD9E38"
                 unit="g"
@@ -507,50 +665,75 @@ const HomeScreen = () => {
         <SectionContainer>
           <SectionTitle>식사 메뉴 추천</SectionTitle>
 
-          {tempRecommendations.length > 0 ? (
+          {meals.length === 0 ? (
+            // 음식 기록이 없는 경우
+            <NoDataContainer>
+              <NoDataText>음식 데이터가 부족해서 음식을 추천해드릴 수 없습니다.</NoDataText>
+            </NoDataContainer>
+          ) : deficientNutrient && recommendedFoods.length > 0 ? (
+            // 부족한 영양소가 있고 추천 음식이 있는 경우
+            <>
+              <RecommendationMessageContainer>
+                <RecommendationMessageText>
+                  오늘은 {deficientNutrient === 'calories' ? '칼로리' :
+                          deficientNutrient === 'carbs' ? '탄수화물' :
+                          deficientNutrient === 'protein' ? '단백질' :
+                          deficientNutrient === 'fat' ? '지방' : deficientNutrient} 섭취가 부족해요. 이런 음식들은 어떠세요?
+                </RecommendationMessageText>
+              </RecommendationMessageContainer>
+              
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: 20}}>
+                {recommendedFoods.map((food, index) => (
+                  <FoodRecommendCard key={`food-${index}`} onPress={() => navigateToFoodRecommendation(food)}>
+                    <FoodRecommendImage source={{uri: food.imageUrl}} />
+                    <FoodRecommendContent>
+                      <FoodRecommendTitle>{food.name}</FoodRecommendTitle>
+                      <FoodRecommendDescription>
+                        {deficientNutrient === 'calories' ? `${food.kcal}kcal` :
+                         deficientNutrient === 'carbs' ? `탄수화물 ${food.carbs}g` :
+                         deficientNutrient === 'protein' ? `단백질 ${food.protein}g` :
+                         deficientNutrient === 'fat' ? `지방 ${food.fat}g` :
+                         `${deficientNutrient} ${food.nutrients[deficientNutrient] || ''}`}
+                      </FoodRecommendDescription>
+                    </FoodRecommendContent>
+                  </FoodRecommendCard>
+                ))}
+              </ScrollView>
+            </>
+          ) : (
+            // 부족한 영양소가 없거나 추천 음식이 없는 경우 (기존 추천 표시)
             <RecommendationContainer>
               <ArrowButton onPress={handlePrevRecommendation}>
-                <ArrowLeft />
+                <ArrowLeft width={24} height={24} />
               </ArrowButton>
-
-              <TouchableOpacity onPress={navigateToFoodRecommendation} style={{flex: 1}}>
-                <RecommendationCard>
-                  <RecommendationImageContainer>
-                    <RecommendationImage
-                      source={{ uri: currentRecommendation.imageUrl }}
-                      resizeMode="cover"
-                    />
-                  </RecommendationImageContainer>
-                  <RecommendationInfo>
-                    <RecommendationName>{currentRecommendation.name}</RecommendationName>
-                    <RecommendationCalories>{currentRecommendation.calories} kcal</RecommendationCalories>
-
-                    <NutrientRow>
-                      <NutrientLabel>탄수화물</NutrientLabel>
-                      <NutrientValue color="#FD384C">{currentRecommendation.carbs}g</NutrientValue>
-                    </NutrientRow>
-                    <NutrientRow>
-                      <NutrientLabel>단백질</NutrientLabel>
-                      <NutrientValue color="#D95B72">{currentRecommendation.protein}g</NutrientValue>
-                    </NutrientRow>
-                    <NutrientRow>
-                      <NutrientLabel>지방</NutrientLabel>
-                      <NutrientValue color="#FD9E38">{currentRecommendation.fat}g</NutrientValue>
-                    </NutrientRow>
-                  </RecommendationInfo>
-                </RecommendationCard>
-              </TouchableOpacity>
-
+              
+              <RecommendationCard>
+                <RecommendationImageContainer>
+                  <RecommendationImage source={{uri: currentRecommendation.imageUrl}} resizeMode="cover" />
+                </RecommendationImageContainer>
+                <RecommendationInfo>
+                  <RecommendationName>{currentRecommendation.name}</RecommendationName>
+                  <RecommendationCalories>{currentRecommendation.calories} kcal</RecommendationCalories>
+                  
+                  <NutrientRow>
+                    <NutrientLabel>탄수화물</NutrientLabel>
+                    <NutrientValue color="#FD384C">{currentRecommendation.carbs}g</NutrientValue>
+                  </NutrientRow>
+                  <NutrientRow>
+                    <NutrientLabel>단백질</NutrientLabel>
+                    <NutrientValue color="#D95B72">{currentRecommendation.protein}g</NutrientValue>
+                  </NutrientRow>
+                  <NutrientRow>
+                    <NutrientLabel>지방</NutrientLabel>
+                    <NutrientValue color="#FD9E38">{currentRecommendation.fat}g</NutrientValue>
+                  </NutrientRow>
+                </RecommendationInfo>
+              </RecommendationCard>
+              
               <ArrowButton onPress={handleNextRecommendation}>
-                <ArrowRight />
+                <ArrowRight width={24} height={24} />
               </ArrowButton>
             </RecommendationContainer>
-          ) : (
-            <EmptyRecommendContainer>
-              <EmptyRecommendText>
-                설문조사에 참여하셔야 음식을 추천드릴 수 있어요
-              </EmptyRecommendText>
-            </EmptyRecommendContainer>
           )}
         </SectionContainer>
                 
@@ -730,6 +913,7 @@ const SectionTitleRow = styled.View`
 const SectionTitle = styled.Text`
   font-size: 16px;
   font-family: 'Pretendard-Bold';
+  margin-bottom: 8px;
   color: #333;
 `;
 
@@ -809,12 +993,80 @@ const RecommendationContainer = styled.View`
   background-color: #FFFFFF; 
   border-radius: 16px; 
   border: 1px solid rgba(0,0,0,0.1);
-`;  
+`;
 
 const ArrowButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   padding: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+`;
+
+const NoDataContainer = styled.View`
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #F0F0F0;
+`;
+
+const NoDataText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 16px;
+  color: #888888;
+  text-align: center;
+`;
+
+const RecommendationMessageContainer = styled.View`
+  background-color: #FFF5F5;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border: 1px solid #FFDBDB;
+  border-left-width: 4px;
+  border-left-color: #E44F68;
+`;
+
+const RecommendationMessageText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 15px;
+  color: #731A22;
+`;
+
+const FoodRecommendCard = styled.TouchableOpacity`
+  width: 180px;
+  margin-right: 12px;
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #F0F0F0;
+`;
+
+const FoodRecommendImage = styled.Image`
+  width: 100%;
+  height: 120px;
+  resize-mode: cover;
+`;
+
+const FoodRecommendContent = styled.View`
+  padding: 10px;
+`;
+
+const FoodRecommendTitle = styled.Text`
+  font-family: 'Pretendard-Bold';
+  font-size: 14px;
+  color: #333333;
+  margin-bottom: 4px;
+`;
+
+const FoodRecommendDescription = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 12px;
+  color: #E44F68;
 `;
 
 const RecommendationCard = styled.View`
