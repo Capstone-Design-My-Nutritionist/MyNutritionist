@@ -78,7 +78,7 @@ const CalendarScreen = () => {
         const apiData = nutritionResponse.data;
         const formattedData = {
           ...apiData,
-          consumedCalories: apiData.energy !== undefined ? apiData.energy : (apiData.consumedCalories || 0)
+          consumedCalories: apiData.energy !== undefined ? (apiData.energy >= 0 ? apiData.energy : 0) : (apiData.consumedCalories >= 0 ? apiData.consumedCalories : 0)
         };
         setNutritionSummary(formattedData);
         console.log('📊 캘린더 화면 - 영양소 요약 데이터 가져오기 성공:', formattedData);
@@ -340,13 +340,13 @@ const CalendarScreen = () => {
 
               <TotalIntakeText>총 섭취량</TotalIntakeText>
               <CalorieInfoContainer>
-                <CalorieText>{(nutritionSummary.consumedCalories || 0).toFixed(1)}</CalorieText>
+                <CalorieText>{(nutritionSummary.consumedCalories >= 0 ? nutritionSummary.consumedCalories : 0).toFixed(1)}</CalorieText>
                 <CalorieUnit>/ {goalNutrition.calories}kcal</CalorieUnit>
               </CalorieInfoContainer>
 
               <ProgressBarContainer>
                 <ProgressBarBackground>
-                  <ProgressBarFill width={(nutritionSummary.consumedCalories / goalNutrition.calories) * 100} />
+                  <ProgressBarFill width={((nutritionSummary.consumedCalories >= 0 ? nutritionSummary.consumedCalories : 0) / goalNutrition.calories) * 100} />
                 </ProgressBarBackground>
               </ProgressBarContainer>
 
@@ -354,7 +354,7 @@ const CalendarScreen = () => {
                 <ProgressBar
                   id={1}
                   label="탄수화물"
-                  consumed={parseFloat((nutritionSummary.carbohydrate || 0).toFixed(1))}
+                  consumed={parseFloat((nutritionSummary.carbohydrate >= 0 ? nutritionSummary.carbohydrate : 0).toFixed(1))}
                   goal={goalNutrition.carbs}
                   progressColor="#FD384C"
                   unit="g"
@@ -362,7 +362,7 @@ const CalendarScreen = () => {
                 <ProgressBar
                   id={2}
                   label="단백질"
-                  consumed={parseFloat((nutritionSummary.protein || 0).toFixed(1))}
+                  consumed={parseFloat((nutritionSummary.protein >= 0 ? nutritionSummary.protein : 0).toFixed(1))}
                   goal={goalNutrition.protein}
                   progressColor="#D95B72"
                   unit="g"
@@ -370,7 +370,7 @@ const CalendarScreen = () => {
                 <ProgressBar
                   id={3}
                   label="지방"
-                  consumed={parseFloat((nutritionSummary.fat || 0).toFixed(1))}
+                  consumed={parseFloat((nutritionSummary.fat >= 0 ? nutritionSummary.fat : 0).toFixed(1))}
                   goal={goalNutrition.fat}
                   progressColor="#FD9E38"
                   unit="g"

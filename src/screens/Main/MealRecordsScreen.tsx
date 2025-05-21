@@ -204,11 +204,11 @@ const MealRecordsScreen = () => {
     // 영양소 정보가 없는 경우를 대비해 안전하게 처리
     const nutrition = mainFood.nutrition || {};
     
-    // 소수점 두 자리까지 정확하게 표시 (안전하게 null 처리)
-    const totalCalories = parseFloat((nutrition.energy || 0).toFixed(2));
-    const carbs = parseFloat((nutrition.carbohydrate || 0).toFixed(2));
-    const protein = parseFloat((nutrition.protein || 0).toFixed(2));
-    const fat = parseFloat((nutrition.fat || 0).toFixed(2));
+    // 소수점 두 자리까지 정확하게 표시 (안전하게 null 처리 및 -1 값을 0으로 표시)
+    const totalCalories = parseFloat(((nutrition.energy !== undefined && nutrition.energy >= 0) ? nutrition.energy : 0).toFixed(2));
+    const carbs = parseFloat(((nutrition.carbohydrate !== undefined && nutrition.carbohydrate >= 0) ? nutrition.carbohydrate : 0).toFixed(2));
+    const protein = parseFloat(((nutrition.protein !== undefined && nutrition.protein >= 0) ? nutrition.protein : 0).toFixed(2));
+    const fat = parseFloat(((nutrition.fat !== undefined && nutrition.fat >= 0) ? nutrition.fat : 0).toFixed(2));
     
     return {
       date: selectedDate,
