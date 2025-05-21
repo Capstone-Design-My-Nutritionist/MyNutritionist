@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  Modal,
 } from 'react-native';
 import styled from 'styled-components/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -15,9 +16,24 @@ const SupplementDetailsScreen = () => {
   const route = useRoute();
   // @ts-ignore: 타입 정의 임시 처리
   const {supplement} = route.params;
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleGoBack = () => {
     navigation.goBack();
+  };
+
+  const handlePurchase = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleConsultation = () => {
+    setIsModalVisible(false);
+    // 여기에 영양사 상담 페이지로 이동하는 로직을 추가할 수 있습니다.
+    // 예: navigation.navigate('NutritionistConsultation');
   };
 
   return (
@@ -94,11 +110,38 @@ const SupplementDetailsScreen = () => {
 
         {/* 구매 버튼 */}
         <ButtonContainer>
-          <PurchaseButton>
+          <PurchaseButton onPress={handlePurchase}>
             <PurchaseButtonText>구매하기</PurchaseButtonText>
           </PurchaseButton>
         </ButtonContainer>
       </ScrollView>
+
+      {/* 영양사 상담 안내 모달 */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={handleCloseModal}
+      >
+        <ModalOverlay>
+          <ModalContainer>
+            <ModalTitle>영양사 상담 안내</ModalTitle>
+            <ModalDivider />
+            <ModalContent>
+              영양제 구매를 위해서는 법적으로 영양사와의 1:1 상담이 필요합니다.
+              상담을 통해 개인에게 맞는 영양제 복용 방법과 주의사항을 안내받으실 수 있습니다.
+            </ModalContent>
+            <ModalButtonContainer>
+              <ModalCancelButton onPress={handleCloseModal}>
+                <ModalButtonText>취소</ModalButtonText>
+              </ModalCancelButton>
+              <ModalConsultButton onPress={handleConsultation}>
+                <ModalConsultText>상담 신청하기</ModalConsultText>
+              </ModalConsultButton>
+            </ModalButtonContainer>
+          </ModalContainer>
+        </ModalOverlay>
+      </Modal>
     </Container>
   );
 };
@@ -263,4 +306,80 @@ const PurchaseButtonText = styled.Text`
   font-family: 'Pretendard-Bold';
   font-size: 16px;
   color: #ffffff;
+`;
+
+// Modal Styled Components
+const ModalOverlay = styled.View`
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+`;
+
+const ModalContainer = styled.View`
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 340px;
+`;
+
+const ModalTitle = styled.Text`
+  font-family: 'Pretendard-Bold';
+  font-size: 18px;
+  color: #731A22;
+  text-align: center;
+  margin-bottom: 10px;
+`;
+
+const ModalDivider = styled.View`
+  height: 1px;
+  background-color: #EEEEEE;
+  margin-vertical: 10px;
+`;
+
+const ModalContent = styled.Text`
+  font-family: 'Pretendard-Regular';
+  font-size: 14px;
+  color: #333333;
+  line-height: 20px;
+  text-align: center;
+  margin-vertical: 15px;
+`;
+
+const ModalButtonContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10px;
+`;
+
+const ModalCancelButton = styled.TouchableOpacity`
+  flex: 1;
+  background-color: #EEEEEE;
+  padding: 12px;
+  border-radius: 6px;
+  align-items: center;
+  margin-right: 8px;
+`;
+
+const ModalConsultButton = styled.TouchableOpacity`
+  flex: 1;
+  background-color: #731A22;
+  padding: 12px;
+  border-radius: 6px;
+  align-items: center;
+  margin-left: 8px;
+`;
+
+const ModalButtonText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 14px;
+  color: #333333;
+`;
+
+const ModalConsultText = styled.Text`
+  font-family: 'Pretendard-Medium';
+  font-size: 14px;
+  color: #FFFFFF;
 `;
