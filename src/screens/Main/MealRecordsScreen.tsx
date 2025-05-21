@@ -414,7 +414,7 @@ const MealRecordsScreen = () => {
         <BackButton onPress={handleGoBack}>
           <Icon name="arrow-back-ios" size={24} color="#731A22" />
         </BackButton>
-        <HeaderTitle>{`${mealData.date} - ${mealData.mealType}식사`}</HeaderTitle>
+        <HeaderTitle>{`${mealData.date} - ${mealData.mealType}`}</HeaderTitle>
       </HeaderContainer>
       <HeaderDivider />
 
