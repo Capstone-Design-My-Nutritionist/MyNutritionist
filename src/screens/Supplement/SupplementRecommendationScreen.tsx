@@ -103,7 +103,7 @@ const SupplementRecommendationScreen = () => {
         {/* 추천 영양제 섹션 */}
         <RecommendationSection>
           <RecommendationHeader>
-            <RecommendationTitle>홍길동님께 추천하는 영양제</RecommendationTitle>
+            <RecommendationTitle>Admin님께 추천하는 영양제</RecommendationTitle>
             <RefreshButton onPress={handleRefresh}>
               <RefreshButtonText>새로고침</RefreshButtonText>
             </RefreshButton>
