@@ -273,9 +273,9 @@ export const completeSurvey = async (surveyId: number) => {
   const token = await AsyncStorage.getItem('accessToken');
 
   try {
-    const response = await axios.post(
-      `${API_URL}/surveys/${surveyId}/complete`,
-      {},
+    const response = await axios.patch(
+      `${API_URL}/surveys/complete`,
+      {surveyId}, // ✅ surveyId를 body로 넘김
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -308,10 +308,11 @@ export const completeSurvey = async (surveyId: number) => {
 export const convertImageToBase64 = async (uri: string): Promise<string> => {
   try {
     // 파일 경로 정규화
-    const filePath = Platform.OS === 'android' && !uri.startsWith('file://')
-      ? `file://${uri}`
-      : uri;
-    
+    const filePath =
+      Platform.OS === 'android' && !uri.startsWith('file://')
+        ? `file://${uri}`
+        : uri;
+
     // 파일을 Base64로 읽기
     const base64Image = await RNFS.readFile(filePath, 'base64');
     return base64Image;
@@ -333,21 +334,30 @@ export const convertImageToBase64 = async (uri: string): Promise<string> => {
 export const fetchMealRecords = async (date: string) => {
   try {
     const token = await AsyncStorage.getItem('accessToken');
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    
-    console.log('식사 기록 조회 API 요청:', `${API_ENDPOINTS.GET_MEAL_RECORDS}?date=${date}`);
-    
-    const response = await axios.get(`${API_ENDPOINTS.GET_MEAL_RECORDS}?date=${date}`, {
-      headers,
-    });
-    
+    const headers = token ? {Authorization: `Bearer ${token}`} : {};
+
+    console.log(
+      '식사 기록 조회 API 요청:',
+      `${API_ENDPOINTS.GET_MEAL_RECORDS}?date=${date}`,
+    );
+
+    const response = await axios.get(
+      `${API_ENDPOINTS.GET_MEAL_RECORDS}?date=${date}`,
+      {
+        headers,
+      },
+    );
+
     console.log('식사 기록 조회 API 응답:', response.data);
-    
+
     if (!response.data || !response.data.data) {
-      console.warn('서버에서 유효한 응답을 반환하지 않았습니다:', response.data);
+      console.warn(
+        '서버에서 유효한 응답을 반환하지 않았습니다:',
+        response.data,
+      );
       return null;
     }
-    
+
     return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -369,33 +379,49 @@ export const fetchMealRecords = async (date: string) => {
 export const fetchMealByType = async (date: string, mealType: string) => {
   try {
     const token = await AsyncStorage.getItem('accessToken');
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    
+    const headers = token ? {Authorization: `Bearer ${token}`} : {};
+
     // mealType이 유효한지 확인
     const validMealTypes = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'];
     if (!validMealTypes.includes(mealType)) {
       console.warn('유효하지 않은 식사 유형:', mealType);
-      throw new Error(`유효하지 않은 식사 유형: ${mealType}. 유효한 값: ${validMealTypes.join(', ')}`);
+      throw new Error(
+        `유효하지 않은 식사 유형: ${mealType}. 유효한 값: ${validMealTypes.join(
+          ', ',
+        )}`,
+      );
     }
-    
-    console.log('식사 유형별 음식 정보 조회 API 요청:', `${API_ENDPOINTS.GET_MEAL_BY_TYPE}/${mealType}?date=${date}`);
-    
-    const response = await axios.get(`${API_ENDPOINTS.GET_MEAL_BY_TYPE}/${mealType}`, {
-      params: { date },
-      headers,
-    });
-    
+
+    console.log(
+      '식사 유형별 음식 정보 조회 API 요청:',
+      `${API_ENDPOINTS.GET_MEAL_BY_TYPE}/${mealType}?date=${date}`,
+    );
+
+    const response = await axios.get(
+      `${API_ENDPOINTS.GET_MEAL_BY_TYPE}/${mealType}`,
+      {
+        params: {date},
+        headers,
+      },
+    );
+
     console.log('식사 유형별 음식 정보 조회 API 응답:', response.data);
-    
+
     if (!response.data || !response.data.data) {
-      console.warn('서버에서 유효한 응답을 반환하지 않았습니다:', response.data);
+      console.warn(
+        '서버에서 유효한 응답을 반환하지 않았습니다:',
+        response.data,
+      );
       return null;
     }
-    
+
     return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('식사 유형별 음식 정보 조회 중 네트워크 에러:', error.message);
+      console.error(
+        '식사 유형별 음식 정보 조회 중 네트워크 에러:',
+        error.message,
+      );
       console.error('에러 상세:', error.response?.data);
     } else {
       console.error('식사 유형별 음식 정보 조회 중 오류 발생:', error);
@@ -423,21 +449,21 @@ export const postMealData = async (
   }>,
 ) => {
   const token = await AsyncStorage.getItem('accessToken');
-  
+
   try {
     // 이미지를 Base64로 변환
     const base64Image = await convertImageToBase64(imageUri);
-    
+
     // FormData 생성
     const formData = new FormData();
-    
+
     // 이미지 추가
     formData.append('image', {
       uri: imageUri,
       type: 'image/jpeg',
       name: 'food_image.jpg',
     } as any);
-    
+
     // 음식 데이터 JSON 생성 - mealType을 포함하여 서버에 전송
     const foodData = {
       foods: foods.map(food => ({
@@ -449,18 +475,18 @@ export const postMealData = async (
       })),
       mealType: mealType, // 식사 유형을 JSON 데이터 내부에 포함
     };
-    
+
     // 음식 데이터 추가
     formData.append('request', JSON.stringify(foodData));
-    
+
     // 식사 유형을 별도 파라미터로도 추가 (이중 보호)
     formData.append('mealType', mealType);
-    
+
     console.log('🔔 음식 데이터 제출:', {
       mealType,
       foodsCount: foods.length,
     });
-    
+
     // API 호출
     const response = await axios.post(API_ENDPOINTS.POST_MEALS, formData, {
       headers: {
@@ -468,7 +494,7 @@ export const postMealData = async (
         'Content-Type': 'multipart/form-data',
       },
     });
-    
+
     console.log('📦 음식 데이터 제출 응답:', response.data);
     return response.data;
   } catch (error: any) {
@@ -491,17 +517,17 @@ export const postMealData = async (
  */
 export const fetchUserInfo = async () => {
   const token = await AsyncStorage.getItem('accessToken');
-  
+
   try {
     console.log('🔔 유저 정보 요청');
-    
+
     // API 호출
     const response = await axios.get(API_ENDPOINTS.GET_USER_INFO, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    
+
     console.log('📦 유저 정보 응답:', response.data);
     return response.data;
   } catch (error: any) {
@@ -525,20 +551,20 @@ export const fetchUserInfo = async () => {
  */
 export const fetchNutritionSummary = async (date: string) => {
   const token = await AsyncStorage.getItem('accessToken');
-  
+
   try {
     // API 호출 URL
     const url = `${API_ENDPOINTS.GET_NUTRITION_SUMMARY}?date=${date}`;
-    
+
     console.log('🔔 영양소 요약 데이터 요청:', url);
-    
+
     // API 호출
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    
+
     console.log('📦 영양소 요약 데이터 응답:', response.data);
     return response.data;
   } catch (error: any) {
@@ -568,24 +594,28 @@ export const deleteMeal = async (
   foodName: string,
 ) => {
   const token = await AsyncStorage.getItem('accessToken');
-  
+
   try {
     // mealType이 유효한지 확인
     const validMealTypes = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'];
     if (!validMealTypes.includes(mealType)) {
       console.warn('유효하지 않은 식사 유형:', mealType);
-      throw new Error(`유효하지 않은 식사 유형: ${mealType}. 유효한 값: ${validMealTypes.join(', ')}`);
+      throw new Error(
+        `유효하지 않은 식사 유형: ${mealType}. 유효한 값: ${validMealTypes.join(
+          ', ',
+        )}`,
+      );
     }
-    
+
     // 쿼리 파라미터 구성
     const params = {
       date,
       mealType,
       foodName,
     };
-    
+
     console.log('🗑️ 음식 데이터 삭제 요청:', params);
-    
+
     // API 호출
     const response = await axios.delete(API_ENDPOINTS.DELETE_MEALS, {
       params,
@@ -594,7 +624,7 @@ export const deleteMeal = async (
         'Content-Type': 'application/json',
       },
     });
-    
+
     console.log('✅ 음식 데이터 삭제 성공:', response.data);
     return response.data;
   } catch (error: any) {

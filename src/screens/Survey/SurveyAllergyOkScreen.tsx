@@ -11,6 +11,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 import {
   submitSurveyAnswer,
   saveSurveyCompletionTime,
+  getOrCreateSurvey,
 } from '../../utils/surveyUtils';
 import {completeSurvey} from '../../api/api';
 
@@ -27,7 +28,7 @@ type NavigationProps = StackNavigationProp<
 >;
 
 const SurveyAllergyOkScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<any>();
   const route = useRoute();
   const from = (route.params as {from?: string})?.from;
 
@@ -39,24 +40,20 @@ const SurveyAllergyOkScreen = () => {
     const hasAllergy = selectedOption === '예';
 
     try {
-      await submitSurveyAnswer('allergy-status', {hasAllergy});
+      const surveyId = await getOrCreateSurvey();
+      await submitSurveyAnswer('allergy-status', {hasAllergy}, surveyId);
 
       if (hasAllergy) {
-        // 알레르기 상세 화면으로 이동 (분기 흐름 고려)
         navigation.navigate('SurveyAllergyScreen', {from});
       } else {
-        // 빈 배열 저장
-        await submitSurveyAnswer('allergies', {allergies: []});
+        await submitSurveyAnswer('allergies', {allergies: []}, surveyId);
 
         if (from === 'partial-health') {
-          // 분기 흐름이면 설문 완료 처리 후 마이페이지로
-          await completeSurvey();
+          await completeSurvey(surveyId);
           await saveSurveyCompletionTime();
-          console.log('🎉 건강정보 설문 완료!');
           navigation.navigate('ProfileStack');
         } else {
-          // 전체 흐름에서는 다음 단계로 (SmokingScreen 등)
-          navigation.navigate('SurveySmokingScreen');
+          navigation.navigate('SurveyAllergyScreen');
         }
       }
     } catch (error) {

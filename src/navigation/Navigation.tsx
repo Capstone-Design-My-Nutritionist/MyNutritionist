@@ -7,14 +7,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from '../screens/Main/HomeScreen';
 import SupplementRecommendationScreen from '../screens/Supplement/SupplementRecommendationScreen';
 // Import the FoodUploadNavigator and tab bar visibility function
-import FoodUploadNavigator, { getTabBarVisibility } from './FoodUploadNavigator';
+import FoodUploadNavigator, {getTabBarVisibility} from './FoodUploadNavigator';
 import CalendarScreen from '../screens/Calendar/CalendarScreen';
 import ProfileScreen from '../screens/UserSettings/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
 // Define colors
-const ACTIVE_COLOR = '#BF0404';  // Reddish tone for active tab
+const ACTIVE_COLOR = '#BF0404'; // Reddish tone for active tab
 const INACTIVE_COLOR = '#9E9E9E'; // Gray tone for inactive tabs
 const UPLOAD_BUTTON_COLOR = '#E44F68'; // Keeping the original upload button color
 
@@ -30,13 +30,14 @@ const Navigation = () => {
         tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarIcon: ({focused, color, size}) => {
           // Map route names to icon names from MaterialCommunityIcons
-          const iconName: string = {
-            Home: 'home',
-            Supplements: 'shopping',
-            Upload: 'plus',
-            Calendar: 'calendar-month',
-            Profile: 'account',
-          }[route.name] || '';
+          const iconName: string =
+            {
+              Home: 'home',
+              Supplements: 'shopping',
+              Upload: 'plus',
+              Calendar: 'calendar-month',
+              Profile: 'account',
+            }[route.name] || '';
 
           // Upload button placeholder
           if (route.name === 'Upload') {
@@ -50,16 +51,20 @@ const Navigation = () => {
           );
         },
       })}>
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: '홈' }} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{tabBarLabel: '홈'}}
+      />
       <Tab.Screen
         name="Supplements"
         component={SupplementRecommendationScreen}
-        options={{ tabBarLabel: '영양제' }}
+        options={{tabBarLabel: '영양제'}}
       />
       <Tab.Screen
         name="Upload"
         component={FoodUploadNavigator}
-        options={({ route }) => {
+        options={({route}) => {
           const tabBarVisibility = getTabBarVisibility(route);
           return {
             tabBarLabel: () => null,
@@ -70,16 +75,26 @@ const Navigation = () => {
                 </UploadButton>
               </UploadButtonContainer>
             ),
-            tabBarStyle: tabBarVisibility.tabBarStyle ? {
-              display: 'none',
-              position: 'absolute',
-              height: 0
-            } : styles.tabBar
+            tabBarStyle: tabBarVisibility.tabBarStyle
+              ? {
+                  display: 'none',
+                  position: 'absolute',
+                  height: 0,
+                }
+              : styles.tabBar,
           };
         }}
       />
-      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: '캘린더' }} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: '프로필' }} />
+      <Tab.Screen
+        name="Calendar"
+        component={CalendarScreen}
+        options={{tabBarLabel: '캘린더'}}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{tabBarLabel: '프로필'}}
+      />
     </Tab.Navigator>
   );
 };
@@ -94,7 +109,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     elevation: 0,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
+    shadowOffset: {width: 0, height: -2},
     shadowOpacity: 0.1,
     shadowRadius: 3,
     paddingBottom: Platform.OS === 'ios' ? 20 : 10,

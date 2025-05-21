@@ -12,6 +12,7 @@ import SurveyButtonGroup from '../../components/Common/SurveyButtonGroup';
 import {
   submitSurveyAnswer,
   saveSurveyCompletionTime,
+  getOrCreateSurvey,
 } from '../../utils/surveyUtils';
 import {completeSurvey} from '../../api/api';
 
@@ -49,20 +50,21 @@ const SurveyAllergyScreen = () => {
     if (!selectedOption) return;
 
     try {
+      const surveyId = await getOrCreateSurvey();
       await submitSurveyAnswer('allergies', {
         allergies: [allergyMap[selectedOption]],
       });
 
       if (from === 'partial-health') {
         // 건강정보 설문만 다시 하는 경우
-        await completeSurvey();
+        await completeSurvey(surveyId);
         await saveSurveyCompletionTime();
         console.log('🎉 건강정보 설문 완료!');
         await AsyncStorage.setItem('hasCompletedSurvey', 'true');
         navigation.replace('ProfileStack');
       } else {
         // 전체 설문 흐름
-        navigation.navigate('SurveySmokingScreen');
+        navigation.navigate('ProfileStack');
       }
     } catch (error) {
       console.error('❌ 알레르기 저장/설문 완료 중 오류:', error);
