@@ -574,29 +574,35 @@ const HomeScreen = () => {
   // 현재 표시할 추천 메뉴
   const currentRecommendation = tempRecommendations[currentRecommendationIndex];
 
+  // useEffect(() => {
+  //   const debugResetSurvey = async () => {
+  //     await AsyncStorage.removeItem('hasCompletedSurvey');
+  //     console.log('✅ 설문 상태 초기화됨 (실기기)');
+  //   };
+
+  //   debugResetSurvey();
+  // }, []);
   useEffect(() => {
-    const debugResetSurvey = async () => {
-      await AsyncStorage.removeItem('hasCompletedSurvey');
-      console.log('✅ 설문 상태 초기화됨 (실기기)');
+    const disableSurveyModalTemporarily = async () => {
+      await AsyncStorage.setItem('hasCompletedSurvey', 'true');
+      console.log('🛠 디버그용: 설문 완료 상태 강제 설정됨');
     };
 
-    debugResetSurvey();
+    disableSurveyModalTemporarily();
   }, []);
 
   useEffect(() => {
     const initSurveyCheck = async () => {
-      await AsyncStorage.removeItem('hasCompletedSurvey');
-      console.log('🧹 설문 상태 초기화 완료');
+      try {
+        const storedValue = await AsyncStorage.getItem('hasCompletedSurvey');
+        const hasCompleted = storedValue === 'true';
+        console.log('📦 hasCompletedSurvey:', storedValue);
 
-      const storedValue = await AsyncStorage.getItem('hasCompletedSurvey');
-      const hasCompleted = JSON.parse(storedValue || 'false');
-      console.log('✅ hasCompletedSurvey (boolean):', hasCompleted);
-      console.log('📦 실기기 저장된 값:', storedValue);
-
-      if (!hasCompleted) {
-        setShowSurveyModal(true);
-      } else {
-        setShowSurveyModal(false);
+        if (!hasCompleted) {
+          setShowSurveyModal(true);
+        }
+      } catch (error) {
+        console.error('AsyncStorage 에러:', error);
       }
     };
 

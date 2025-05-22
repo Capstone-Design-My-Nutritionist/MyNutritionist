@@ -28,10 +28,21 @@ export const fetchExistingSurvey = async (): Promise<number | null> => {
     });
 
     const surveyData = response.data?.data;
-    return surveyData?.id ?? null; // ✅ 배열이 아니라 객체에서 id 추출
-  } catch (error) {
-    console.error('❌ 기존 설문 조회 실패:', error);
-    return null;
+    return surveyData?.id ?? null;
+  } catch (error: any) {
+    // 💥 여기에서 404가 아니라면 에러 다시 던져야 함
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      if (status === 404) {
+        console.log('📭 설문 없음 (404), 새로 생성 필요');
+        return null;
+      } else {
+        console.error('❌ 설문 조회 실패 (예상 외):', error.response?.data);
+        throw error; // 💥 여기서 throw해야 createSurvey()까지 안 가
+      }
+    } else {
+      throw error;
+    }
   }
 };
 
@@ -63,6 +74,7 @@ export const getOrCreateSurvey = async (): Promise<number> => {
     throw error;
   }
 };
+
 /** 설문 항목 저장 */
 export const submitSurveyAnswer = async (
   field: string,

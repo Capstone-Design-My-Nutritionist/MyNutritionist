@@ -54,6 +54,7 @@ const SurveyAllergyScreen = () => {
       await submitSurveyAnswer('allergies', {
         allergies: [allergyMap[selectedOption]],
       });
+      await AsyncStorage.setItem('hasCompletedSurvey', JSON.stringify(true));
 
       if (from === 'partial-health') {
         // 건강정보 설문만 다시 하는 경우

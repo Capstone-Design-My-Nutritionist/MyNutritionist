@@ -45,6 +45,7 @@ const SurveyAllergyOkScreen = () => {
       await submitSurveyAnswer('allergy-status', {hasAllergy}, surveyId);
 
       if (hasAllergy) {
+        await AsyncStorage.setItem('hasCompletedSurvey', JSON.stringify(true));
         navigation.navigate('SurveyAllergyScreen', {from});
       } else {
         await submitSurveyAnswer('allergies', {allergies: []}, surveyId);
@@ -58,7 +59,7 @@ const SurveyAllergyOkScreen = () => {
           );
           navigation.navigate('ProfileStack');
         } else {
-          navigation.navigate('SurveyAllergyScreen');
+          navigation.navigate('ProfileStack');
         }
       }
     } catch (error) {
